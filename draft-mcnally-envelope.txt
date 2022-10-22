@@ -206,6 +206,8 @@ Table of Contents
    TODO This section describes the binary format of envelopes in terms
    of its CBOR components and their sequencing.
 
+   (Artwork only available as svg: alice_knows_bob_tiny_repaired.svg)
+
 5.  Reference Implementation
 
    TODO This section describes the current reference implementations.
