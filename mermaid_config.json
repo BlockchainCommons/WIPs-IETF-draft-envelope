@@ -1,0 +1,23 @@
+{
+    "theme": "default",
+    "themeVariables": {
+        "fontFamily": "sans-serif",
+        "fontSize": "16px",
+
+        "background": "transparent",
+        "primaryTextColor" : "black",
+        "primaryBorderColor" : "black",
+        "primaryColor" : "transparent",
+        "secondaryColor" : "transparent",
+        "lineColor" : "black",
+
+        "nodeBorder" : "black",
+        "clusterBkg" : "transparent",
+        "clusterBorder" : "black",
+        "defaultLinkColor" : "black",
+        "titleColor" : "black",
+        "edgeLabelBackground" : "transparent",
+        "mainBkg" : "transparent",
+        "nodeTextColor" : "black"
+    }
+}

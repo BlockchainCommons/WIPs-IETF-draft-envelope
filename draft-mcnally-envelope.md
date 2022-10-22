@@ -120,10 +120,11 @@ In the diagram above, there are five distinct positions of elements, each of whi
 
 Note that the envelope digest is not the same as the subject's digest, as it includes the digests of the envelope's assertions as well. Also note that while the predicate and object of an assertion are distinct envelopes, the assertion as a whole is also a distinct envelope.
 
-
 # Envelope Format
 
 TODO This section describes the binary format of envelopes in terms of its CBOR components and their sequencing.
+
+<artwork type="svg" src="alice_knows_bob_tiny_repaired.svg"/>
 
 
 # Reference Implementation
