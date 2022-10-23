@@ -1462,7 +1462,7 @@ blake3-digest = bytes .size 32
           <h4 id="name-node">
 <a href="#section-2.3.1" class="section-number selfRef">2.3.1. </a><a href="#name-node" class="section-name selfRef">Node</a>
           </h4>
-<p id="section-2.3.1-1">A <code>node</code> case is encoded as a CBOR array, and used when one or more assertions are present on the envelope. It <span class="bcp14">MUST NOT</span> be present when there is not at least one assertion. The first element of the array is the envelope's <code>subject</code>, Followed by one <code>assertion-element</code> for each assertion. The assertion elements <span class="bcp14">MUST</span> appear in ascending lexicographic order by their digest. The array <span class="bcp14">MUST NOT</span> contain any assertion elements with identical digests.<a href="#section-2.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.1-1">A <code>node</code> case is encoded as a CBOR array, and used when one or more assertions are present on the envelope. It <span class="bcp14">MUST NOT</span> be present when there is not at least one assertion. The first element of the array is the envelope's <code>subject</code>, Followed by one or more <code>assertion-element</code>s, each of which <span class="bcp14">MUST</span> be an <code>assertion</code>, or the <code>encrypted</code> or <code>elided</code> transformation of that assertion. The assertion elements <span class="bcp14">MUST</span> appear in ascending lexicographic order by their digest. The array <span class="bcp14">MUST NOT</span> contain any assertion elements with identical digests.<a href="#section-2.3.1-1" class="pilcrow">¶</a></p>
 <div id="section-2.3.1-2">
 <pre class="lang-cddl sourcecode">
 node = [envelope-content, + assertion-element]
@@ -1490,7 +1490,7 @@ wrapped-envelope = #6.224(envelope-content)
           <h4 id="name-assertion">
 <a href="#section-2.3.3" class="section-number selfRef">2.3.3. </a><a href="#name-assertion" class="section-name selfRef">Assertion</a>
           </h4>
-<p id="section-2.3.3-1">An <code>assertion</code> case is used for each of the assertions in an envelope, and a well-formed envelope <span class="bcp14">MUST</span> only contain envelopes so tagged in its array of assertions.<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.3-1">An <code>assertion</code> case is used for each of the assertions in an envelope.<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
 <div id="section-2.3.3-2">
 <pre class="lang-cddl sourcecode">
 assertion = #6.221([envelope, envelope])
