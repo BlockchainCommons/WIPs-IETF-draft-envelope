@@ -111,6 +111,9 @@ byte
 element
 : An envelope is a tree of elements, each of which is itself an envelope.
 
+image
+: The source data from which a cryptographic digest is calculated.
+
 # Envelope Format Specification
 
 This section is normative, and specifies the binary format of envelopes in terms of its CBOR components and their sequencing. The formal language used is the Concise Data Definition Language (CDDL) {{-CDDL}}. To be considered a well-formed envelope, a sequence of bytes MUST be well-formed deterministic CBOR {{-CBOR}} and MUST conform to the specifications in this section.
@@ -150,7 +153,7 @@ envelope-content = (
 
 ## Cases Without Children
 
-### Leaf
+### Leaf Case Format
 
 A `leaf` case is used when the envelope contains user-defined CBOR content. It is tagged using #6.24, per {{-CBOR}} section 3.4.5.1, "Encoded CBOR Data Item".
 
@@ -158,7 +161,7 @@ A `leaf` case is used when the envelope contains user-defined CBOR content. It i
 leaf = #6.24(bytes)
 ~~~
 
-### Known Predicate
+### Known Predicate Case Format
 
 A `known-predicate` case is used to specify an unsigned integer used as a predicate. Any envelope can be used as a predicate in an assertion, but many predicates are commonly used, e.g., `verifiedBy` for signatures, hence it is desirable to keep common predicates short.
 
@@ -166,7 +169,7 @@ A `known-predicate` case is used to specify an unsigned integer used as a predic
 known-predicate = #6.223(uint)
 ~~~
 
-### Encrypted
+### Encrypted Case Format
 
 An `encrypted` case is used for an envelope that has been encrypted.
 
@@ -185,7 +188,7 @@ nonce = bytes .size 12   ; Random, generated at encryption-time
 auth = bytes .size 16    ; Authentication tag created by Poly1305
 ~~~
 
-### Elided
+### Elided Case Format
 
 An `elided` case is used as a placeholder for an element that has been elided.
 
@@ -203,7 +206,7 @@ blake3-digest = bytes .size 32
 
 ## Cases With Children
 
-### Node
+### Node Case Format
 
 A `node` case is encoded as a CBOR array, and used when one or more assertions are present on the envelope. It MUST NOT be present when there is not at least one assertion. The first element of the array is the envelope's `subject`, Followed by one or more `assertion-element`s, each of which MUST be an `assertion`, or the `encrypted` or `elided` transformation of that assertion. The assertion elements MUST appear in ascending lexicographic order by their digest. The array MUST NOT contain any assertion elements with identical digests.
 
@@ -213,7 +216,7 @@ node = [envelope-content, + assertion-element]
 assertion-element = ( assertion / encrypted / elided )
 ~~~
 
-### Wrapped Envelope
+### Wrapped Envelope Case Format
 
 A `wrapped-envelope` case is used where an envelope including all its assertions should be treated as a single element, e.g. for the purpose of signing.
 
@@ -221,7 +224,7 @@ A `wrapped-envelope` case is used where an envelope including all its assertions
 wrapped-envelope = #6.224(envelope-content)
 ~~~
 
-### Assertion
+### Assertion Case Format
 
 An `assertion` case is used for each of the assertions in an envelope.
 
@@ -231,7 +234,264 @@ assertion = #6.221([envelope, envelope])
 
 # Computing the Digest Tree
 
-TODO This section specifies how the digests for each of the envelope cases are computed.
+This section is normative, and specifies how the digests for each of the envelope cases are computed. The examples in this section may be used as test vectors.
+
+Each of the seven enumerated envelope cases produces an image which is used as input to a cryptographic hash function to produce a digest of its contents.
+
+The overall digest of an envelope is the digest of its specific case.
+
+In this and subsequenct sections:
+*  `digest(image)` is the BLAKE3 hash function that produces a 32-byte digest.
+*  The `.digest` attribute is the digest of the named element computed as specified herein.
+*  The `||` operator represents contactenation of byte strings.
+
+## Leaf Case Digest Calculation
+
+The `leaf` case consists of any CBOR object. The envelope image is the CBOR serialization of that object:
+
+~~~
+digest(cbor)
+~~~
+
+### Example
+
+The CBOR serialization of the plaintext string `"Hello"` (not including the quotes) is `6548656C6C6F`. The following command line calculates the BLAKE3 sum of this sequence:
+
+~~~
+$ echo "6548656C6C6F" | xxd -r -p | b3sum --no-names
+bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+~~~
+
+Using the command line tool in the envelope reference implementation, we create an envelope with this string as the subject and display the envelope's digest. The digest below matches the one above.
+
+~~~
+$ envelope subject "Hello" | envelope digest --hex
+bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+~~~
+
+## Known Predicate Case Digest Calculation
+
+The envelope image of the `known-predicate` case is the CBOR serialization of the unsigned integer value of the predicate tagged with #6.223, as specified in the Known Predicate Case Format section above.
+
+~~~
+digest(#6.223(uint))
+~~~
+
+### Example
+
+The known predicate `verifiedBy` in CBOR diagnostic notation is `223(3)`, which in hex is `D8DF03`. The BLAKE3 sum of this sequence is:
+
+~~~
+$ echo "D8DF03" | xxd -r -p | b3sum --no-names
+d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
+~~~
+
+Using the command line tool in the envelope reference implementation, we create an envelope with this known predicate as the subject and display the envelope's digest. The digest below matches the one above.
+
+~~~
+$ envelope subject --known-predicate verifiedBy | envelope digest --hex
+d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
+~~~
+
+## Encrypted Case Digest Calculation
+
+The `encrypted` case declares its digest to be the digest of the encrypted plaintext. The declaration is made using an HMAC, and when decrypting an element the implementation MUST compare the digest of the decrypted element to the declared digest and flag an error if they do not match.
+
+### Example
+
+If we create the envelope from the leaf example above, encrypt it, and then request its digest:
+
+~~~
+$ KEY=`envelope generate key`
+$ envelope subject "Hello" | envelope encrypt --key $KEY | envelope digest --hex
+bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+~~~
+
+...we see that its digest is the same as its plaintext form:
+
+~~~
+$ envelope subject "Hello" | envelope digest --hex
+bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+~~~
+
+## Elided Case Digest Calculation
+
+The `elided` case declares its digest to be the digest of the envelope for which it is a placeholder.
+
+### Example
+
+If we create the envelope from the leaf example above, elide it, and then request its digest:
+
+~~~
+$ envelope subject "Hello" | envelope elide | envelope digest --hex
+bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+~~~
+
+...we see that its digest is the same as its unelided form:
+
+~~~
+$ envelope subject "Hello" | envelope digest --hex
+bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+~~~
+
+## Node Case Digest Calculation
+
+The envelope image of the `node` case is the concatenation of the digest of its `subject` and the digests of its assertions sorted in ascending lexicographic order.
+
+With a `node` case, there MUST always be at least one assertion.
+
+~~~
+digest(subject.digest || assertion-0.digest || assertion-1.digest || ... || assertion-n.digest)
+~~~
+
+### Example
+
+We create four separate envelopes and display their digests:
+
+~~~
+$ SUBJECT=`envelope subject "Alice"`
+$ envelope digest --hex $SUBJECT
+278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
+
+$ ASSERTION_0=`envelope subject assertion "knows" "Bob"`
+$ envelope digest --hex $ASSERTION_0
+55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+
+$ ASSERTION_1=`envelope subject assertion "knows" "Carol"`
+$ envelope digest --hex $ASSERTION_1
+71a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b5f77aa3159a711
+
+$ ASSERTION_2=`envelope subject assertion "knows" "Edward"`
+$ envelope digest --hex $ASSERTION_2
+1e0b049b8d2b21d4bb32f90b4a9e6b5031526f868da303268a9c1c75c0082446
+~~~
+
+We combine the envelopes into a single envelope with three assertions:
+
+~~~
+$ ENVELOPE=`envelope assertion add envelope $ASSERTION_0 $SUBJECT | \
+    envelope assertion add envelope $ASSERTION_1 | \
+    envelope assertion add envelope $ASSERTION_2`
+
+$ envelope $ENVELOPE
+"Alice" [
+    "knows": "Bob"
+    "knows": "Carol"
+    "knows": "Edward"
+]
+
+$ envelope digest --hex $ENVELOPE
+0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
+~~~
+
+Note that in the envelope notation representation above, the assertions are sorted alphabetically, with `"knows": "Edward"` coming last. But internally, the three assertions are ordered by digest in ascending lexicographic order, with "Edward" coming first because it's digest starting with `1e0b049b` is the lowest, as in the tree formatted display below:
+
+~~~
+$ envelope --tree $ENVELOPE
+0abac60a NODE
+    27840350 subj "Alice"
+    1e0b049b ASSERTION
+        7092d620 pred "knows"
+        d5a375ff obj "Edward"
+    55560bdf ASSERTION
+        7092d620 pred "knows"
+        9a771715 obj "Bob"
+    71a30690 ASSERTION
+        7092d620 pred "knows"
+        ad2c454b obj "Carol"
+~~~
+
+To replicate this, we make a list of digests, starting with the subject, and then each assertion's digest in ascending lexicographic order:
+
+~~~
+278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
+1e0b049b8d2b21d4bb32f90b4a9e6b5031526f868da303268a9c1c75c0082446
+55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+71a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b5f77aa3159a711
+~~~
+
+We then calculate the BLAKE3 hash of the concatenation of these four digests, and note that this is the same digest as the composite envelope's digest:
+
+~~~
+echo "278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f1101e0b049b8d2b21d4bb32f90b4a9e6b5031526f868da303268a9c1c75c008244655560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d41871a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b5f77aa3159a711" | xxd -r -p | b3sum --no-names
+0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
+
+$ envelope digest --hex $ENVELOPE
+0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
+~~~
+
+## Wrapped Envelope Case Digest Calculation
+
+The envelope image of the `wrapped-envelope` case is the digest of the wrapped envelope:
+
+~~~
+digest(envelope.digest)
+~~~
+
+### Example
+
+As above, we note the digest of a leaf envelope is the digest of its CBOR:
+
+~~~
+$ envelope subject "Hello" | envelope digest --hex
+bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+
+$ echo "6548656C6C6F" | xxd -r -p | b3sum --no-names
+bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+~~~
+
+Now we note that the digest of a wrapped envelope is the digest of the wrapped envelope's digest:
+
+~~~
+$ envelope subject "Hello" | envelope subject --wrapped | envelope digest --hex
+55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f28c31b
+
+$ echo "bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea" | xxd -r -p | b3sum --no-names
+55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f28c31b
+~~~
+
+## Assertion Case Digest Calculation
+
+The envelope image of the `assertion` case is the concatenation of the digests of the assertion's predicate and object in that order:
+
+~~~
+digest(predicate.digest || object.digest)
+~~~
+
+### Example
+
+We create an assertion from two separate envelopes and display their digests:
+
+~~~
+$ PREDICATE=`envelope subject "knows"`
+$ envelope digest --hex $PREDICATE
+7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8ee62fab
+
+$ OBJECT=`envelope subject "Bob"`
+$ envelope digest --hex $OBJECT
+9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab25df1a
+
+$ ASSERTION=`envelope subject assertion "knows" "Bob"`
+$ envelope digest --hex $ASSERTION
+55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+~~~
+
+To replicate this, we make a list of the predicate digest and the object digest, in that order:
+
+~~~
+7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8ee62fab
+9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab25df1a
+~~~
+
+We then calculate the BLAKE3 hash of the concatenation of these two digests, and note that this is the same digest as the composite envelope's digest:
+
+~~~
+echo "7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8ee62fab9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab25df1a" | xxd -r -p | b3sum --no-names
+55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+
+$ envelope digest --hex $ASSERTION
+55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+~~~
 
 # Envelope Hierarchy
 
