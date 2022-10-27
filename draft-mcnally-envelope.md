@@ -54,14 +54,13 @@ informative:
 
 --- abstract
 
-TODO Abstract
-
+The `envelope` protocol specifies a format for hierarchical binary data built on CBOR. Envelopes are designed with "smart documents" in mind, and have a number of unique features including easy representation of semantic structures like triples, built-in normalization, a built-in Merkle-like digest tree, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document *without* invalidating the digest tree or cryptographic signatures that rely on it.
 
 --- middle
 
 # Introduction
 
-This document describes the `envelope` protocol for hierarchical structured binary data. Envelope has a number of features that distinguish it from other forms of structured data formats, for example JSON {{-JSON}} (envelopes are binary, not text), JSON-LD {{JSONLD}} (envelopes require no normalization because they are always in canonical form), and protocol buffers {{PROTOBUF}} (envelopes allow for, but do not require a pre-existing schema.)
+This document specifies the `envelope` protocol for hierarchical structured binary data. Envelope has a number of features that distinguish it from other forms of structured data formats, for example JSON {{-JSON}} (envelopes are binary, not text), JSON-LD {{JSONLD}} (envelopes require no normalization because they are always constructed in canonical form), and protocol buffers {{PROTOBUF}} (envelopes allow for, but do not require a pre-existing schema.)
 
 ## Feature: Digest Tree
 
@@ -241,6 +240,7 @@ Each of the seven enumerated envelope cases produces an image which is used as i
 The overall digest of an envelope is the digest of its specific case.
 
 In this and subsequenct sections:
+
 *  `digest(image)` is the BLAKE3 hash function that produces a 32-byte digest.
 *  The `.digest` attribute is the digest of the named element computed as specified herein.
 *  The `||` operator represents contactenation of byte strings.
@@ -495,23 +495,108 @@ $ envelope digest --hex $ASSERTION
 
 # Envelope Hierarchy
 
-TODO This section describes envelopes from the perspective of their hierachical structure and the semantic constructs it supports.
+This section is informative, and describes envelopes from the perspective of their hierachical structure and the semantic constructs it supports.
+
+An envelope consists of a `subject` and one or more `predicate-object` pairs called `assertions`:
 
 ~~~
 subject [
-    predicate1: object2
-    predicate2: object2
+    predicate0: object0
+    predicate1: object1
     ...
+    predicateN: objectN
 ]
 ~~~
 
-In the diagram above, there are five distinct positions of elements, each of which is itself an enveope and which therefore produces its own digest:
+A concrete example of this might be:
+
+~~~
+"Alice" [
+    "knows": "Bob"
+    "knows": "Carol"
+    "knows": "Edward"
+]
+~~~
+
+In the diagram above, there are five distinct "positions" of elements, each of which is itself an envelope and which therefore produces its own digest:
 
 1. envelope
 2. subject
 3. predicate
 4. object
 5. assertion
+
+The examples above are printed in "envelope notation," which is designed to make the semantic content of envelopes human-readable, but it doesn't show the actual digests associated with each of the positions. To see the structure more completely, we can use print out every element of the envelope tree:
+
+~~~
+0abac60a NODE
+    27840350 subj "Alice"
+    1e0b049b ASSERTION
+        7092d620 pred "knows"
+        d5a375ff obj "Edward"
+    55560bdf ASSERTION
+        7092d620 pred "knows"
+        9a771715 obj "Bob"
+    71a30690 ASSERTION
+        7092d620 pred "knows"
+        ad2c454b obj "Carol"
+~~~
+
+For easy recognition, envelope trees only show the first four bytes of each digest, but internally all digests are actually 32 bytes.
+
+In the above tree, we see the envelope is a `node` case, which holds the overall envelope digest. We also see that the subject "Alice" has its own digest, and each of the three assertions have their own digests, as does the predicate and object of each assertion. We also see that the assertions are in ascending lexicographic order by digest, which is distinct from envelope notation.
+
+The following subsections present each of the seven enumerated envelope cases in five different output formats:
+
+* Envelope Notation
+* Envelope Tree
+* CBOR Diagnostic Notation
+* Mermaid
+* CBOR hex
+
+In addition, each subsection starts with the reference implementation envelope CLI command line needed to generate the envelope being formatted.
+
+## Leaf Case
+
+### Envelope CLI Command Line
+
+~~~
+envelope subject "Alice"
+~~~
+
+### Envelope Notation
+
+~~~
+"Alice"
+~~~
+
+### Tree
+
+~~~
+27840350 "Alice"
+~~~
+
+### CBOR Diagnostic Notation
+
+~~~
+200(   ; envelope
+   24("Alice")   ; leaf
+)
+~~~
+
+### Mermaid
+
+~~~
+graph LR
+    1["27840350<br/>#quot;Alice#quot;"]
+    style 1 stroke:#55f,stroke-width:3.0px
+~~~
+
+### CBOR
+
+~~~
+d8c8d81865416c696365
+~~~
 
 Note that the envelope digest is not the same as the subject's digest, as it includes the digests of the envelope's assertions as well. Also note that while the predicate and object of an assertion are distinct envelopes, the assertion as a whole is also a distinct envelope.
 
