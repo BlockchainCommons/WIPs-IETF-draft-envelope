@@ -685,8 +685,9 @@ $ envelope digest --hex $ASSERTION
    see that the assertions are in ascending lexicographic order by
    digest, which is distinct from envelope notation.
 
-   The following subsections present each of the seven enumerated
-   envelope cases in five different output formats:
+   The following subsections (WIP) present each of the seven enumerated
+   envelope cases in five different output formats.  These can be used
+   as test vectors:
 
    *  Envelope Notation
 
