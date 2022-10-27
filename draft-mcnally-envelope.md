@@ -546,7 +546,7 @@ For easy recognition, envelope trees only show the first four bytes of each dige
 
 In the above tree, we see the envelope is a `node` case, which holds the overall envelope digest. We also see that the subject "Alice" has its own digest, and each of the three assertions have their own digests, as does the predicate and object of each assertion. We also see that the assertions are in ascending lexicographic order by digest, which is distinct from envelope notation.
 
-The following subsections present each of the seven enumerated envelope cases in five different output formats:
+The following subsections (WIP) present each of the seven enumerated envelope cases in five different output formats. These can be used as test vectors:
 
 * Envelope Notation
 * Envelope Tree
