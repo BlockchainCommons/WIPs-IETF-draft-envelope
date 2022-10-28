@@ -36,6 +36,9 @@ normative:
     BLAKE3:
         title: BLAKE3 Cryptographic Hash Function
         target: https://blake3.io
+    CRYPTO-MSG:
+        title: UR Type Definition for Secure Messages
+        target: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2022-001-secure-message.md
 
 informative:
     MERKLE:
@@ -71,35 +74,36 @@ One of the key features of envelope is that it structurally provides a tree of d
 
 ## Feature: Semantic Structure
 
-Envelope is designed to facilitate the encoding semantic triples {{TRIPLE}}, i.e., "subject-predicate-object", e.g. "Alice knows Bob". At its top structural level, an envelope encodes a single `subject` and a set of zero or more `assertion`s about the subject, which are `predicate-object` pairs:
+Envelope is designed to facilitate the encoding of semantic triples {{TRIPLE}}, i.e., "subject-predicate-object", e.g. "Alice knows Bob." At its top structural level, an envelope encodes a single `subject` and a set of zero or more `assertion`s about the subject, which are `predicate-object` pairs:
 
 ~~~
 subject [
+    predicate0: object0
     predicate1: object1
-    predicate2: object2
     ...
+    predicateN: objectN
 ]
 ~~~
 
-The simplest envelope is just a subject with no assertions, e.g., a simple plaintext string. But since every element in an envelope is itelf an envelope, every element can therefore hold its own assertions. This allows any element to carry additional context, e.g. an assertion declaring the language in which human-readable string is written. This mechanism for "assertions with assertions" provides for arbitrarily complex metadata.
+The simplest envelope is just a subject with no assertions, e.g., a simple plaintext string (or any other CBOR construct.) But since every element in an envelope is itelf an envelope, every element can therefore hold its own assertions. This allows any element to carry additional context, e.g. an assertion declaring the language in which a human-readable string is written. This mechanism for "assertions with assertions" provides for arbitrarily complex metadata.
 
 ## Feature: Cryptography Ready
 
-Because of the strictly invariant nature of the digest tree, envelopes are suitable for use in applications that employ cryptographic signatures. Such signatures in an envelope take the form of `verifiedBy-Signature` assertions on a `subject`, which is the target of the signature.
+Because of the strictly invariant nature of the digest tree, envelopes are suitable for use in applications that employ cryptographic signatures. Such signatures in an envelope take the form of `verifiedBy-Signature` assertions on a `subject`, which is the target of the signature. Other cryptographic structures are readily supported.
 
 ## Feature: Binary Efficiency, Built on Deterministic CBOR
 
-Envelopes are a binary structure built on CBOR {{-CBOR}}, and MUST adhere to the requirements in section 4.2., "Deterministically Encoded CBOR". This requirement is one factor ensuring that two envelopes that have the same top-level digest, and therefore contain the same digest tree, MUST contain exactly the same information. This holds true even if the two identical envelopes were assembled by different parties, at different times, and particularly in different orders.
+Envelopes are a binary structure built on CBOR {{-CBOR}}, and MUST adhere to the requirements in section 4.2., "Deterministically Encoded CBOR". This requirement is one of several design factors ensuring that two envelopes that have the same top-level digest, and therefore contain the same digest tree, MUST represent exactly the same information. This holds true even if the two identical envelopes were assembled by different parties, at different times, and particularly in different orders.
 
 ## Feature: Digest-Preserving Encryption and Elision
 
-Envelope supports two digest-tree preserving transformations for any of its elements: encryption and elision.
+Envelope supports two digest tree-preserving transformations for any of its elements: encryption and elision.
 
-When an element is encrypted, its ciphertext remains in the envelope, and the transformation can be reversed using the symmetric key used to perform the encryption. The encrypted envelope declares the digest of its plaintext content using HMAC authentication. More sophisticated cryptographic constructs such as encryption to a set of public keys are easily supported.
+When an element is encrypted, its ciphertext remains in the envelope, and the transformation can be reversed using the symmetric key used to perform the encryption. The encrypted envelope declares the digest of its plaintext content using HMAC authentication. More sophisticated cryptographic constructs such as encryption to a set of public keys are readily supported.
 
-When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision can be used as a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts, or as a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope, or as a form of compression where many identical sub-elements of an envelope (except one) are elided.
+When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision can be used as a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts; or as a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope; or as a form of compression, where many identical sub-elements of an envelope (except one) are elided.
 
-These digest-tree preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) contains another envelope by revealing only a minimum spanning set of digests.
+These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) contains another envelope by revealing only a minimum spanning set of digests.
 
 ## Terminology
 
@@ -179,7 +183,7 @@ An `encrypted` case is used for an envelope that has been encrypted.
 encrypted = crypto-msg
 ~~~
 
-For `crypto-msg`, this document specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in {{-CHACHA}}. When used with envelopes, the `crypto-message` construct `aad` (additional authenticated data) field is the `digest` of the plaintext.
+For `crypto-msg`, uses the definition in "UR Type Definition for Secure Messages" {{CRYPTO-MSG}} and repeats the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in {{-CHACHA}}. When used with envelopes, the `crypto-msg` construct `aad` (additional authenticated data) field contains the `digest` of the plaintext, authenticating the declared digest using the Poly1305 HMAC.
 
 ~~~ cddl
 crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
@@ -210,7 +214,7 @@ blake3-digest = bytes .size 32
 
 ### Node Case Format
 
-A `node` case is encoded as a CBOR array, and used when one or more assertions are present on the envelope. It MUST NOT be present when there is not at least one assertion. The first element of the array is the envelope's `subject`, Followed by one or more `assertion-element`s, each of which MUST be an `assertion`, or the `encrypted` or `elided` transformation of that assertion. The assertion elements MUST appear in ascending lexicographic order by their digest. The array MUST NOT contain any assertion elements with identical digests.
+A `node` case is encoded as a CBOR array, and MUST be used when one or more assertions are present on the envelope. It MUST NOT be present when there is not at least one assertion. The first element of the array is the envelope's `subject`, Followed by one or more `assertion-element`s, each of which MUST be an `assertion`, or the `encrypted` or `elided` transformation of that assertion. The assertion elements MUST appear in ascending lexicographic order by their digest. The array MUST NOT contain any assertion elements with identical digests.
 
 ~~~ cddl
 node = [envelope-content, + assertion-element]
@@ -228,10 +232,12 @@ wrapped-envelope = #6.224(envelope-content)
 
 ### Assertion Case Format
 
-An `assertion` case is used for each of the assertions in an envelope.
+An `assertion` case is used for each of the assertions in an envelope. It is encoded as a CBOR array with exactly two elements, the envelope representing the predicate of the assertion and the envelope representing the object of the assertion, in that order.
 
 ~~~ cddl
-assertion = #6.221([envelope, envelope])
+assertion = #6.221([predicate-envelope, object-envelope])
+predicate-envelope = envelope
+object-envelope = envelope
 ~~~
 
 # Computing the Digest Tree
@@ -250,7 +256,7 @@ In this and subsequenct sections:
 
 ## Leaf Case Digest Calculation
 
-The `leaf` case consists of any CBOR object. The envelope image is the CBOR serialization of that object:
+The `leaf` case consists of any CBOR object. Tagging the leaf CBOR is OPTIONAL but RECOMMENDED. The envelope image is the CBOR serialization of that object:
 
 ~~~
 digest(cbor)
