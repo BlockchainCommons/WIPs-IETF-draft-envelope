@@ -498,7 +498,7 @@ $ envelope digest --hex $ASSERTION
 
 # Envelope Hierarchy
 
-This section is informative, and describes envelopes from the perspective of their hierachical structure and the semantic constructs it supports.
+This section is informative, and describes envelopes from the perspective of their hierachical structure and the various ways they can be formatted.
 
 An envelope consists of a `subject` and one or more `predicate-object` pairs called `assertions`:
 
