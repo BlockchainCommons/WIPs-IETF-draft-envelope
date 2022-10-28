@@ -51,6 +51,9 @@ informative:
     PROTOBUF:
         title: "Protocol Buffers"
         target: https://developers.google.com/protocol-buffers/
+    MERMAID:
+        title: "Mermaid.js"
+        target: https://mermaid-js.github.io/mermaid/#/
 
 --- abstract
 
@@ -526,7 +529,7 @@ In the diagram above, there are five distinct "positions" of elements, each of w
 4. object
 5. assertion
 
-The examples above are printed in "envelope notation," which is designed to make the semantic content of envelopes human-readable, but it doesn't show the actual digests associated with each of the positions. To see the structure more completely, we can use print out every element of the envelope tree:
+The examples above are printed in "envelope notation," which is designed to make the semantic content of envelopes human-readable, but it doesn't show the actual digests associated with each of the positions. To see the structure more completely, we can display every element of the envelope in Tree Notation:
 
 ~~~
 0abac60a NODE
@@ -542,19 +545,29 @@ The examples above are printed in "envelope notation," which is designed to make
         ad2c454b obj "Carol"
 ~~~
 
-For easy recognition, envelope trees only show the first four bytes of each digest, but internally all digests are actually 32 bytes.
+We can also show the digest tree graphically using Mermaid {{MERMAID}}:
 
-In the above tree, we see the envelope is a `node` case, which holds the overall envelope digest. We also see that the subject "Alice" has its own digest, and each of the three assertions have their own digests, as does the predicate and object of each assertion. We also see that the assertions are in ascending lexicographic order by digest, which is distinct from envelope notation.
+<artwork type="svg" src="images/svg-validated/example.svg"/>
 
-The following subsections (WIP) present each of the seven enumerated envelope cases in five different output formats. These can be used as test vectors:
+For easy recognition, envelope trees and Mermaid diagrams only show the first four bytes of each digest, but internally all digests are 32 bytes.
+
+From the above envelope and its tree, we make the following observations:
+
+* The envelope is a `node` case, which holds the overall envelope digest.
+* The subject "Alice" has its own digest.
+* Each of the three assertions have their own digests
+* The predicate and object of each assertion each have their own digests.
+* The assertions appear in the structure in ascending lexicographic order by digest, which is distinct from envelope notation where they appear sorted alphabeticaly.
+
+The following subsections present each of the seven enumerated envelope cases in five different output formats:
 
 * Envelope Notation
 * Envelope Tree
-* CBOR Diagnostic Notation
 * Mermaid
+* CBOR Diagnostic Notation
 * CBOR hex
 
-In addition, each subsection starts with the reference implementation envelope CLI command line needed to generate the envelope being formatted.
+These examples may be used as test vectors. In addition, each subsection starts with the reference implementation envelope CLI command line needed to generate the envelope being formatted.
 
 ## Leaf Case
 
@@ -576,6 +589,10 @@ envelope subject "Alice"
 27840350 "Alice"
 ~~~
 
+### Mermaid
+
+<artwork type="svg" src="images/svg-validated/leaf_case.svg"/>
+
 ### CBOR Diagnostic Notation
 
 ~~~
@@ -584,25 +601,292 @@ envelope subject "Alice"
 )
 ~~~
 
-### Mermaid
-
-~~~
-graph LR
-    1["27840350<br/>#quot;Alice#quot;"]
-    style 1 stroke:#55f,stroke-width:3.0px
-~~~
-
-### CBOR
+### CBOR Hex
 
 ~~~
 d8c8d81865416c696365
 ~~~
 
-Note that the envelope digest is not the same as the subject's digest, as it includes the digests of the envelope's assertions as well. Also note that while the predicate and object of an assertion are distinct envelopes, the assertion as a whole is also a distinct envelope.
+## Known Predicate Case
 
-<artwork type="svg" src="alice_knows_bob_tiny_repaired.svg"/>
+### Envelope CLI Command Line
+
+~~~
+envelope subject --known-predicate verifiedBy
+~~~
+
+### Envelope Notation
+
+~~~
+verifiedBy
+~~~
+
+### Tree
+
+~~~
+d59f8c0f verifiedBy
+~~~
+
+### Mermaid
+
+<artwork type="svg" src="images/svg-validated/known_predicate_case.svg"/>
+
+### CBOR Diagnostic Notation
+
+~~~
+200(   ; envelope
+   223(3)   ; known-predicate
+)
+~~~
+
+### CBOR Hex
+
+~~~
+d8c8d8df03
+~~~
+
+## Encrypted Case
+
+### Envelope CLI Command Line
+
+~~~
+envelope subject "Alice" | envelope encrypt --key `envelope generate key`
+~~~
+
+### Envelope Notation
+
+~~~
+ENCRYPTED
+~~~
+
+### Tree
+
+~~~
+27840350 ENCRYPTED
+~~~
+
+### Mermaid
+
+<artwork type="svg" src="images/svg-validated/encrypted_case.svg"/>
+
+### CBOR Diagnostic Notation
+
+~~~
+200(   ; envelope
+   201(   ; crypto-msg
+      [
+         h'6bfa027df241def0',
+         h'5520ca6d9d798ffd32d075c4',
+         h'd4b43d97a37eb280fdd89cf152ccf57d',
+         h'd8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110'
+      ]
+   )
+)
+~~~
+
+### CBOR Hex
+
+~~~
+d8c8d8c984486bfa027df241def04c5520ca6d9d798ffd32d075c450d4b43d97a37eb280fdd89cf152ccf57d5824d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
+~~~
+
+## Elided Case
+
+### Envelope CLI Command Line
+
+~~~
+envelope subject "Alice" | envelope elide
+~~~
+
+### Envelope Notation
+
+~~~
+ELIDED
+~~~
+
+### Tree
+
+~~~
+27840350 ELIDED
+~~~
+
+### Mermaid
+
+<artwork type="svg" src="images/svg-validated/elided_case.svg"/>
+
+### CBOR Diagnostic Notation
+
+~~~
+200(   ; envelope
+   203(   ; crypto-digest
+      h'278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110'
+   )
+)
+~~~
+
+### CBOR Hex
+
+~~~
+d8c8d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
+~~~
+
+## Node Case
+
+### Envelope CLI Command Line
+
+~~~
+envelope subject "Alice" | envelope assertion "knows" "Bob"
+~~~
+
+### Envelope Notation
+
+~~~
+"Alice" [
+    "knows": "Bob"
+]
+~~~
+
+### Tree
+
+~~~
+e54d6fd3 NODE
+    27840350 subj "Alice"
+    55560bdf ASSERTION
+        7092d620 pred "knows"
+        9a771715 obj "Bob"
+~~~
+
+### Mermaid
+
+<artwork type="svg" src="images/svg-validated/node_case.svg"/>
+
+### CBOR Diagnostic Notation
+
+~~~
+200(   ; envelope
+   [
+      200(   ; envelope
+         24("Alice")   ; leaf
+      ),
+      200(   ; envelope
+         221(   ; assertion
+            [
+               200(   ; envelope
+                  24("knows")   ; leaf
+               ),
+               200(   ; envelope
+                  24("Bob")   ; leaf
+               )
+            ]
+         )
+      )
+   ]
+)
+~~~
+
+### CBOR Hex
+
+~~~
+d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
+~~~
+
+## Wrapped Envelope Case
+
+### Envelope CLI Command Line
+
+~~~
+envelope subject "Alice" | envelope subject --wrapped
+~~~
+
+### Envelope Notation
+
+~~~
+{
+    "Alice"
+}
+~~~
+
+### Tree
+
+~~~
+aaed47e8 WRAPPED
+    27840350 subj "Alice"
+~~~
+
+### Mermaid
+
+<artwork type="svg" src="images/svg-validated/wrapped_envelope_case.svg"/>
+
+### CBOR Diagnostic Notation
+
+~~~
+200(   ; envelope
+   224(   ; wrapped-envelope
+      24("Alice")   ; leaf
+   )
+)
+~~~
+
+### CBOR Hex
+
+~~~
+d8c8d8e0d81865416c696365
+~~~
+
+## Assertion Case
+
+### Envelope CLI Command Line
+
+~~~
+envelope subject assertion "knows" "Bob"
+~~~
+
+### Envelope Notation
+
+~~~
+"knows": "Bob"
+~~~
+
+### Tree
+
+~~~
+55560bdf ASSERTION
+    7092d620 pred "knows"
+    9a771715 obj "Bob"
+~~~
+
+### Mermaid
+
+<artwork type="svg" src="images/svg-validated/assertion_case.svg"/>
+
+### CBOR Diagnostic Notation
+
+~~~
+200(   ; envelope
+   221(   ; assertion
+      [
+         200(   ; envelope
+            24("knows")   ; leaf
+         ),
+         200(   ; envelope
+            24("Bob")   ; leaf
+         )
+      ]
+   )
+)
+~~~
+
+### CBOR Hex
+
+~~~
+d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
+~~~
+
 
 # Known Predicates
+
+TODO
+
 
 # Reference Implementation
 
@@ -616,8 +900,10 @@ TODO Security
 
 # IANA Considerations
 
-TODO This section describes a request that IANA allocated specific CBOR tags in its CBOR tag registry {{IANA-CBOR-TAGS}} to the purpose of encoding the envelope type.
+TODO
 
+* This section will request that IANA allocated specific CBOR tags in its CBOR tag registry {{IANA-CBOR-TAGS}} to the purpose of encoding the envelope type.
+* This section will also request that IANA reserve the MIME type `application/envelope+cbor` for media conforming to this specification.
 
 --- back
 
