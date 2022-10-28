@@ -1474,17 +1474,18 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
         <h3 id="name-feature-semantic-structure">
 <a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-feature-semantic-structure" class="section-name selfRef">Feature: Semantic Structure</a>
         </h3>
-<p id="section-1.2-1">Envelope is designed to facilitate the encoding semantic triples <span>[<a href="#TRIPLE" class="cite xref">TRIPLE</a>]</span>, i.e., "subject-predicate-object", e.g. "Alice knows Bob". At its top structural level, an envelope encodes a single <code>subject</code> and a set of zero or more <code>assertion</code>s about the subject, which are <code>predicate-object</code> pairs:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-1">Envelope is designed to facilitate the encoding of semantic triples <span>[<a href="#TRIPLE" class="cite xref">TRIPLE</a>]</span>, i.e., "subject-predicate-object", e.g. "Alice knows Bob." At its top structural level, an envelope encodes a single <code>subject</code> and a set of zero or more <code>assertion</code>s about the subject, which are <code>predicate-object</code> pairs:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-1.2-2">
 <pre>
 subject [
+    predicate0: object0
     predicate1: object1
-    predicate2: object2
     ...
+    predicateN: objectN
 ]
 </pre><a href="#section-1.2-2" class="pilcrow">¶</a>
 </div>
-<p id="section-1.2-3">The simplest envelope is just a subject with no assertions, e.g., a simple plaintext string. But since every element in an envelope is itelf an envelope, every element can therefore hold its own assertions. This allows any element to carry additional context, e.g. an assertion declaring the language in which human-readable string is written. This mechanism for "assertions with assertions" provides for arbitrarily complex metadata.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">The simplest envelope is just a subject with no assertions, e.g., a simple plaintext string (or any other CBOR construct.) But since every element in an envelope is itelf an envelope, every element can therefore hold its own assertions. This allows any element to carry additional context, e.g. an assertion declaring the language in which a human-readable string is written. This mechanism for "assertions with assertions" provides for arbitrarily complex metadata.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="feature-cryptography-ready">
@@ -1492,7 +1493,7 @@ subject [
         <h3 id="name-feature-cryptography-ready">
 <a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-feature-cryptography-ready" class="section-name selfRef">Feature: Cryptography Ready</a>
         </h3>
-<p id="section-1.3-1">Because of the strictly invariant nature of the digest tree, envelopes are suitable for use in applications that employ cryptographic signatures. Such signatures in an envelope take the form of <code>verifiedBy-Signature</code> assertions on a <code>subject</code>, which is the target of the signature.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<p id="section-1.3-1">Because of the strictly invariant nature of the digest tree, envelopes are suitable for use in applications that employ cryptographic signatures. Such signatures in an envelope take the form of <code>verifiedBy-Signature</code> assertions on a <code>subject</code>, which is the target of the signature. Other cryptographic structures are readily supported.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="feature-binary-efficiency-built-on-deterministic-cbor">
@@ -1500,7 +1501,7 @@ subject [
         <h3 id="name-feature-binary-efficiency-b">
 <a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-feature-binary-efficiency-b" class="section-name selfRef">Feature: Binary Efficiency, Built on Deterministic CBOR</a>
         </h3>
-<p id="section-1.4-1">Envelopes are a binary structure built on CBOR <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, and <span class="bcp14">MUST</span> adhere to the requirements in section 4.2., "Deterministically Encoded CBOR". This requirement is one factor ensuring that two envelopes that have the same top-level digest, and therefore contain the same digest tree, <span class="bcp14">MUST</span> contain exactly the same information. This holds true even if the two identical envelopes were assembled by different parties, at different times, and particularly in different orders.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
+<p id="section-1.4-1">Envelopes are a binary structure built on CBOR <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>, and <span class="bcp14">MUST</span> adhere to the requirements in section 4.2., "Deterministically Encoded CBOR". This requirement is one of several design factors ensuring that two envelopes that have the same top-level digest, and therefore contain the same digest tree, <span class="bcp14">MUST</span> represent exactly the same information. This holds true even if the two identical envelopes were assembled by different parties, at different times, and particularly in different orders.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="feature-digest-preserving-encryption-and-elision">
@@ -1508,10 +1509,10 @@ subject [
         <h3 id="name-feature-digest-preserving-e">
 <a href="#section-1.5" class="section-number selfRef">1.5. </a><a href="#name-feature-digest-preserving-e" class="section-name selfRef">Feature: Digest-Preserving Encryption and Elision</a>
         </h3>
-<p id="section-1.5-1">Envelope supports two digest-tree preserving transformations for any of its elements: encryption and elision.<a href="#section-1.5-1" class="pilcrow">¶</a></p>
-<p id="section-1.5-2">When an element is encrypted, its ciphertext remains in the envelope, and the transformation can be reversed using the symmetric key used to perform the encryption. The encrypted envelope declares the digest of its plaintext content using HMAC authentication. More sophisticated cryptographic constructs such as encryption to a set of public keys are easily supported.<a href="#section-1.5-2" class="pilcrow">¶</a></p>
-<p id="section-1.5-3">When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision can be used as a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts, or as a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope, or as a form of compression where many identical sub-elements of an envelope (except one) are elided.<a href="#section-1.5-3" class="pilcrow">¶</a></p>
-<p id="section-1.5-4">These digest-tree preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) contains another envelope by revealing only a minimum spanning set of digests.<a href="#section-1.5-4" class="pilcrow">¶</a></p>
+<p id="section-1.5-1">Envelope supports two digest tree-preserving transformations for any of its elements: encryption and elision.<a href="#section-1.5-1" class="pilcrow">¶</a></p>
+<p id="section-1.5-2">When an element is encrypted, its ciphertext remains in the envelope, and the transformation can be reversed using the symmetric key used to perform the encryption. The encrypted envelope declares the digest of its plaintext content using HMAC authentication. More sophisticated cryptographic constructs such as encryption to a set of public keys are readily supported.<a href="#section-1.5-2" class="pilcrow">¶</a></p>
+<p id="section-1.5-3">When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision can be used as a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts; or as a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope; or as a form of compression, where many identical sub-elements of an envelope (except one) are elided.<a href="#section-1.5-3" class="pilcrow">¶</a></p>
+<p id="section-1.5-4">These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) contains another envelope by revealing only a minimum spanning set of digests.<a href="#section-1.5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="terminology">
@@ -1642,7 +1643,7 @@ known-predicate = #6.223(uint)
 encrypted = crypto-msg
 </pre><a href="#section-2.2.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-2.2.3-3">For <code>crypto-msg</code>, this document specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in <span>[<a href="#RFC7539" class="cite xref">RFC7539</a>]</span>. When used with envelopes, the <code>crypto-message</code> construct <code>aad</code> (additional authenticated data) field is the <code>digest</code> of the plaintext.<a href="#section-2.2.3-3" class="pilcrow">¶</a></p>
+<p id="section-2.2.3-3">For <code>crypto-msg</code>, uses the definition in "UR Type Definition for Secure Messages" <span>[<a href="#CRYPTO-MSG" class="cite xref">CRYPTO-MSG</a>]</span> and repeats the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in <span>[<a href="#RFC7539" class="cite xref">RFC7539</a>]</span>. When used with envelopes, the <code>crypto-msg</code> construct <code>aad</code> (additional authenticated data) field contains the <code>digest</code> of the plaintext, authenticating the declared digest using the Poly1305 HMAC.<a href="#section-2.2.3-3" class="pilcrow">¶</a></p>
 <div id="section-2.2.3-4">
 <pre class="lang-cddl sourcecode">
 crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
@@ -1688,7 +1689,7 @@ blake3-digest = bytes .size 32
           <h4 id="name-node-case-format">
 <a href="#section-2.3.1" class="section-number selfRef">2.3.1. </a><a href="#name-node-case-format" class="section-name selfRef">Node Case Format</a>
           </h4>
-<p id="section-2.3.1-1">A <code>node</code> case is encoded as a CBOR array, and used when one or more assertions are present on the envelope. It <span class="bcp14">MUST NOT</span> be present when there is not at least one assertion. The first element of the array is the envelope's <code>subject</code>, Followed by one or more <code>assertion-element</code>s, each of which <span class="bcp14">MUST</span> be an <code>assertion</code>, or the <code>encrypted</code> or <code>elided</code> transformation of that assertion. The assertion elements <span class="bcp14">MUST</span> appear in ascending lexicographic order by their digest. The array <span class="bcp14">MUST NOT</span> contain any assertion elements with identical digests.<a href="#section-2.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.1-1">A <code>node</code> case is encoded as a CBOR array, and <span class="bcp14">MUST</span> be used when one or more assertions are present on the envelope. It <span class="bcp14">MUST NOT</span> be present when there is not at least one assertion. The first element of the array is the envelope's <code>subject</code>, Followed by one or more <code>assertion-element</code>s, each of which <span class="bcp14">MUST</span> be an <code>assertion</code>, or the <code>encrypted</code> or <code>elided</code> transformation of that assertion. The assertion elements <span class="bcp14">MUST</span> appear in ascending lexicographic order by their digest. The array <span class="bcp14">MUST NOT</span> contain any assertion elements with identical digests.<a href="#section-2.3.1-1" class="pilcrow">¶</a></p>
 <div id="section-2.3.1-2">
 <pre class="lang-cddl sourcecode">
 node = [envelope-content, + assertion-element]
@@ -1716,10 +1717,12 @@ wrapped-envelope = #6.224(envelope-content)
           <h4 id="name-assertion-case-format">
 <a href="#section-2.3.3" class="section-number selfRef">2.3.3. </a><a href="#name-assertion-case-format" class="section-name selfRef">Assertion Case Format</a>
           </h4>
-<p id="section-2.3.3-1">An <code>assertion</code> case is used for each of the assertions in an envelope.<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.3-1">An <code>assertion</code> case is used for each of the assertions in an envelope. It is encoded as a CBOR array with exactly two elements, the envelope representing the predicate of the assertion and the envelope representing the object of the assertion, in that order.<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
 <div id="section-2.3.3-2">
 <pre class="lang-cddl sourcecode">
-assertion = #6.221([envelope, envelope])
+assertion = #6.221([predicate-envelope, object-envelope])
+predicate-envelope = envelope
+object-envelope = envelope
 </pre><a href="#section-2.3.3-2" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1751,7 +1754,7 @@ assertion = #6.221([envelope, envelope])
         <h3 id="name-leaf-case-digest-calculatio">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-leaf-case-digest-calculatio" class="section-name selfRef">Leaf Case Digest Calculation</a>
         </h3>
-<p id="section-3.1-1">The <code>leaf</code> case consists of any CBOR object. The envelope image is the CBOR serialization of that object:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">The <code>leaf</code> case consists of any CBOR object. Tagging the leaf CBOR is <span class="bcp14">OPTIONAL</span> but <span class="bcp14">RECOMMENDED</span>. The envelope image is the CBOR serialization of that object:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1-2">
 <pre>
 digest(cbor)
@@ -3346,6 +3349,10 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 <dt id="BLAKE3">[BLAKE3]</dt>
         <dd>
 <span class="refTitle">"BLAKE3 Cryptographic Hash Function"</span>, <span>n.d.</span>, <span>&lt;<a href="https://blake3.io">https://blake3.io</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CRYPTO-MSG">[CRYPTO-MSG]</dt>
+        <dd>
+<span class="refTitle">"UR Type Definition for Secure Messages"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2022-001-secure-message.md">https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2022-001-secure-message.md</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="IANA-CBOR-TAGS">[IANA-CBOR-TAGS]</dt>
         <dd>
