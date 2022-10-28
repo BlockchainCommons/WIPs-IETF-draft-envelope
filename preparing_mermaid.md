@@ -69,11 +69,11 @@ mmdc --input images/mermaid/node_case.mermaid \
 
 3. In Illustrator, flatten the image:
 
-* Remove all clip groups.
-* Ungroup all groups.
+* Release all clip groups.
 * Outline all text.
+* Ungroup all groups.
 * Remove the invisible border around the entire page.
-* Remove the smaller invisible border around the artwork.
+* Remove the smaller background fill path behind the content.
 
 ![](https://i.imgur.com/ZOGFrpT.png)
 
@@ -93,7 +93,7 @@ svgcheck -r \
     --out images/svg-validated/node_case.svg
 ```
 
-7. Remove ` x="0px" y="0px"` from the `svg` element:
+7. Remove ` x="0px" y="0px"` and ` id="Layer_1"` from the `svg` element:
 
 ```
 sed -e "s/ x=\"0px\" y=\"0px\"//g" -i .backup images/svg-validated/node_case.svg
