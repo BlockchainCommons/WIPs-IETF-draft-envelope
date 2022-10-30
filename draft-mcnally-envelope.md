@@ -905,15 +905,19 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
 This section is informative.
 
-Known values are a specific case of envelope that defines a namespace consisting of single unsigned integers. The expectation is that the most common and widely useful predicates will be assigned in this namespace, but known values may be used in position in an envelope. Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications, the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.
+Known values are a specific case of envelope that defines a namespace consisting of single unsigned integers. The expectation is that the most common and widely useful predicates will be assigned in this namespace, but known values may be used in any position in an envelope.
+
+Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.
 
 Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation tools recognize specific known values and their human-readable names.
 
-Custom ontologies such as OWL {{OWL}} or FOAF {{FOAF}} may someday be represented as ranges of integers in this known space, or be defined in their own namespaces.
+Custom ontologies such as Web Ontology Language {{OWL}} or Friend of a Friend {{FOAF}} may someday be represented as ranges of integers in this known space, or be defined in their own namespaces.
 
 A specification for a standard minimal ontology known values is TBD.
 
-The following table lists all the known values currently defined in the reference implementation. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors. Note that a work-in-progress specification for remote procedure calls using envelope has been assigned a namespace starting at 100.
+The following table lists all the known values currently defined in the reference implementation. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors.
+
+Note that a work-in-progress specification for remote procedure calls using envelope has been assigned a namespace starting at 100.
 
 | Value | Name             | Used as   | Description |
 |:------|:-----------------|:----------|:------------|
