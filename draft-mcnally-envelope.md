@@ -937,9 +937,9 @@ Note that a work-in-progress specification for remote procedure calls using enve
 | 14    | `holder`         | predicate | A domain-unique identifier of the document's holder, i.e., the entity to which the document pertains. |
 | 15    | `salt`           | predicate | A block of random data used to deliberately perturb the digest tree for the purpose of decorrelation. |
 | 16    | `date`           | predicate | A timestamp, e.g., the time at which a remote procedure call request was signed. |
-| 100   | `body`           | predicate | RPC: The body of a function call |
-| 101   | `result`         | predicate | RPC: A result of a function call |
-| 102   | `error`          | predicate | RPC: An error message or object representing state returned when a remote procedure call fails. |
+| 100   | `body`           | predicate | RPC: The body of a function call. The object is the function identifier and the assertions on the object are the function parameters. |
+| 101   | `result`         | predicate | RPC: A result of a successful function call. The object is the returned value. |
+| 102   | `error`          | predicate | RPC: A result of an unsuccessful function call. The object is message or other diagnostic state. |
 | 103   | `ok`             | object    | RPC: The object of a `result` predicate for a successful remote procedure call that has no other return value. |
 | 104   | `processing`     | object    | RPC: The object of a `result` predicate where a function call is accepted for processing and has not yet produced a result or error. |
 
