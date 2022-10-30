@@ -15,7 +15,7 @@
 <meta content="draft-mcnally-envelope-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.15.1
-    Python 3.10.8
+    Python 3.10.5
     appdirs 1.4.4
     ConfigArgParse 1.5.3
     google-i18n-address 2.5.2
@@ -27,8 +27,8 @@
     MarkupSafe 2.1.1
     pycountry 22.3.5
     PyYAML 6.0
-    requests 2.28.1
-    setuptools 65.5.0
+    requests 2.27.1
+    setuptools 59.4.0
     six 1.16.0
 -->
 <link href="draft-mcnally-envelope.xml" rel="alternate" type="application/rfc+xml">
@@ -3305,11 +3305,13 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-known-values" class="section-name selfRef">Known Values</a>
       </h2>
 <p id="section-5-1">This section is informative.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<p id="section-5-2">Known values are a specific case of envelope that defines a namespace consisting of single unsigned integers. The expectation is that the most common and widely useful predicates will be assigned in this namespace, but known values may be used in position in an envelope. Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications, the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.<a href="#section-5-2" class="pilcrow">¶</a></p>
-<p id="section-5-3">Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation tools recognize specific known values and their human-readable names.<a href="#section-5-3" class="pilcrow">¶</a></p>
-<p id="section-5-4">Custom ontologies such as OWL <span>[<a href="#OWL" class="cite xref">OWL</a>]</span> or FOAF <span>[<a href="#FOAF" class="cite xref">FOAF</a>]</span> may someday be represented as ranges of integers in this known space, or be defined in their own namespaces.<a href="#section-5-4" class="pilcrow">¶</a></p>
-<p id="section-5-5">A specification for a standard minimal ontology known values is TBD.<a href="#section-5-5" class="pilcrow">¶</a></p>
-<p id="section-5-6">The following table lists all the known values currently defined in the reference implementation. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors. Note that a work-in-progress specification for remote procedure calls using envelope has been assigned a namespace starting at 100.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-2">Known values are a specific case of envelope that defines a namespace consisting of single unsigned integers. The expectation is that the most common and widely useful predicates will be assigned in this namespace, but known values may be used in any position in an envelope.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-4">Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation tools recognize specific known values and their human-readable names.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">Custom ontologies such as Web Ontology Language <span>[<a href="#OWL" class="cite xref">OWL</a>]</span> or Friend of a Friend <span>[<a href="#FOAF" class="cite xref">FOAF</a>]</span> may someday be represented as ranges of integers in this known space, or be defined in their own namespaces.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">A specification for a standard minimal ontology known values is TBD.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-7">The following table lists all the known values currently defined in the reference implementation. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-8">Note that a work-in-progress specification for remote procedure calls using envelope has been assigned a namespace starting at 100.<a href="#section-5-8" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
         <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
 <thead>
