@@ -1132,15 +1132,21 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    |       |                |           | call request was signed.    |
    +-------+----------------+-----------+-----------------------------+
    | 100   | body           | predicate | RPC: The body of a function |
-   |       |                |           | call                        |
+   |       |                |           | call.  The object is the    |
+   |       |                |           | function identifier and the |
+   |       |                |           | assertions on the object    |
+   |       |                |           | are the function            |
+   |       |                |           | parameters.                 |
    +-------+----------------+-----------+-----------------------------+
-   | 101   | result         | predicate | RPC: A result of a function |
-   |       |                |           | call                        |
+   | 101   | result         | predicate | RPC: A result of a          |
+   |       |                |           | successful function call.   |
+   |       |                |           | The object is the returned  |
+   |       |                |           | value.                      |
    +-------+----------------+-----------+-----------------------------+
-   | 102   | error          | predicate | RPC: An error message or    |
-   |       |                |           | object representing state   |
-   |       |                |           | returned when a remote      |
-   |       |                |           | procedure call fails.       |
+   | 102   | error          | predicate | RPC: A result of an         |
+   |       |                |           | unsuccessful function call. |
+   |       |                |           | The object is message or    |
+   |       |                |           | other diagnostic state.     |
    +-------+----------------+-----------+-----------------------------+
    | 103   | ok             | object    | RPC: The object of a result |
    |       |                |           | predicate for a successful  |
