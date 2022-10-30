@@ -57,6 +57,18 @@ informative:
     MERMAID:
         title: "Mermaid.js"
         target: https://mermaid-js.github.io/mermaid/#/
+    FOAF:
+        title: "Friend of a Friend (FOAF)"
+        target: https://en.wikipedia.org/wiki/FOAF
+    SSKR:
+        title: "Sharded Secret Key Recovery (SSKR)"
+        target: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-011-sskr.md
+    OWL:
+        title: "Web Ontology Language (OWL)"
+        target: https://www.w3.org/OWL/
+    ISO639:
+        title: "ISO 639 - Standard for representation of names for language and language groups"
+        target: https://en.wikipedia.org/wiki/ISO_639
 
 --- abstract
 
@@ -129,7 +141,7 @@ This section is normative, and specifies the binary format of envelopes in terms
 An envelope is a tagged enumerated type with seven cases. Four of these cases have no children:
 
 * `leaf`
-* `known-predicate`
+* `known-value`
 * `encrypted`
 * `elided`
 
@@ -148,7 +160,7 @@ envelope = #6.200(
 
 envelope-content = (
     leaf /
-    known-predicate /
+    known-value /
     encrypted /
     elided /
     node /
@@ -167,12 +179,12 @@ A `leaf` case is used when the envelope contains user-defined CBOR content. It i
 leaf = #6.24(bytes)
 ~~~
 
-### Known Predicate Case Format
+### Known Value Case Format
 
-A `known-predicate` case is used to specify an unsigned integer used as a predicate. Any envelope can be used as a predicate in an assertion, but many predicates are commonly used, e.g., `verifiedBy` for signatures, hence it is desirable to keep common predicates short.
+A `known-value` case is used to specify an unsigned integer in a namespace of well-known values. Known values are frequently used as predicates. Any envelope can be used as a predicate in an assertion, but many predicates are commonly used, e.g., `verifiedBy` for signatures, hence it is desirable to keep common predicates short.
 
 ~~~ cddl
-known-predicate = #6.223(uint)
+known-value = #6.223(uint)
 ~~~
 
 ### Encrypted Case Format
@@ -278,9 +290,9 @@ $ envelope subject "Hello" | envelope digest --hex
 bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 ~~~
 
-## Known Predicate Case Digest Calculation
+## Known Value Case Digest Calculation
 
-The envelope image of the `known-predicate` case is the CBOR serialization of the unsigned integer value of the predicate tagged with #6.223, as specified in the Known Predicate Case Format section above.
+The envelope image of the `known-value` case is the CBOR serialization of the unsigned integer value of the value tagged with #6.223, as specified in the Known Value Case Format section above.
 
 ~~~
 digest(#6.223(uint))
@@ -288,17 +300,17 @@ digest(#6.223(uint))
 
 ### Example
 
-The known predicate `verifiedBy` in CBOR diagnostic notation is `223(3)`, which in hex is `D8DF03`. The BLAKE3 sum of this sequence is:
+The known value `verifiedBy` in CBOR diagnostic notation is `223(3)`, which in hex is `D8DF03`. The BLAKE3 sum of this sequence is:
 
 ~~~
 $ echo "D8DF03" | xxd -r -p | b3sum --no-names
 d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
 ~~~
 
-Using the command line tool in the envelope reference implementation, we create an envelope with this known predicate as the subject and display the envelope's digest. The digest below matches the one above.
+Using the command line tool in the envelope reference implementation, we create an envelope with this known value as the subject and display the envelope's digest. The digest below matches the one above.
 
 ~~~
-$ envelope subject --known-predicate verifiedBy | envelope digest --hex
+$ envelope subject --known verifiedBy | envelope digest --hex
 d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
 ~~~
 
@@ -531,9 +543,9 @@ In the diagram above, there are five distinct "positions" of elements, each of w
 
 1. envelope
 2. subject
-3. predicate
-4. object
-5. assertion
+3. assertion
+4. predicate
+5. object
 
 The examples above are printed in "envelope notation," which is designed to make the semantic content of envelopes human-readable, but it doesn't show the actual digests associated with each of the positions. To see the structure more completely, we can display every element of the envelope in Tree Notation:
 
@@ -613,12 +625,12 @@ envelope subject "Alice"
 d8c8d81865416c696365
 ~~~
 
-## Known Predicate Case
+## Known Value Case
 
 ### Envelope CLI Command Line
 
 ~~~
-envelope subject --known-predicate verifiedBy
+envelope subject --known verifiedBy
 ~~~
 
 ### Envelope Notation
@@ -635,13 +647,13 @@ d59f8c0f verifiedBy
 
 ### Mermaid
 
-<artwork type="svg" src="images/svg-validated/known_predicate_case.svg"/>
+<artwork type="svg" src="images/svg-validated/known_value_case.svg"/>
 
 ### CBOR Diagnostic Notation
 
 ~~~
 200(   ; envelope
-   223(3)   ; known-predicate
+   223(3)   ; known-value
 )
 ~~~
 
@@ -889,10 +901,43 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 ~~~
 
 
-# Known Predicates
+# Known Values
 
-TODO
+This section is informative.
 
+Known values are a specific case of envelope that defines a namespace consisting of single unsigned integers. The expectation is that the most common and widely useful predicates will be assigned in this namespace, but known values may be used in position in an envelope. Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications, the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.
+
+Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation tools recognize specific known values and their human-readable names.
+
+Custom ontologies such as OWL {{OWL}} or FOAF {{FOAF}} may someday be represented as ranges of integers in this known space, or be defined in their own namespaces.
+
+A specification for a standard minimal ontology known values is TBD.
+
+The following table lists all the known values currently defined in the reference implementation. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors. Note that a work-in-progress specification for remote procedure calls using envelope has been assigned a namespace starting at 100.
+
+| Value | Name             | Used as   | Description |
+|:------|:-----------------|:----------|:------------|
+| 1     | `id`             | predicate | A domain-unique identifier of some kind. |
+| 2     | `isA`            | predicate | A domain-specific type identifier. |
+| 3     | `verifiedBy`     | predicate | A signature on the digest of the subject, verifiable with the signer's public key. |
+| 4     | `note`           | predicate | A human-readable informative note. |
+| 5     | `hasRecipient`   | predicate | A sealed message encrypting to a specific recipient the ephemeral encryption key that was used to encrypt the subject. |
+| 6     | `sskrShare`      | predicate | A single SSKR {{SSKR}} share of the emphemeral encryption key that was used to encrypt the subject. |
+| 7     | `controller`     | predicate | A domain-unique identifier of the party that controls the contents of this document. |
+| 8     | `publicKeys`     | predicate | A "public key base" consisting of the information needed to encrypt messages to a party or verify messages signed by them. |
+| 9     | `dereferenceVia` | predicate | A domain-unique Pointer such as a URL indicating from where the elided envelope subject can be recovered. |
+| 10    | `entity`         | predicate | A document representing an entity of interest in the current context. |
+| 11    | `hasName`        | predicate | The human-readable name of the subject. |
+| 12    | `language`       | predicate | The ISO 639 {{ISO639}} code for the human natural language used to write the subject. |
+| 13    | `issuer`         | predicate | A domain-unique identifier of the document's issuing entity. |
+| 14    | `holder`         | predicate | A domain-unique identifier of the document's holder, i.e., the entity to which the document pertains. |
+| 15    | `salt`           | predicate | A block of random data used to deliberately perturb the digest tree for the purpose of decorrelation. |
+| 16    | `date`           | predicate | A timestamp, e.g., the time at which a remote procedure call request was signed. |
+| 100   | `body`           | predicate | RPC: The body of a function call |
+| 101   | `result`         | predicate | RPC: A result of a function call |
+| 102   | `error`          | predicate | RPC: An error message or object representing state returned when a remote procedure call fails. |
+| 103   | `ok`             | object    | RPC: The object of a `result` predicate for a successful remote procedure call that has no other return value. |
+| 104   | `processing`     | object    | RPC: The object of a `result` predicate where a function call is accepted for processing and has not yet produced a result or error. |
 
 # Reference Implementation
 

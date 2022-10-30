@@ -50,7 +50,7 @@ print_variants() {
 
 print_variants "Example" 'envelope subject "Alice" | envelope assertion "knows" "Bob" | envelope assertion "knows" "Carol" | envelope assertion "knows" "Edward"'
 print_variants "Leaf Case" 'envelope subject "Alice"'
-print_variants "Known Predicate Case" 'envelope subject --known-predicate verifiedBy'
+print_variants "Known Value Case" 'envelope subject --known verifiedBy'
 print_variants "Encrypted Case" 'envelope subject "Alice" | envelope encrypt --key `envelope generate key`'
 print_variants "Elided Case" 'envelope subject "Alice" | envelope elide'
 print_variants "Node Case" 'envelope subject "Alice" | envelope assertion "knows" "Bob"'
