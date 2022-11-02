@@ -8,7 +8,7 @@
 <meta content="Wolf McNally" name="author">
 <meta content="Christopher Allen" name="author">
 <meta content='
-       The  envelope  protocol specifies a format for hierarchical binary data built on CBOR. Envelopes are designed with "smart documents" in mind, and have a number of unique features including easy representation of semantic structures like triples, built-in normalization, a built-in Merkle-like digest tree, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document  without  invalidating the digest tree or cryptographic signatures that rely on it. 
+       The  envelope  protocol specifies a format for hierarchical binary data built on CBOR. Envelopes are designed with "smart documents" in mind, and have a number of unique features including easy representation of semantic structures like triples, built-in normalization, a built-in Merkle-like digest tree, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document without invalidating the digest tree or cryptographic signatures that rely on it. 
     ' name="description">
 <meta content="xml2rfc 3.15.1" name="generator">
 <meta content="Internet-Draft" name="keyword">
@@ -1036,11 +1036,11 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Envelope</td>
-<td class="right">October 2022</td>
+<td class="right">November 2022</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">McNally &amp; Allen</td>
-<td class="center">Expires 3 May 2023</td>
+<td class="center">Expires 6 May 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1053,12 +1053,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-mcnally-envelope-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-10-30" class="published">30 October 2022</time>
+<time datetime="2022-11-02" class="published">2 November 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-05-03">3 May 2023</time></dd>
+<dd class="expires"><time datetime="2023-05-06">6 May 2023</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1075,7 +1075,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <h1 id="title">The Envelope Structured Data Format</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">The <code>envelope</code> protocol specifies a format for hierarchical binary data built on CBOR. Envelopes are designed with "smart documents" in mind, and have a number of unique features including easy representation of semantic structures like triples, built-in normalization, a built-in Merkle-like digest tree, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document <em>without</em> invalidating the digest tree or cryptographic signatures that rely on it.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">The <code>envelope</code> protocol specifies a format for hierarchical binary data built on CBOR. Envelopes are designed with "smart documents" in mind, and have a number of unique features including easy representation of semantic structures like triples, built-in normalization, a built-in Merkle-like digest tree, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document without invalidating the digest tree or cryptographic signatures that rely on it.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1104,7 +1104,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 May 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 May 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1426,30 +1426,44 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-known-values" class="internal xref">Known Values</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-reference-implementation" class="internal xref">Reference Implementation</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-existence-proofs" class="internal xref">Existence Proofs</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-reference-implementation" class="internal xref">Reference Implementation</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-future-proofing" class="internal xref">Future Proofing</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
-                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
-                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-cbor-tags" class="internal xref">CBOR Tags</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-media-type" class="internal xref">Media Type</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
-</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1511,8 +1525,16 @@ subject [
         </h3>
 <p id="section-1.5-1">Envelope supports two digest tree-preserving transformations for any of its elements: encryption and elision.<a href="#section-1.5-1" class="pilcrow">¶</a></p>
 <p id="section-1.5-2">When an element is encrypted, its ciphertext remains in the envelope, and the transformation can be reversed using the symmetric key used to perform the encryption. The encrypted envelope declares the digest of its plaintext content using HMAC authentication. More sophisticated cryptographic constructs such as encryption to a set of public keys are readily supported.<a href="#section-1.5-2" class="pilcrow">¶</a></p>
-<p id="section-1.5-3">When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision can be used as a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts; or as a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope; or as a form of compression, where many identical sub-elements of an envelope (except one) are elided.<a href="#section-1.5-3" class="pilcrow">¶</a></p>
-<p id="section-1.5-4">These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) contains another envelope by revealing only a minimum spanning set of digests.<a href="#section-1.5-4" class="pilcrow">¶</a></p>
+<p id="section-1.5-3">When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision has several use cases:<a href="#section-1.5-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.5-4.1">As a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts;<a href="#section-1.5-4.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.5-4.2">As a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope;<a href="#section-1.5-4.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.5-4.3">As a form of compression, where many identical sub-elements of an envelope (except one) are elided.<a href="#section-1.5-4.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-1.5-5">These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) necessarily contains another envelope by revealing only a minimum spanning set of digests.<a href="#section-1.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="terminology">
@@ -1611,7 +1633,7 @@ envelope-content = (
           <h4 id="name-leaf-case-format">
 <a href="#section-2.2.1" class="section-number selfRef">2.2.1. </a><a href="#name-leaf-case-format" class="section-name selfRef">Leaf Case Format</a>
           </h4>
-<p id="section-2.2.1-1">A <code>leaf</code> case is used when the envelope contains user-defined CBOR content. It is tagged using #6.24, per <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> section 3.4.5.1, "Encoded CBOR Data Item".<a href="#section-2.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.1-1">A <code>leaf</code> case is used when the envelope contains only user-defined CBOR content. It is tagged using #6.24, per <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> section 3.4.5.1, "Encoded CBOR Data Item".<a href="#section-2.2.1-1" class="pilcrow">¶</a></p>
 <div id="section-2.2.1-2">
 <pre class="lang-cddl sourcecode">
 leaf = #6.24(bytes)
@@ -1643,7 +1665,7 @@ known-value = #6.223(uint)
 encrypted = crypto-msg
 </pre><a href="#section-2.2.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-2.2.3-3">For <code>crypto-msg</code>, uses the definition in "UR Type Definition for Secure Messages" <span>[<a href="#CRYPTO-MSG" class="cite xref">CRYPTO-MSG</a>]</span> and repeats the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in <span>[<a href="#RFC7539" class="cite xref">RFC7539</a>]</span>. When used with envelopes, the <code>crypto-msg</code> construct <code>aad</code> (additional authenticated data) field contains the <code>digest</code> of the plaintext, authenticating the declared digest using the Poly1305 HMAC.<a href="#section-2.2.3-3" class="pilcrow">¶</a></p>
+<p id="section-2.2.3-3">For <code>crypto-msg</code>, the reference implementation <span>[<a href="#ENVELOPE-REFIMPL" class="cite xref">ENVELOPE-REFIMPL</a>]</span> uses the definition in "UR Type Definition for Secure Messages" <span>[<a href="#CRYPTO-MSG" class="cite xref">CRYPTO-MSG</a>]</span> and we repeat the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in <span>[<a href="#RFC7539" class="cite xref">RFC7539</a>]</span>. When used with envelopes, the <code>crypto-msg</code> construct <code>aad</code> (additional authenticated data) field contains the <code>digest</code> of the plaintext, authenticating the declared digest using the Poly1305 HMAC.<a href="#section-2.2.3-3" class="pilcrow">¶</a></p>
 <div id="section-2.2.3-4">
 <pre class="lang-cddl sourcecode">
 crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
@@ -1667,7 +1689,7 @@ auth = bytes .size 16    ; Authentication tag created by Poly1305
 elided = digest
 </pre><a href="#section-2.2.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-2.2.4-3">For <code>digest</code>, this document specifies the use of the BLAKE3 cryptographic hash function <span>[<a href="#BLAKE3" class="cite xref">BLAKE3</a>]</span> to generate a 32 byte digest.<a href="#section-2.2.4-3" class="pilcrow">¶</a></p>
+<p id="section-2.2.4-3">For <code>digest</code>, the reference implementation <span>[<a href="#ENVELOPE-REFIMPL" class="cite xref">ENVELOPE-REFIMPL</a>]</span> uses of the BLAKE3 cryptographic hash function <span>[<a href="#BLAKE3" class="cite xref">BLAKE3</a>]</span> to generate a 32 byte digest.<a href="#section-2.2.4-3" class="pilcrow">¶</a></p>
 <div id="section-2.2.4-4">
 <pre class="lang-cddl sourcecode">
 digest = #6.203(blake3-digest)
@@ -1717,13 +1739,19 @@ wrapped-envelope = #6.224(envelope-content)
           <h4 id="name-assertion-case-format">
 <a href="#section-2.3.3" class="section-number selfRef">2.3.3. </a><a href="#name-assertion-case-format" class="section-name selfRef">Assertion Case Format</a>
           </h4>
-<p id="section-2.3.3-1">An <code>assertion</code> case is used for each of the assertions in an envelope. It is encoded as a CBOR array with exactly two elements, the envelope representing the predicate of the assertion and the envelope representing the object of the assertion, in that order.<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
-<div id="section-2.3.3-2">
+<p id="section-2.3.3-1">An <code>assertion</code> case is used for each of the assertions in an envelope. It is encoded as a CBOR array with exactly two elements in order:<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.3.3-2">
+<li id="section-2.3.3-2.1">the envelope representing the predicate of the assertion, followed by<a href="#section-2.3.3-2.1" class="pilcrow">¶</a>
+</li>
+            <li id="section-2.3.3-2.2">the envelope representing the object of the assertion.<a href="#section-2.3.3-2.2" class="pilcrow">¶</a>
+</li>
+          </ol>
+<div id="section-2.3.3-3">
 <pre class="lang-cddl sourcecode">
 assertion = #6.221([predicate-envelope, object-envelope])
 predicate-envelope = envelope
 object-envelope = envelope
-</pre><a href="#section-2.3.3-2" class="pilcrow">¶</a>
+</pre><a href="#section-2.3.3-3" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -1746,7 +1774,7 @@ object-envelope = envelope
 </li>
         <li class="normal" id="section-3-5.2">The <code>.digest</code> attribute is the digest of the named element computed as specified herein.<a href="#section-3-5.2" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-3-5.3">The <code>||</code> operator represents contactenation of byte strings.<a href="#section-3-5.3" class="pilcrow">¶</a>
+        <li class="normal" id="section-3-5.3">The <code>||</code> operator represents contactenation of byte sequences.<a href="#section-3-5.3" class="pilcrow">¶</a>
 </li>
       </ul>
 <div id="leaf-case-digest-calculation">
@@ -1754,7 +1782,7 @@ object-envelope = envelope
         <h3 id="name-leaf-case-digest-calculatio">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-leaf-case-digest-calculatio" class="section-name selfRef">Leaf Case Digest Calculation</a>
         </h3>
-<p id="section-3.1-1">The <code>leaf</code> case consists of any CBOR object. Tagging the leaf CBOR is <span class="bcp14">OPTIONAL</span> but <span class="bcp14">RECOMMENDED</span>. The envelope image is the CBOR serialization of that object:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">The <code>leaf</code> case consists of any CBOR object. Tagging the leaf CBOR is <span class="bcp14">RECOMMENDED</span>, especially for compound structures with a specified layout. The envelope image is the CBOR serialization of that object:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1-2">
 <pre>
 digest(cbor)
@@ -1772,7 +1800,7 @@ $ echo "6548656C6C6F" | xxd -r -p | b3sum --no-names
 bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 </pre><a href="#section-3.1.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1.1-3">Using the command line tool in the envelope reference implementation, we create an envelope with this string as the subject and display the envelope's digest. The digest below matches the one above.<a href="#section-3.1.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1.1-3">Using the envelope command line tool <span>[<a href="#ENVELOPE-CLI" class="cite xref">ENVELOPE-CLI</a>]</span>, we create an envelope with this string as the subject and display the envelope's digest. The digest below matches the one above.<a href="#section-3.1.1-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1.1-4">
 <pre>
 $ envelope subject "Hello" | envelope digest --hex
@@ -1806,7 +1834,7 @@ $ echo "D8DF03" | xxd -r -p | b3sum --no-names
 d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
 </pre><a href="#section-3.2.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.2.1-3">Using the command line tool in the envelope reference implementation, we create an envelope with this known value as the subject and display the envelope's digest. The digest below matches the one above.<a href="#section-3.2.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-3">Using the envelope command line tool <span>[<a href="#ENVELOPE-CLI" class="cite xref">ENVELOPE-CLI</a>]</span>, we create an envelope with this known value as the subject and display the envelope's digest. The digest below matches the one above.<a href="#section-3.2.1-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.2.1-4">
 <pre>
 $ envelope subject --known verifiedBy | envelope digest --hex
@@ -1822,7 +1850,7 @@ d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
         <h3 id="name-encrypted-case-digest-calcu">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-encrypted-case-digest-calcu" class="section-name selfRef">Encrypted Case Digest Calculation</a>
         </h3>
-<p id="section-3.3-1">The <code>encrypted</code> case declares its digest to be the digest of the encrypted plaintext. The declaration is made using an HMAC, and when decrypting an element the implementation <span class="bcp14">MUST</span> compare the digest of the decrypted element to the declared digest and flag an error if they do not match.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">The <code>encrypted</code> case declares its digest to be the digest of plaintext before encryption. The declaration is made using an HMAC, and when decrypting an element the implementation <span class="bcp14">MUST</span> compare the digest of the decrypted element to the declared digest and flag an error if they do not match.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <div id="example-2">
 <section id="section-3.3.1">
           <h4 id="name-example-3">
@@ -1931,7 +1959,7 @@ $ envelope digest --hex $ENVELOPE
 0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
 </pre><a href="#section-3.5.1-4" class="pilcrow">¶</a>
 </div>
-<p id="section-3.5.1-5">Note that in the envelope notation representation above, the assertions are sorted alphabetically, with <code>"knows": "Edward"</code> coming last. But internally, the three assertions are ordered by digest in ascending lexicographic order, with "Edward" coming first because it's digest starting with <code>1e0b049b</code> is the lowest, as in the tree formatted display below:<a href="#section-3.5.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.5.1-5">Note that in the envelope notation representation above, the assertions are sorted alphabetically, with <code>"knows": "Edward"</code> coming last. But internally, the three assertions are ordered by digest in ascending lexicographic order, with "Edward" coming first because its digest starting with <code>1e0b049b</code> is the lowest, as in the tree formatted display below:<a href="#section-3.5.1-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.5.1-6">
 <pre>
 $ envelope --tree $ENVELOPE
@@ -2405,7 +2433,7 @@ subject [
         <li class="normal" id="section-4-16.5">CBOR hex<a href="#section-4-16.5" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-4-17">These examples may be used as test vectors. In addition, each subsection starts with the reference implementation envelope CLI command line needed to generate the envelope being formatted.<a href="#section-4-17" class="pilcrow">¶</a></p>
+<p id="section-4-17">These examples may be used as test vectors. In addition, each subsection starts with the envelope command line <span>[<a href="#ENVELOPE-CLI" class="cite xref">ENVELOPE-CLI</a>]</span> needed to generate the envelope being formatted.<a href="#section-4-17" class="pilcrow">¶</a></p>
 <div id="leaf-case">
 <section id="section-4.1">
         <h3 id="name-leaf-case">
@@ -3307,10 +3335,10 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 <p id="section-5-1">This section is informative.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">Known values are a specific case of envelope that defines a namespace consisting of single unsigned integers. The expectation is that the most common and widely useful predicates will be assigned in this namespace, but known values may be used in any position in an envelope.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <p id="section-5-3">Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.<a href="#section-5-3" class="pilcrow">¶</a></p>
-<p id="section-5-4">Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation tools recognize specific known values and their human-readable names.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-4">Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation <span>[<a href="#ENVELOPE-REFIMPL" class="cite xref">ENVELOPE-REFIMPL</a>]</span> and its tools <span>[<a href="#ENVELOPE-CLI" class="cite xref">ENVELOPE-CLI</a>]</span> recognize specific known values and their human-readable names.<a href="#section-5-4" class="pilcrow">¶</a></p>
 <p id="section-5-5">Custom ontologies such as Web Ontology Language <span>[<a href="#OWL" class="cite xref">OWL</a>]</span> or Friend of a Friend <span>[<a href="#FOAF" class="cite xref">FOAF</a>]</span> may someday be represented as ranges of integers in this known space, or be defined in their own namespaces.<a href="#section-5-5" class="pilcrow">¶</a></p>
-<p id="section-5-6">A specification for a standard minimal ontology known values is TBD.<a href="#section-5-6" class="pilcrow">¶</a></p>
-<p id="section-5-7">The following table lists all the known values currently defined in the reference implementation. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-6">A specification for a standard minimal ontology of known values is TBD.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-7">The following table lists all the known values currently defined in the reference implementation <span>[<a href="#ENVELOPE-REFIMPL" class="cite xref">ENVELOPE-REFIMPL</a>]</span>. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors.<a href="#section-5-7" class="pilcrow">¶</a></p>
 <p id="section-5-8">Note that a work-in-progress specification for remote procedure calls using envelope has been assigned a namespace starting at 100.<a href="#section-5-8" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
         <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
@@ -3495,43 +3523,317 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
       </table>
 </section>
 </div>
-<div id="reference-implementation">
+<div id="existence-proofs">
 <section id="section-6">
-      <h2 id="name-reference-implementation">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-reference-implementation" class="section-name selfRef">Reference Implementation</a>
+      <h2 id="name-existence-proofs">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-existence-proofs" class="section-name selfRef">Existence Proofs</a>
       </h2>
-<p id="section-6-1">TODO This section describes the current reference implementations.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">This section is informative.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">Because each element of an envelope provides a unique digest, and because changing an element in an envelope changes the digest of all elements upwards towards its root, the structure of an envelope is comparable to a <span>[<a href="#MERKLE" class="cite xref">MERKLE</a>]</span>.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">In a Merkle Tree, all semantically significant information is carried by the tree's leaves (for example, the transactions in a block of Bitcoin transactions) while the internal nodes of the tree are nothing but digests computed from combinations of pairs of lower nodes, all the way up to the root of the tree (the "Merkle root".)<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">In an envelope, every digest references some semantically significant content: it could reference the subject of the envelope, or one of the assertions in the envelope, or at the predicate or object of a given assertion. Of course, those elements are all envelopes themselves, and thus potentiall the root of their own subtree.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">In a merkle tree, the minumum subset of hashes necessary to confirm that a specific leaf node (the "target") must be present is called a "Merkle proof." For envelopes, an analogous proof would be a transformation of the envelope that is entirely elided but preserves the structure necesssary to reveal the target.<a href="#section-6-5" class="pilcrow">¶</a></p>
+<p id="section-6-6">As an example, we produce an envelope representing a simple FOAF <span>[<a href="#FOAF" class="cite xref">FOAF</a>]</span> style graph:<a href="#section-6-6" class="pilcrow">¶</a></p>
+<div id="section-6-7">
+<pre class="lang-sh sourcecode">
+$ ALICE_FRIENDS=`envelope subject Alice |
+    envelope assertion knows Bob |
+    envelope assertion knows Carol |
+    envelope assertion knows Dan`
+
+$ envelope $ALICE_FRIENDS
+"Alice" [
+    "knows": "Bob"
+    "knows": "Carol"
+    "knows": "Dan"
+]
+</pre><a href="#section-6-7" class="pilcrow">¶</a>
+</div>
+<p id="section-6-8">We then elide the entire envlope, leaving only the root-level digest. This digest is a cryptographic commitment to the envelope's contents.<a href="#section-6-8" class="pilcrow">¶</a></p>
+<div id="section-6-9">
+<pre class="lang-sh sourcecode">
+$ COMMITMENT=`envelope elide $ALICE_FRIENDS`
+$ envelope --tree $COMMITMENT
+cd84aa96 ELIDED
+</pre><a href="#section-6-9" class="pilcrow">¶</a>
+</div>
+<p id="section-6-10">A third party, having received this commitment, can then request proof that the envelope contains a particular assertion, called the <em>target</em>.<a href="#section-6-10" class="pilcrow">¶</a></p>
+<div id="section-6-11">
+<pre class="lang-sh sourcecode">
+$ REQUESTED_ASSERTION=`envelope subject assertion knows Bob`
+
+$ envelope --tree $REQUESTED_ASSERTION
+55560bdf ASSERTION
+    7092d620 pred "knows"
+    9a771715 obj "Bob"
+</pre><a href="#section-6-11" class="pilcrow">¶</a>
+</div>
+<p id="section-6-12">The holder can then produce a proof, which is an elided form of the original document that contains a minimum spanning set of digests including the target.<a href="#section-6-12" class="pilcrow">¶</a></p>
+<div id="section-6-13">
+<pre class="lang-sh sourcecode">
+$ KNOWS_BOB_DIGEST=`envelope digest $REQUESTED_ASSERTION`
+
+$ KNOWS_BOB_PROOF=`envelope proof create $ALICE_FRIENDS $KNOWS_BOB_DIGEST`
+
+$ envelope --tree $KNOWS_BOB_PROOF
+cd84aa96 NODE
+    27840350 subj ELIDED
+    55560bdf ELIDED
+    71a30690 ELIDED
+    907c8857 ELIDED
+</pre><a href="#section-6-13" class="pilcrow">¶</a>
+</div>
+<p id="section-6-14">Note that the proof:<a href="#section-6-14" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6-15">
+<li id="section-6-15.1">has the same root digest as the commitment,<a href="#section-6-15.1" class="pilcrow">¶</a>
+</li>
+        <li id="section-6-15.2">includes the digest of the <code>knows-Bob</code> assertion: <code>55560bdf</code>,<a href="#section-6-15.2" class="pilcrow">¶</a>
+</li>
+        <li id="section-6-15.3">includes only the other digests necessary to calculate the digest tree from the target back to the root, without revealing any additional information about the envelope.<a href="#section-6-15.3" class="pilcrow">¶</a>
+</li>
+      </ol>
+<p id="section-6-16">Criteria 3 was met when the proof was produced. Critera 1 and 2 are checked by the command line tool when confirming the proof:<a href="#section-6-16" class="pilcrow">¶</a></p>
+<div id="section-6-17">
+<pre class="lang-sh sourcecode">
+$ envelope proof confirm --silent $COMMITMENT $KNOWS_BOB_PROOF $KNOWS_BOB_DIGEST &amp;&amp; echo "Success"
+Success
+</pre><a href="#section-6-17" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="reference-implementation">
+<section id="section-7">
+      <h2 id="name-reference-implementation">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-reference-implementation" class="section-name selfRef">Reference Implementation</a>
+      </h2>
+<p id="section-7-1">This section is informative.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">The current reference implementation of envelope is written in Swift and is part of the Blockchain Commons Secure Components Framework <span>[<a href="#ENVELOPE-REFIMPL" class="cite xref">ENVELOPE-REFIMPL</a>]</span>.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">The envelope command line tool <span>[<a href="#ENVELOPE-CLI" class="cite xref">ENVELOPE-CLI</a>]</span> is also written in Swift.<a href="#section-7-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="future-proofing">
+<section id="section-8">
+      <h2 id="name-future-proofing">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-future-proofing" class="section-name selfRef">Future Proofing</a>
+      </h2>
+<p id="section-8-1">This section is informative.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">Because envelope is a specification for documents that may persist indefinitely, it is a design goal of this specification that later implementation versions are able to parse envelopes produced by earlier versions. Furthermore, later implementations should be able to compose new envelopes using older envelopes as components.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-3">The authors considered adding a version number to every envelope, but deemed this unnecessary as any code that parses later envelopes can determine what features are required from the CBOR structure alone.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">The general migration strategy is that the specific structure of envelopes defined in the first general release of this specification is the baseline, and later specifications may incrementally add structural features such as envelope cases, new tags, or support for new structures or algorithms, but are generally expected to maintain backward compatibility.<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-5">An example of addition would be to add an additional supported method of encryption. The <code>crypto-msg</code> specification CDDL is a CBOR array with either three or four elements:<a href="#section-8-5" class="pilcrow">¶</a></p>
+<div id="section-8-6">
+<pre class="lang-cddl sourcecode">
+crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
+ciphertext = bytes       ; encrypted using ChaCha20
+aad = digest             ; Additional Authenticated Data
+nonce = bytes .size 12   ; Random, generated at encryption-time
+auth = bytes .size 16    ; Authentication tag created by Poly1305
+</pre><a href="#section-8-6" class="pilcrow">¶</a>
+</div>
+<p id="section-8-7">For the sake of this example we assume the new method to be supported has all the same fields, but needs to be processed differently. In this case, the first element of the array could become an optional integer:<a href="#section-8-7" class="pilcrow">¶</a></p>
+<div id="section-8-8">
+<pre class="lang-cddl sourcecode">
+crypto-msg = #6.201([ ? version, ciphertext, nonce, auth, ? aad ])
+version = uint           ; absent for old method, 1 for new method
+</pre><a href="#section-8-8" class="pilcrow">¶</a>
+</div>
+<p id="section-8-9">If present, the first field specifies the later encryption method. If absent, the original encryption method is specified. For low numbered versions, the storage cost of specifying a later version is one byte, and backwards compatibility is preserved.<a href="#section-8-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-7">
+<section id="section-9">
       <h2 id="name-security-considerations">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-7-1">TODO Security<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-9-1">This section is informative unless noted otherwise.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">Generally, this document inherits the security considerations of CBOR <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> and any of the cryptographic constructs it uses like IETF-ChaCha20-Poly1305 <span>[<a href="#RFC7539" class="cite xref">RFC7539</a>]</span> and BLAKE3 <span>[<a href="#BLAKE3" class="cite xref">BLAKE3</a>]</span>.<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-3">Unlike HTML which has a permissive "be conservative in what you send, be liberal in what you accept," philosophy, envelope is conservative both ways, and receivers of envelope-based documents should carefully validate them. Any deviation from the validation requirements of this specification <span class="bcp14">MUST</span> result in the rejection of the entire envelope. Even after validation, envelope contents should be treated with due skepticism.<a href="#section-9-3" class="pilcrow">¶</a></p>
+<p id="section-9-4">Creators of specifications for envelope-based documents should give due consideration to security implications that are outside the scope of this specification to anticipate or avert. One example would be the number and type of assertions allowed in a particular document, and whether additional assertions (metadata) are allowed on those assertions.<a href="#section-9-4" class="pilcrow">¶</a></p>
+<p id="section-9-5">Because they are short unsigned integers well-known values, by extension, produce well-known digests. Elided envelopes may in some cases inadvertently reveal information by transmitting digests that may be correlated to known information. The envelope tools provide a salting mechanism that adds assertions containing random data used to perturb the digest tree, hence decorrelating it from any known values.<a href="#section-9-5" class="pilcrow">¶</a></p>
+<p id="section-9-6">Existence proofs include the minimal set of digests that are necessary to calculate the digest tree from the target to the root, but may themselves leak information about the contents of the envelope due to the other digests that must be included in the spanning set. Designers of envelope-based formats should anticipate such attacks and use decorrelation mechanisms like salting where necessary.<a href="#section-9-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-8">
+<section id="section-10">
       <h2 id="name-iana-considerations">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-8-1">TODO<a href="#section-8-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8-2.1">This section will request that IANA allocated specific CBOR tags in its CBOR tag registry <span>[<a href="#IANA-CBOR-TAGS" class="cite xref">IANA-CBOR-TAGS</a>]</span> to the purpose of encoding the envelope type.<a href="#section-8-2.1" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-8-2.2">This section will also request that IANA reserve the MIME type <code>application/envelope+cbor</code> for media conforming to this specification.<a href="#section-8-2.2" class="pilcrow">¶</a>
-</li>
-      </ul>
+<div id="cbor-tags">
+<section id="section-10.1">
+        <h3 id="name-cbor-tags">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-cbor-tags" class="section-name selfRef">CBOR Tags</a>
+        </h3>
+<p id="section-10.1-1">This section proposes a number of IANA allocated specific CBOR tags <span>[<a href="#IANA-CBOR-TAGS" class="cite xref">IANA-CBOR-TAGS</a>]</span>.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.1-2">In the table below, tags directly referenced in this specification have "yes" in the "spec" field.<a href="#section-10.1-2" class="pilcrow">¶</a></p>
+<p id="section-10.1-3">The reference implementation <span>[<a href="#ENVELOPE-REFIMPL" class="cite xref">ENVELOPE-REFIMPL</a>]</span> uses tags not used in this specification, and these are marked "no" in the "spec" field.<a href="#section-10.1-3" class="pilcrow">¶</a></p>
+<p id="section-10.1-4">This document requests that IANA reserve the assigned tags listed below in the range 200-230 for use by envelope and associated specifications.<a href="#section-10.1-4" class="pilcrow">¶</a></p>
+<table class="center" id="table-2">
+          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">data item</th>
+              <th class="text-left" rowspan="1" colspan="1">spec</th>
+              <th class="text-left" rowspan="1" colspan="1">semantics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">200</td>
+              <td class="text-left" rowspan="1" colspan="1">yes</td>
+              <td class="text-left" rowspan="1" colspan="1">envelope</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">201</td>
+              <td class="text-left" rowspan="1" colspan="1">yes</td>
+              <td class="text-left" rowspan="1" colspan="1">crypto-message</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">202</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">common-identifier</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">203</td>
+              <td class="text-left" rowspan="1" colspan="1">yes</td>
+              <td class="text-left" rowspan="1" colspan="1">digest</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">204</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">symmetric-key</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">205</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">private-key-base</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">206</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">public-key-base</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">207</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">sealed-message</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">208-221</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">unassigned</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">221</td>
+              <td class="text-left" rowspan="1" colspan="1">yes</td>
+              <td class="text-left" rowspan="1" colspan="1">assertion</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">222</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">signature</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">223</td>
+              <td class="text-left" rowspan="1" colspan="1">yes</td>
+              <td class="text-left" rowspan="1" colspan="1">known-value</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">224</td>
+              <td class="text-left" rowspan="1" colspan="1">yes</td>
+              <td class="text-left" rowspan="1" colspan="1">wrapped-envelope</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">225-229</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">unassigned</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">230</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">agreement-public-key</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-10.1-6">Points of contact:
+    * Christopher Allen <a href="mailto:christophera@blockchaincommons.com">christophera@blockchaincommons.com</a>
+    * Wolf McNally <a href="mailto:wolf@wolfmcnally.com">wolf@wolfmcnally.com</a><a href="#section-10.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
-<section id="section-9">
+<div id="media-type">
+<section id="section-10.2">
+        <h3 id="name-media-type">
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-media-type" class="section-name selfRef">Media Type</a>
+        </h3>
+<p id="section-10.2-1">The proposed media type <span>[<a href="#RFC6838" class="cite xref">RFC6838</a>]</span> for envelope is <code>application/envelope+cbor</code>.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.2-2.1">Type name: application<a href="#section-10.2-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.2">Subtype name: envelope+cbor<a href="#section-10.2-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.3">Required parameters: n/a<a href="#section-10.2-2.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.4">Optional parameters: n/a<a href="#section-10.2-2.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.5">Encoding considerations: binary<a href="#section-10.2-2.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.6">Security considerations: See the previous section of this document<a href="#section-10.2-2.6" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.7">Interoperability considerations: n/a<a href="#section-10.2-2.7" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.8">Published specification: This document<a href="#section-10.2-2.8" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.9">Applications that use this media type:  None yet, but it is expected that this format will be deployed in protocols and applications.<a href="#section-10.2-2.9" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.10">
+            <p id="section-10.2-2.10.1">Additional information:<a href="#section-10.2-2.10.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.2-2.10.2.1">Magic number(s): n/a<a href="#section-10.2-2.10.2.1" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-10.2-2.10.2.2">File extension(s): .envelope<a href="#section-10.2-2.10.2.2" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-10.2-2.10.2.3">Macintosh file type code(s): n/a<a href="#section-10.2-2.10.2.3" class="pilcrow">¶</a>
+</li>
+            </ul>
+</li>
+          <li class="normal" id="section-10.2-2.11">
+            <p id="section-10.2-2.11.1">Person &amp; email address to contact for further information:<a href="#section-10.2-2.11.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.2-2.11.2.1">Christopher Allen <a href="mailto:christophera@blockchaincommons.com">christophera@blockchaincommons.com</a><a href="#section-10.2-2.11.2.1" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-10.2-2.11.2.2">Wolf McNally <a href="mailto:wolf@wolfmcnally.com">wolf@wolfmcnally.com</a><a href="#section-10.2-2.11.2.2" class="pilcrow">¶</a>
+</li>
+            </ul>
+</li>
+          <li class="normal" id="section-10.2-2.12">Intended usage: COMMON<a href="#section-10.2-2.12" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.13">Restrictions on usage: none<a href="#section-10.2-2.13" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-10.2-2.14">
+            <p id="section-10.2-2.14.1">Author:<a href="#section-10.2-2.14.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.2-2.14.2.1">Wolf McNally <a href="mailto:wolf@wolfmcnally.com">wolf@wolfmcnally.com</a><a href="#section-10.2-2.14.2.1" class="pilcrow">¶</a>
+</li>
+            </ul>
+</li>
+          <li class="normal" id="section-10.2-2.15">
+            <p id="section-10.2-2.15.1">Change controller:<a href="#section-10.2-2.15.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.2-2.15.2.1">The IESG <a href="mailto:iesg@ietf.org">iesg@ietf.org</a><a href="#section-10.2-2.15.2.1" class="pilcrow">¶</a>
+</li>
+            </ul>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<section id="section-11">
       <h2 id="name-references">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
-<section id="section-9.1">
+<section id="section-11.1">
         <h3 id="name-normative-references">
-<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="BLAKE3">[BLAKE3]</dt>
@@ -3542,6 +3844,14 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
         <dd>
 <span class="refTitle">"UR Type Definition for Secure Messages"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2022-001-secure-message.md">https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2022-001-secure-message.md</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="ENVELOPE-CLI">[ENVELOPE-CLI]</dt>
+        <dd>
+<span class="refTitle">"Envelope Command Line Tool"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/BlockchainCommons/envelope-cli-swift">https://github.com/BlockchainCommons/envelope-cli-swift</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ENVELOPE-REFIMPL">[ENVELOPE-REFIMPL]</dt>
+        <dd>
+<span class="refTitle">"Envelope Reference Implementation, part of the Blockchain Commons Secure Components Framework"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/BlockchainCommons/BCSwiftSecureComponents">https://github.com/BlockchainCommons/BCSwiftSecureComponents</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="IANA-CBOR-TAGS">[IANA-CBOR-TAGS]</dt>
         <dd>
 <span class="refTitle">"IANA, Concise Binary Object Representation (CBOR) Tags"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml">https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml</a>&gt;</span>. </dd>
@@ -3549,6 +3859,10 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6838">[RFC6838]</dt>
+        <dd>
+<span class="refAuthor">Freed, N.</span>, <span class="refAuthor">Klensin, J.</span>, and <span class="refAuthor">T. Hansen</span>, <span class="refTitle">"Media Type Specifications and Registration Procedures"</span>, <span class="seriesInfo">BCP 13</span>, <span class="seriesInfo">RFC 6838</span>, <span class="seriesInfo">DOI 10.17487/RFC6838</span>, <time datetime="2013-01" class="refDate">January 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6838">https://www.rfc-editor.org/rfc/rfc6838</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7539">[RFC7539]</dt>
         <dd>
@@ -3568,9 +3882,9 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 <dd class="break"></dd>
 </dl>
 </section>
-<section id="section-9.2">
+<section id="section-11.2">
         <h3 id="name-informative-references">
-<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="FOAF">[FOAF]</dt>
