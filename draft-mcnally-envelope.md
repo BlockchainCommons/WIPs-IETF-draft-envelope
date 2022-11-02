@@ -30,6 +30,7 @@ normative:
     RFC8949: CBOR
     RFC8610: CDDL
     RFC7539: CHACHA
+    RFC6838: MIME
     IANA-CBOR-TAGS:
         title: IANA, Concise Binary Object Representation (CBOR) Tags
         target: https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
@@ -39,6 +40,12 @@ normative:
     CRYPTO-MSG:
         title: UR Type Definition for Secure Messages
         target: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2022-001-secure-message.md
+    ENVELOPE-REFIMPL:
+        title: Envelope Reference Implementation, part of the Blockchain Commons Secure Components Framework
+        target: https://github.com/BlockchainCommons/BCSwiftSecureComponents
+    ENVELOPE-CLI:
+        title: Envelope Command Line Tool
+        target: https://github.com/BlockchainCommons/envelope-cli-swift
 
 informative:
     MERKLE:
@@ -72,7 +79,7 @@ informative:
 
 --- abstract
 
-The `envelope` protocol specifies a format for hierarchical binary data built on CBOR. Envelopes are designed with "smart documents" in mind, and have a number of unique features including easy representation of semantic structures like triples, built-in normalization, a built-in Merkle-like digest tree, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document *without* invalidating the digest tree or cryptographic signatures that rely on it.
+The `envelope` protocol specifies a format for hierarchical binary data built on CBOR. Envelopes are designed with "smart documents" in mind, and have a number of unique features including easy representation of semantic structures like triples, built-in normalization, a built-in Merkle-like digest tree, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document without invalidating the digest tree or cryptographic signatures that rely on it.
 
 --- middle
 
@@ -113,9 +120,13 @@ Envelope supports two digest tree-preserving transformations for any of its elem
 
 When an element is encrypted, its ciphertext remains in the envelope, and the transformation can be reversed using the symmetric key used to perform the encryption. The encrypted envelope declares the digest of its plaintext content using HMAC authentication. More sophisticated cryptographic constructs such as encryption to a set of public keys are readily supported.
 
-When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision can be used as a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts; or as a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope; or as a form of compression, where many identical sub-elements of an envelope (except one) are elided.
+When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision has several use cases:
 
-These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) contains another envelope by revealing only a minimum spanning set of digests.
+* As a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts;
+* As a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope;
+* As a form of compression, where many identical sub-elements of an envelope (except one) are elided.
+
+These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) necessarily contains another envelope by revealing only a minimum spanning set of digests.
 
 ## Terminology
 
@@ -173,7 +184,7 @@ envelope-content = (
 
 ### Leaf Case Format
 
-A `leaf` case is used when the envelope contains user-defined CBOR content. It is tagged using #6.24, per {{-CBOR}} section 3.4.5.1, "Encoded CBOR Data Item".
+A `leaf` case is used when the envelope contains only user-defined CBOR content. It is tagged using #6.24, per {{-CBOR}} section 3.4.5.1, "Encoded CBOR Data Item".
 
 ~~~ cddl
 leaf = #6.24(bytes)
@@ -195,7 +206,7 @@ An `encrypted` case is used for an envelope that has been encrypted.
 encrypted = crypto-msg
 ~~~
 
-For `crypto-msg`, uses the definition in "UR Type Definition for Secure Messages" {{CRYPTO-MSG}} and repeats the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in {{-CHACHA}}. When used with envelopes, the `crypto-msg` construct `aad` (additional authenticated data) field contains the `digest` of the plaintext, authenticating the declared digest using the Poly1305 HMAC.
+For `crypto-msg`, the reference implementation {{ENVELOPE-REFIMPL}} uses the definition in "UR Type Definition for Secure Messages" {{CRYPTO-MSG}} and we repeat the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in {{-CHACHA}}. When used with envelopes, the `crypto-msg` construct `aad` (additional authenticated data) field contains the `digest` of the plaintext, authenticating the declared digest using the Poly1305 HMAC.
 
 ~~~ cddl
 crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
@@ -214,7 +225,7 @@ An `elided` case is used as a placeholder for an element that has been elided.
 elided = digest
 ~~~
 
-For `digest`, this document specifies the use of the BLAKE3 cryptographic hash function {{BLAKE3}} to generate a 32 byte digest.
+For `digest`, the reference implementation {{ENVELOPE-REFIMPL}} uses of the BLAKE3 cryptographic hash function {{BLAKE3}} to generate a 32 byte digest.
 
 ~~~ cddl
 digest = #6.203(blake3-digest)
@@ -244,7 +255,10 @@ wrapped-envelope = #6.224(envelope-content)
 
 ### Assertion Case Format
 
-An `assertion` case is used for each of the assertions in an envelope. It is encoded as a CBOR array with exactly two elements, the envelope representing the predicate of the assertion and the envelope representing the object of the assertion, in that order.
+An `assertion` case is used for each of the assertions in an envelope. It is encoded as a CBOR array with exactly two elements in order:
+
+1. the envelope representing the predicate of the assertion, followed by
+2. the envelope representing the object of the assertion.
 
 ~~~ cddl
 assertion = #6.221([predicate-envelope, object-envelope])
@@ -264,11 +278,11 @@ In this and subsequenct sections:
 
 *  `digest(image)` is the BLAKE3 hash function that produces a 32-byte digest.
 *  The `.digest` attribute is the digest of the named element computed as specified herein.
-*  The `||` operator represents contactenation of byte strings.
+*  The `||` operator represents contactenation of byte sequences.
 
 ## Leaf Case Digest Calculation
 
-The `leaf` case consists of any CBOR object. Tagging the leaf CBOR is OPTIONAL but RECOMMENDED. The envelope image is the CBOR serialization of that object:
+The `leaf` case consists of any CBOR object. Tagging the leaf CBOR is RECOMMENDED, especially for compound structures with a specified layout. The envelope image is the CBOR serialization of that object:
 
 ~~~
 digest(cbor)
@@ -283,7 +297,7 @@ $ echo "6548656C6C6F" | xxd -r -p | b3sum --no-names
 bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 ~~~
 
-Using the command line tool in the envelope reference implementation, we create an envelope with this string as the subject and display the envelope's digest. The digest below matches the one above.
+Using the envelope command line tool {{ENVELOPE-CLI}}, we create an envelope with this string as the subject and display the envelope's digest. The digest below matches the one above.
 
 ~~~
 $ envelope subject "Hello" | envelope digest --hex
@@ -307,7 +321,7 @@ $ echo "D8DF03" | xxd -r -p | b3sum --no-names
 d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
 ~~~
 
-Using the command line tool in the envelope reference implementation, we create an envelope with this known value as the subject and display the envelope's digest. The digest below matches the one above.
+Using the envelope command line tool {{ENVELOPE-CLI}}, we create an envelope with this known value as the subject and display the envelope's digest. The digest below matches the one above.
 
 ~~~
 $ envelope subject --known verifiedBy | envelope digest --hex
@@ -316,7 +330,7 @@ d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
 
 ## Encrypted Case Digest Calculation
 
-The `encrypted` case declares its digest to be the digest of the encrypted plaintext. The declaration is made using an HMAC, and when decrypting an element the implementation MUST compare the digest of the decrypted element to the declared digest and flag an error if they do not match.
+The `encrypted` case declares its digest to be the digest of plaintext before encryption. The declaration is made using an HMAC, and when decrypting an element the implementation MUST compare the digest of the decrypted element to the declared digest and flag an error if they do not match.
 
 ### Example
 
@@ -405,7 +419,7 @@ $ envelope digest --hex $ENVELOPE
 0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
 ~~~
 
-Note that in the envelope notation representation above, the assertions are sorted alphabetically, with `"knows": "Edward"` coming last. But internally, the three assertions are ordered by digest in ascending lexicographic order, with "Edward" coming first because it's digest starting with `1e0b049b` is the lowest, as in the tree formatted display below:
+Note that in the envelope notation representation above, the assertions are sorted alphabetically, with `"knows": "Edward"` coming last. But internally, the three assertions are ordered by digest in ascending lexicographic order, with "Edward" coming first because its digest starting with `1e0b049b` is the lowest, as in the tree formatted display below:
 
 ~~~
 $ envelope --tree $ENVELOPE
@@ -585,7 +599,7 @@ The following subsections present each of the seven enumerated envelope cases in
 * CBOR Diagnostic Notation
 * CBOR hex
 
-These examples may be used as test vectors. In addition, each subsection starts with the reference implementation envelope CLI command line needed to generate the envelope being formatted.
+These examples may be used as test vectors. In addition, each subsection starts with the envelope command line {{ENVELOPE-CLI}} needed to generate the envelope being formatted.
 
 ## Leaf Case
 
@@ -909,13 +923,13 @@ Known values are a specific case of envelope that defines a namespace consisting
 
 Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.
 
-Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation tools recognize specific known values and their human-readable names.
+Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation {{ENVELOPE-REFIMPL}} and its tools {{ENVELOPE-CLI}} recognize specific known values and their human-readable names.
 
 Custom ontologies such as Web Ontology Language {{OWL}} or Friend of a Friend {{FOAF}} may someday be represented as ranges of integers in this known space, or be defined in their own namespaces.
 
-A specification for a standard minimal ontology known values is TBD.
+A specification for a standard minimal ontology of known values is TBD.
 
-The following table lists all the known values currently defined in the reference implementation. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors.
+The following table lists all the known values currently defined in the reference implementation {{ENVELOPE-REFIMPL}}. This list is currently informative, but all these known values have been used in the reference implementation for various examples and test vectors.
 
 Note that a work-in-progress specification for remote procedure calls using envelope has been assigned a namespace starting at 100.
 
@@ -943,22 +957,194 @@ Note that a work-in-progress specification for remote procedure calls using enve
 | 103   | `ok`             | object    | RPC: The object of a `result` predicate for a successful remote procedure call that has no other return value. |
 | 104   | `processing`     | object    | RPC: The object of a `result` predicate where a function call is accepted for processing and has not yet produced a result or error. |
 
+# Existence Proofs
+
+This section is informative.
+
+Because each element of an envelope provides a unique digest, and because changing an element in an envelope changes the digest of all elements upwards towards its root, the structure of an envelope is comparable to a {{MERKLE}}.
+
+In a Merkle Tree, all semantically significant information is carried by the tree's leaves (for example, the transactions in a block of Bitcoin transactions) while the internal nodes of the tree are nothing but digests computed from combinations of pairs of lower nodes, all the way up to the root of the tree (the "Merkle root".)
+
+In an envelope, every digest references some semantically significant content: it could reference the subject of the envelope, or one of the assertions in the envelope, or at the predicate or object of a given assertion. Of course, those elements are all envelopes themselves, and thus potentiall the root of their own subtree.
+
+In a merkle tree, the minumum subset of hashes necessary to confirm that a specific leaf node (the "target") must be present is called a "Merkle proof." For envelopes, an analogous proof would be a transformation of the envelope that is entirely elided but preserves the structure necesssary to reveal the target.
+
+As an example, we produce an envelope representing a simple FOAF {{FOAF}} style graph:
+
+~~~ sh
+$ ALICE_FRIENDS=`envelope subject Alice |
+    envelope assertion knows Bob |
+    envelope assertion knows Carol |
+    envelope assertion knows Dan`
+
+$ envelope $ALICE_FRIENDS
+"Alice" [
+    "knows": "Bob"
+    "knows": "Carol"
+    "knows": "Dan"
+]
+~~~
+
+We then elide the entire envlope, leaving only the root-level digest. This digest is a cryptographic commitment to the envelope's contents.
+
+~~~ sh
+$ COMMITMENT=`envelope elide $ALICE_FRIENDS`
+$ envelope --tree $COMMITMENT
+cd84aa96 ELIDED
+~~~
+
+A third party, having received this commitment, can then request proof that the envelope contains a particular assertion, called the *target*.
+
+~~~ sh
+$ REQUESTED_ASSERTION=`envelope subject assertion knows Bob`
+
+$ envelope --tree $REQUESTED_ASSERTION
+55560bdf ASSERTION
+    7092d620 pred "knows"
+    9a771715 obj "Bob"
+~~~
+
+The holder can then produce a proof, which is an elided form of the original document that contains a minimum spanning set of digests including the target.
+
+~~~ sh
+$ KNOWS_BOB_DIGEST=`envelope digest $REQUESTED_ASSERTION`
+
+$ KNOWS_BOB_PROOF=`envelope proof create $ALICE_FRIENDS $KNOWS_BOB_DIGEST`
+
+$ envelope --tree $KNOWS_BOB_PROOF
+cd84aa96 NODE
+    27840350 subj ELIDED
+    55560bdf ELIDED
+    71a30690 ELIDED
+    907c8857 ELIDED
+~~~
+
+Note that the proof:
+
+1. has the same root digest as the commitment,
+2. includes the digest of the `knows-Bob` assertion: `55560bdf`,
+3. includes only the other digests necessary to calculate the digest tree from the target back to the root, without revealing any additional information about the envelope.
+
+Criteria 3 was met when the proof was produced. Critera 1 and 2 are checked by the command line tool when confirming the proof:
+
+~~~ sh
+$ envelope proof confirm --silent $COMMITMENT $KNOWS_BOB_PROOF $KNOWS_BOB_DIGEST && echo "Success"
+Success
+~~~
+
 # Reference Implementation
 
-TODO This section describes the current reference implementations.
+This section is informative.
 
+The current reference implementation of envelope is written in Swift and is part of the Blockchain Commons Secure Components Framework {{ENVELOPE-REFIMPL}}.
+
+The envelope command line tool {{ENVELOPE-CLI}} is also written in Swift.
+
+
+# Future Proofing
+
+This section is informative.
+
+Because envelope is a specification for documents that may persist indefinitely, it is a design goal of this specification that later implementation versions are able to parse envelopes produced by earlier versions. Furthermore, later implementations should be able to compose new envelopes using older envelopes as components.
+
+The authors considered adding a version number to every envelope, but deemed this unnecessary as any code that parses later envelopes can determine what features are required from the CBOR structure alone.
+
+The general migration strategy is that the specific structure of envelopes defined in the first general release of this specification is the baseline, and later specifications may incrementally add structural features such as envelope cases, new tags, or support for new structures or algorithms, but are generally expected to maintain backward compatibility.
+
+An example of addition would be to add an additional supported method of encryption. The `crypto-msg` specification CDDL is a CBOR array with either three or four elements:
+
+~~~ cddl
+crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
+ciphertext = bytes       ; encrypted using ChaCha20
+aad = digest             ; Additional Authenticated Data
+nonce = bytes .size 12   ; Random, generated at encryption-time
+auth = bytes .size 16    ; Authentication tag created by Poly1305
+~~~
+
+For the sake of this example we assume the new method to be supported has all the same fields, but needs to be processed differently. In this case, the first element of the array could become an optional integer:
+
+~~~ cddl
+crypto-msg = #6.201([ ? version, ciphertext, nonce, auth, ? aad ])
+version = uint           ; absent for old method, 1 for new method
+~~~
+
+If present, the first field specifies the later encryption method. If absent, the original encryption method is specified. For low numbered versions, the storage cost of specifying a later version is one byte, and backwards compatibility is preserved.
 
 # Security Considerations
 
-TODO Security
+This section is informative unless noted otherwise.
+
+Generally, this document inherits the security considerations of CBOR {{-CBOR}} and any of the cryptographic constructs it uses like IETF-ChaCha20-Poly1305 {{-CHACHA}} and BLAKE3 {{BLAKE3}}.
+
+Unlike HTML which has a permissive "be conservative in what you send, be liberal in what you accept," philosophy, envelope is conservative both ways, and receivers of envelope-based documents should carefully validate them. Any deviation from the validation requirements of this specification MUST result in the rejection of the entire envelope. Even after validation, envelope contents should be treated with due skepticism.
+
+Creators of specifications for envelope-based documents should give due consideration to security implications that are outside the scope of this specification to anticipate or avert. One example would be the number and type of assertions allowed in a particular document, and whether additional assertions (metadata) are allowed on those assertions.
+
+Because they are short unsigned integers well-known values, by extension, produce well-known digests. Elided envelopes may in some cases inadvertently reveal information by transmitting digests that may be correlated to known information. The envelope tools provide a salting mechanism that adds assertions containing random data used to perturb the digest tree, hence decorrelating it from any known values.
+
+Existence proofs include the minimal set of digests that are necessary to calculate the digest tree from the target to the root, but may themselves leak information about the contents of the envelope due to the other digests that must be included in the spanning set. Designers of envelope-based formats should anticipate such attacks and use decorrelation mechanisms like salting where necessary.
 
 
 # IANA Considerations
 
-TODO
+## CBOR Tags
 
-* This section will request that IANA allocated specific CBOR tags in its CBOR tag registry {{IANA-CBOR-TAGS}} to the purpose of encoding the envelope type.
-* This section will also request that IANA reserve the MIME type `application/envelope+cbor` for media conforming to this specification.
+This section proposes a number of IANA allocated specific CBOR tags {{IANA-CBOR-TAGS}}.
+
+In the table below, tags directly referenced in this specification have "yes" in the "spec" field.
+
+The reference implementation {{ENVELOPE-REFIMPL}} uses tags not used in this specification, and these are marked "no" in the "spec" field.
+
+This document requests that IANA reserve the assigned tags listed below in the range 200-230 for use by envelope and associated specifications.
+
+| data item | spec | semantics |
+|:----|:-----|:-----|
+| 200 | yes  | envelope |
+| 201 | yes  | crypto-message |
+| 202 | no   | common-identifier |
+| 203 | yes  | digest |
+| 204 | no   | symmetric-key |
+| 205 | no   | private-key-base |
+| 206 | no   | public-key-base |
+| 207 | no   | sealed-message |
+| 208-221 | no | unassigned
+| 221 | yes  | assertion |
+| 222 | no   | signature |
+| 223 | yes  | known-value |
+| 224 | yes  | wrapped-envelope |
+| 225-229 | no | unassigned
+| 230 | no   | agreement-public-key |
+
+Points of contact:
+    * Christopher Allen <christophera@blockchaincommons.com>
+    * Wolf McNally <wolf@wolfmcnally.com>
+
+## Media Type
+
+The proposed media type {{-MIME}} for envelope is `application/envelope+cbor`.
+
+* Type name: application
+* Subtype name: envelope+cbor
+* Required parameters: n/a
+* Optional parameters: n/a
+* Encoding considerations: binary
+* Security considerations: See the previous section of this document
+* Interoperability considerations: n/a
+* Published specification: This document
+* Applications that use this media type:  None yet, but it is expected that this format will be deployed in protocols and applications.
+* Additional information:
+    * Magic number(s): n/a
+    * File extension(s): .envelope
+    * Macintosh file type code(s): n/a
+* Person & email address to contact for further information:
+    * Christopher Allen <christophera@blockchaincommons.com>
+    * Wolf McNally <wolf@wolfmcnally.com>
+* Intended usage: COMMON
+* Restrictions on usage: none
+* Author:
+    * Wolf McNally <wolf@wolfmcnally.com>
+* Change controller:
+    * The IESG <iesg@ietf.org>
 
 --- back
 
