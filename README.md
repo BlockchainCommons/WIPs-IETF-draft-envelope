@@ -2,16 +2,16 @@
 
 This is the working area for the individual Internet-Draft, "draft-mcnally-envelope".
 
-* [Editor's Copy](https://BlockchainCommons.github.io/envelope-internet-draft/#go.draft-mcnally-envelope.html)
+* [Editor's Copy](https://BlockchainCommons.github.io/WIPs-IETF-draft-envelope/#go.draft-mcnally-envelope.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-mcnally-envelope)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-mcnally-envelope)
-* [Compare Editor's Copy to Individual Draft](https://BlockchainCommons.github.io/envelope-internet-draft/#go.draft-mcnally-envelope.diff)
+* [Compare Editor's Copy to Individual Draft](https://BlockchainCommons.github.io/WIPs-IETF-draft-envelope/#go.draft-mcnally-envelope.diff)
 
 
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/BlockchainCommons/envelope-internet-draft/blob/master/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/blob/master/CONTRIBUTING.md).
 
 Contributions can be made by creating pull requests.
 The GitHub interface supports creating pull requests using the Edit (✏) button.
