@@ -1,6 +1,6 @@
-# TODO - Your title
+# Gordian Envelope IETF Internet Draft
 
-This is the working area for the individual Internet-Draft, "TODO - Your title".
+This is the working area for the individual Internet-Draft, "draft-mcnally-envelope".
 
 * [Editor's Copy](https://BlockchainCommons.github.io/envelope-internet-draft/#go.draft-mcnally-envelope.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-mcnally-envelope)
@@ -27,4 +27,3 @@ $ make
 
 Command line usage requires that you have the necessary software installed.  See
 [the instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/SETUP.md).
-
