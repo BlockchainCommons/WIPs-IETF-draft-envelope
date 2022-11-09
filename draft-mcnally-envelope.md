@@ -1124,7 +1124,7 @@ See https://bitcointalk.org/?topic=102395 for the core attack.
 
 ### Duplication of Claims
 
-Support for redaction allows for the possibility of contradictory claims where one is kept hidden at any time. So, for example, an evelope could contain contradictory predictions of election results, and only reveal the one that matches the actual results. As a result, revealed material should be carefully assessed for this possibility when redacted material also exists.
+Support for elision allows for the possibility of contradictory claims where one is kept hidden at any time. So, for example, an evelope could contain contradictory predictions of election results and only reveal the one that matches the actual results. As a result, revealed material should be carefully assessed for this possibility when redacted material also exists.
 
 ## Additional Specification Creation
 
