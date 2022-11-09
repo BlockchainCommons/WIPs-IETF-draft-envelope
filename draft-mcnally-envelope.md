@@ -1074,16 +1074,61 @@ If present, the first field specifies the later encryption method. If absent, th
 
 This section is informative unless noted otherwise.
 
-Generally, this document inherits the security considerations of CBOR {{-CBOR}} and any of the cryptographic constructs it uses like IETF-ChaCha20-Poly1305 {{-CHACHA}} and BLAKE3 {{BLAKE3}}.
+## Cryptographic Considerations
 
-Unlike HTML which has a permissive "be conservative in what you send, be liberal in what you accept," philosophy, envelope is conservative both ways, and receivers of envelope-based documents should carefully validate them. Any deviation from the validation requirements of this specification MUST result in the rejection of the entire envelope. Even after validation, envelope contents should be treated with due skepticism.
+### Inherited Considerations
 
-Creators of specifications for envelope-based documents should give due consideration to security implications that are outside the scope of this specification to anticipate or avert. One example would be the number and type of assertions allowed in a particular document, and whether additional assertions (metadata) are allowed on those assertions.
+Generally, this document inherits the security considerations of CBOR {{-CBOR}} and any of the cryptographic constructs it uses such as IETF-ChaCha20-Poly1305 {{-CHACHA}} and BLAKE3 {{BLAKE3}}.
 
-Because they are short unsigned integers well-known values, by extension, produce well-known digests. Elided envelopes may in some cases inadvertently reveal information by transmitting digests that may be correlated to known information. The envelope tools provide a salting mechanism that adds assertions containing random data used to perturb the digest tree, hence decorrelating it from any known values.
+### Choice of Cryptographic Primitives (No Set Curve)
+
+Though envelope recommends the use of certain cryptographic algorithms, most are not required (with the exception of BLAKE3 usage, noted below). In particular, envelope has no required curve. Different choices will obviously result in different security considerations.
+
+## Validation Requirements
+
+Unlike HTML, envelope is intended to be conservative in both what it sends _and_ what it accepts. This means that receivers of envelope-based documents should carefully validate them. Any deviation from the validation requirements of this specification MUST result in the rejection of the entire envelope. Even after validation, envelope contents should be treated with due skepticism.
+
+## Hashing
+
+### Choice of BLAKE3 Hash Primitive
+
+Although BLAKE2 is more widely supported by IETF specifications, envelope instead makes use of BLAKE3. This is to take advantage of advances in the updated protocol: the new BLAKE3 implementation uses a Merkle Tree format that allows for streaming and for incremental updates as well as high levels of parallelism. The fact that BLAKE3 is newer should be taken into consideration, but its foundation in BLAKE2 and its support by experts such as the Zcash Foundation are considered to grant it sufficient maturity.
+
+Whereas, envelope is written to allow for the easy exchange of most of its cryptographic protocols, this is not true for BLAKE3: swapping for another hash protocol would result in incompatible envelopes. Thus, any security considerations related to BLAKE3 should be given careful attention.
+
+### Well-Known Hashes
+
+Because they are short unsigned integers, well-known values produce well-known digests. Elided envelopes may in some cases inadvertently reveal information by transmitting digests that may be correlated to known information. Envelopes can be salted by adding assertions that contain random data to perturb the digest tree, hence decorrelating it from any known values.
+
+### Digest Trees
 
 Existence proofs include the minimal set of digests that are necessary to calculate the digest tree from the target to the root, but may themselves leak information about the contents of the envelope due to the other digests that must be included in the spanning set. Designers of envelope-based formats should anticipate such attacks and use decorrelation mechanisms like salting where necessary.
 
+### Collisions
+
+Hash trees tend to make it harder to create collisions than the use of a raw hash function. If attackers manage to find a collision for a hash, they can only replace one node (and its children), so the impact is limited, especially since finding collisions higher in a hash tree grows increasingly difficult because the collision must be a concatenation of two hashes. This should generally reduce issues with collisions: finding collisions that fit a hash tree tends to be harder than finding regular collisions. But, the issue always should be considered.
+
+### Leaf-Node Attacks
+
+Envelope's hash tree  is proof against the leaf-node weakness of Bitcoin that can affect SPVs because its predicates are an unordered set, serialized in increasing lexicographic order by digest, with no possibility for duplication and thus fully deterministic ordering of the tree.
+
+See https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-merkle-tree-design/.
+
+### Forgery Attacks on Unbalanced Trees
+
+Envelopes should also be proof against forgery attacks before of their different construction, where all nodes contain both data and hashes. Nonetheless, care must still be taken with trees, especially when also using redaction, which limits visible information.
+
+See https://bitcointalk.org/?topic=102395 for the core attack.
+
+## Elision
+
+### Duplication of Claims
+
+Support for redaction allows for the possibility of contradictory claims where one is kept hidden at any time. So, for example, an evelope could contain contradictory predictions of election results, and only reveal the one that matches the actual results. As a result, revealed material should be carefully assessed for this possibility when redacted material also exists.
+
+## Additional Specification Creation
+
+Creators of specifications for envelope-based documents should give due consideration to security implications that are outside the scope of this specification to anticipate or avert. One example would be the number and type of assertions allowed in a particular document, and whether additional assertions (metadata) are allowed on those assertions.
 
 # IANA Considerations
 
