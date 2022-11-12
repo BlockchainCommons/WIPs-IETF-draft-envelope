@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 13 May 2023                                     9 November 2022
+Expires: 16 May 2023                                    12 November 2022
 
 
                   The Envelope Structured Data Format
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 May 2023.
+   This Internet-Draft will expire on 16 May 2023.
 
 Copyright Notice
 
@@ -362,7 +362,12 @@ Table of Contents
 
 2.2.3.  Encrypted Case Format
 
-   An encrypted case is used for an envelope that has been encrypted.
+   An encrypted case is used for an envelope that has been encrypted
+   using an Authenticated Encryption with Associated Data (AEAD), and
+   where the digest of the plaintext is declared by the encrypted
+   structure's Additional Authenticated Data (AAD) field.  This
+   subsection specifies the construct used in the current reference
+   implementation and is informative.
 
    encrypted = crypto-msg
 
@@ -385,7 +390,9 @@ Table of Contents
 2.2.4.  Elided Case Format
 
    An elided case is used as a placeholder for an element that has been
-   elided.
+   elided and its digest, produced by a cryptographic hash algorithm is
+   left as a placeholder.  This subsection specifies the construct used
+   in the current reference implementation and is informative.
 
    elided = digest
 
@@ -438,9 +445,12 @@ Table of Contents
 
 3.  Computing the Digest Tree
 
-   This section is normative, and specifies how the digests for each of
-   the envelope cases are computed.  The examples in this section may be
-   used as test vectors.
+   This section specifies how the digests for each of the envelope cases
+   are computed.  The minimum size of the digest and order of operations
+   specified is normative, but the specific cryptographic hash algorithm
+   used by the reference implementation [BLAKE3] is informative.  When
+   implementing using BLAKE3, the examples in this section may be used
+   as test vectors.
 
    Each of the seven enumerated envelope cases produces an image which
    is used as input to a cryptographic hash function to produce a digest
