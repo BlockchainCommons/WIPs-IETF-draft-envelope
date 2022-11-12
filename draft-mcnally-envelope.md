@@ -200,7 +200,7 @@ known-value = #6.223(uint)
 
 ### Encrypted Case Format
 
-An `encrypted` case is used for an envelope that has been encrypted.
+An `encrypted` case is used for an envelope that has been encrypted using an Authenticated Encryption with Associated Data (AEAD), and where the digest of the plaintext is declared by the encrypted structure's Additional Authenticated Data (AAD) field. This subsection specifies the construct used in the current reference implementation and is informative.
 
 ~~~ cddl
 encrypted = crypto-msg
@@ -219,7 +219,7 @@ auth = bytes .size 16    ; Authentication tag created by Poly1305
 
 ### Elided Case Format
 
-An `elided` case is used as a placeholder for an element that has been elided.
+An `elided` case is used as a placeholder for an element that has been elided and its digest, produced by a cryptographic hash algorithm is left as a placeholder. This subsection specifies the construct used in the current reference implementation and is informative.
 
 ~~~ cddl
 elided = digest
@@ -268,7 +268,7 @@ object-envelope = envelope
 
 # Computing the Digest Tree
 
-This section is normative, and specifies how the digests for each of the envelope cases are computed. The examples in this section may be used as test vectors.
+This section specifies how the digests for each of the envelope cases are computed. The minimum size of the digest and order of operations specified is normative, but the specific cryptographic hash algorithm used by the reference implementation {{BLAKE3}} is informative. When implementing using BLAKE3, the examples in this section may be used as test vectors.
 
 Each of the seven enumerated envelope cases produces an image which is used as input to a cryptographic hash function to produce a digest of its contents.
 
