@@ -87,9 +87,13 @@ The `envelope` protocol specifies a format for hierarchical binary data built on
 
 This document specifies the `envelope` protocol for hierarchical structured binary data. Envelope has a number of features that distinguish it from other forms of structured data formats, for example JSON {{-JSON}} (envelopes are binary, not text), JSON-LD {{JSONLD}} (envelopes require no normalization because they are always constructed in canonical form), and protocol buffers {{PROTOBUF}} (envelopes allow for, but do not require a pre-existing schema.)
 
+Together these features create a smart document format with considerable privacy-enhancing, resilience, and efficiency improvements over extant structures while simultaneously maintaining it all under user control.
+
 ## Feature: Digest Tree
 
 One of the key features of envelope is that it structurally provides a tree of digests for all its elements, similar to a Merkle Tree {{MERKLE}}. Additionally, each element in an envelope's hierarchy is itself an envelope, making it a recursive structure. Each element in an envelope MAY be abitrary CBOR, or one of several other types of elements that provide the envelope's structure.
+
+The creation of a digest tree allows for various efficiency improvements over hash lists and is also the fundamental basis for authentication and elision within the envelope.
 
 ## Feature: Semantic Structure
 
@@ -110,6 +114,8 @@ The simplest envelope is just a subject with no assertions, e.g., a simple plain
 
 Because of the strictly invariant nature of the digest tree, envelopes are suitable for use in applications that employ cryptographic signatures. Such signatures in an envelope take the form of `verifiedBy-Signature` assertions on a `subject`, which is the target of the signature. Other cryptographic structures are readily supported.
 
+One of the innovative features of envelope is that these signatures will remain valid even through encryption and elision. 
+
 ## Feature: Binary Efficiency, Built on Deterministic CBOR
 
 Envelopes are a binary structure built on CBOR {{-CBOR}}, and MUST adhere to the requirements in section 4.2., "Deterministically Encoded CBOR". This requirement is one of several design factors ensuring that two envelopes that have the same top-level digest, and therefore contain the same digest tree, MUST represent exactly the same information. This holds true even if the two identical envelopes were assembled by different parties, at different times, and particularly in different orders.
@@ -127,6 +133,13 @@ When an element is elided, only its digest remains in the envelope as a placehol
 * As a form of compression, where many identical sub-elements of an envelope (except one) are elided.
 
 These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) necessarily contains another envelope by revealing only a minimum spanning set of digests.
+
+One of the most notable elements of these features is that any holder of an envelope can engage in the elision or encryption, not just the original creator.
+## Feature: Privacy Protection
+
+As per RFC-6973 "Privacy Considerations" §5.2 & RFC-8280 "Research into Human Rights Protocol Considerations" §6.2.15 "Does the protocol provide ways for initiators to limit which information is shared with intermediaries?" we offer the following examples for improved privacy considerations through a variety of typical data-transfer methodologies, which together show a rough progression from less privacy-focused to more privacy-focused usages, all of which are possible with envelopes:
+
+* Privacy-Focused Data Transfer: structured data can be publicly released; data can be authenticated through signatures and validation; data can be differently elided for different sorts of queries; data can be released through a model of progressive trust by offering less elision over time; data can be further elided by later holders based on their own risk models; data can be entirely elided so that it's only visible to queries that know to ask for the data; data can be entirely elided so that it's only visible to queries if someone provides a hash and a proof that allows them to verify the data; data can be bundled to support herd privacy.
 
 ## Terminology
 
@@ -965,7 +978,7 @@ Because each element of an envelope provides a unique digest, and because changi
 
 In a Merkle Tree, all semantically significant information is carried by the tree's leaves (for example, the transactions in a block of Bitcoin transactions) while the internal nodes of the tree are nothing but digests computed from combinations of pairs of lower nodes, all the way up to the root of the tree (the "Merkle root".)
 
-In an envelope, every digest references some semantically significant content: it could reference the subject of the envelope, or one of the assertions in the envelope, or at the predicate or object of a given assertion. Of course, those elements are all envelopes themselves, and thus potentiall the root of their own subtree.
+In an envelope, every digest references some semantically significant content: it could reference the subject of the envelope, or one of the assertions in the envelope, or at the predicate or object of a given assertion. Of course, those elements are all envelopes themselves, and thus potentially the root of their own subtree.
 
 In a merkle tree, the minumum subset of hashes necessary to confirm that a specific leaf node (the "target") must be present is called a "Merkle proof." For envelopes, an analogous proof would be a transformation of the envelope that is entirely elided but preserves the structure necesssary to reveal the target.
 
@@ -985,7 +998,7 @@ $ envelope $ALICE_FRIENDS
 ]
 ~~~
 
-We then elide the entire envlope, leaving only the root-level digest. This digest is a cryptographic commitment to the envelope's contents.
+We then elide the entire envelope, leaving only the root-level digest. This digest is a cryptographic commitment to the envelope's contents.
 
 ~~~ sh
 $ COMMITMENT=`envelope elide $ALICE_FRIENDS`
@@ -1074,11 +1087,17 @@ If present, the first field specifies the later encryption method. If absent, th
 
 This section is informative unless noted otherwise.
 
+## Structural Considerations
+
+### CBOR Considerations
+
+Generally, this document inherits the security considerations of CBOR {{-CBOR}}. Though CBOR has limited web usage, it has received strong usage in hardware, resulting in a mature specification.
+
 ## Cryptographic Considerations
 
 ### Inherited Considerations
 
-Generally, this document inherits the security considerations of CBOR {{-CBOR}} and any of the cryptographic constructs it uses such as IETF-ChaCha20-Poly1305 {{-CHACHA}} and BLAKE3 {{BLAKE3}}.
+Generally, this document inherits the security considerations of the cryptographic constructs it uses such as IETF-ChaCha20-Poly1305 {{-CHACHA}} and BLAKE3 {{BLAKE3}}.
 
 ### Choice of Cryptographic Primitives (No Set Curve)
 
@@ -1087,6 +1106,10 @@ Though envelope recommends the use of certain cryptographic algorithms, most are
 ## Validation Requirements
 
 Unlike HTML, envelope is intended to be conservative in both what it sends _and_ what it accepts. This means that receivers of envelope-based documents should carefully validate them. Any deviation from the validation requirements of this specification MUST result in the rejection of the entire envelope. Even after validation, envelope contents should be treated with due skepticism.
+
+## Signature Considerations
+
+This specification allows the signing of envelopes that are partially (or even entirely) elided. There may be use cases for this, such as when multiple users are each signing partially elided envelopes that will then be united. However, it's generally a dangerous practice. Our own tools require overrides to allow it. Other developes should take care to warn users of the dangers of signing elided envelopes.
 
 ## Hashing
 
@@ -1104,21 +1127,31 @@ Because they are short unsigned integers, well-known values produce well-known d
 
 Existence proofs include the minimal set of digests that are necessary to calculate the digest tree from the target to the root, but may themselves leak information about the contents of the envelope due to the other digests that must be included in the spanning set. Designers of envelope-based formats should anticipate such attacks and use decorrelation mechanisms like salting where necessary.
 
+### A Tree, Not a List
+
+Envelope makes use of a hash tree instead of a hash list to allow this sort of minimal revelation. This decision may also have advantages in scaling. However, there should be further investigation of the limitations of hash trees regarding scaling, particularly for the scaling of large, elided structures. 
+
+There should also be careful consideration of the best practices needed for the creation of deeply nested envelopes, for the usage of subenvelopes created at different times, and for other technical details related to the use of a potentially broad hash tree, as such best practices do not currently exist. 
+
+### Salts
+
+Specifics for the size and usage of salt are not included in this specifications. There are also no requirements for whether salts should be revealed or can be elided. Careful attention may be required for these factors to ensure that they don't accidentally introduce vulnerabilities into usage.
+
 ### Collisions
 
-Hash trees tend to make it harder to create collisions than the use of a raw hash function. If attackers manage to find a collision for a hash, they can only replace one node (and its children), so the impact is limited, especially since finding collisions higher in a hash tree grows increasingly difficult because the collision must be a concatenation of two hashes. This should generally reduce issues with collisions: finding collisions that fit a hash tree tends to be harder than finding regular collisions. But, the issue always should be considered.
+Hash trees tend to make it harder to create collisions than the use of a raw hash function. If attackers manage to find a collision for a hash, they can only replace one node (and its children), so the impact is limited, especially since finding collisions higher in a hash tree grows increasingly difficult because the collision must be a concatenation of multiple hashes. This should generally reduce issues with collisions: finding collisions that fit a hash tree tends to be harder than finding regular collisions. But, the issue always should be considered.
 
 ### Leaf-Node Attacks
 
 Envelope's hash tree  is proof against the leaf-node weakness of Bitcoin that can affect SPVs because its predicates are an unordered set, serialized in increasing lexicographic order by digest, with no possibility for duplication and thus fully deterministic ordering of the tree.
 
-See https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-merkle-tree-design/.
+See https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-merkle-tree-design/ for the leaf-node attack.
 
 ### Forgery Attacks on Unbalanced Trees
 
 Envelopes should also be proof against forgery attacks before of their different construction, where all nodes contain both data and hashes. Nonetheless, care must still be taken with trees, especially when also using redaction, which limits visible information.
 
-See https://bitcointalk.org/?topic=102395 for the core attack.
+See https://bitcointalk.org/?topic=102395 for the forgery attack.
 
 ## Elision
 
