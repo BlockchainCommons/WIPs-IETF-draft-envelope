@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 16 May 2023                                    12 November 2022
+Expires: 21 May 2023                                    17 November 2022
 
 
                   The Envelope Structured Data Format
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 May 2023.
+   This Internet-Draft will expire on 21 May 2023.
 
 Copyright Notice
 
@@ -68,7 +68,8 @@ Table of Contents
      1.3.  Feature: Cryptography Ready
      1.4.  Feature: Binary Efficiency, Built on Deterministic CBOR
      1.5.  Feature: Digest-Preserving Encryption and Elision
-     1.6.  Terminology
+     1.6.  Feature: Privacy Protection
+     1.7.  Terminology
    2.  Envelope Format Specification
      2.1.  Top Level
      2.2.  Cases Without Children
@@ -150,20 +151,25 @@ Table of Contents
    7.  Reference Implementation
    8.  Future Proofing
    9.  Security Considerations
-     9.1.  Cryptographic Considerations
-       9.1.1.  Inherited Considerations
-       9.1.2.  Choice of Cryptographic Primitives (No Set Curve)
-     9.2.  Validation Requirements
-     9.3.  Hashing
-       9.3.1.  Choice of BLAKE3 Hash Primitive
-       9.3.2.  Well-Known Hashes
-       9.3.3.  Digest Trees
-       9.3.4.  Collisions
-       9.3.5.  Leaf-Node Attacks
-       9.3.6.  Forgery Attacks on Unbalanced Trees
-     9.4.  Elision
-       9.4.1.  Duplication of Claims
-     9.5.  Additional Specification Creation
+     9.1.  Structural Considerations
+       9.1.1.  CBOR Considerations
+     9.2.  Cryptographic Considerations
+       9.2.1.  Inherited Considerations
+       9.2.2.  Choice of Cryptographic Primitives (No Set Curve)
+     9.3.  Validation Requirements
+     9.4.  Signature Considerations
+     9.5.  Hashing
+       9.5.1.  Choice of BLAKE3 Hash Primitive
+       9.5.2.  Well-Known Hashes
+       9.5.3.  Digest Trees
+       9.5.4.  A Tree, Not a List
+       9.5.5.  Salts
+       9.5.6.  Collisions
+       9.5.7.  Leaf-Node Attacks
+       9.5.8.  Forgery Attacks on Unbalanced Trees
+     9.6.  Elision
+       9.6.1.  Duplication of Claims
+     9.7.  Additional Specification Creation
    10. IANA Considerations
      10.1.  CBOR Tags
      10.2.  Media Type
@@ -183,6 +189,11 @@ Table of Contents
    constructed in canonical form), and protocol buffers [PROTOBUF]
    (envelopes allow for, but do not require a pre-existing schema.)
 
+   Together these features create a smart document format with
+   considerable privacy-enhancing, resilience, and efficiency
+   improvements over extant structures while simultaneously maintaining
+   it all under user control.
+
 1.1.  Feature: Digest Tree
 
    One of the key features of envelope is that it structurally provides
@@ -191,6 +202,10 @@ Table of Contents
    itself an envelope, making it a recursive structure.  Each element in
    an envelope MAY be abitrary CBOR, or one of several other types of
    elements that provide the envelope's structure.
+
+   The creation of a digest tree allows for various efficiency
+   improvements over hash lists and is also the fundamental basis for
+   authentication and elision within the envelope.
 
 1.2.  Feature: Semantic Structure
 
@@ -223,6 +238,9 @@ Table of Contents
    form of verifiedBy-Signature assertions on a subject, which is the
    target of the signature.  Other cryptographic structures are readily
    supported.
+
+   One of the innovative features of envelope is that these signatures
+   will remain valid even through encryption and elision.
 
 1.4.  Feature: Binary Efficiency, Built on Deterministic CBOR
 
@@ -269,7 +287,33 @@ Table of Contents
    envelope) necessarily contains another envelope by revealing only a
    minimum spanning set of digests.
 
-1.6.  Terminology
+   One of the most notable elements of these features is that any holder
+   of an envelope can engage in the elision or encryption, not just the
+   original creator.
+
+1.6.  Feature: Privacy Protection
+
+   As per [RFC6973] "Privacy Considerations for Internet Protocols"
+   S.5.2 & [RFC8280] "Research into Human Rights Protocol
+   Considerations" S.6.2.15 "Does the protocol provide ways for
+   initiators to limit which information is shared with intermediaries?"
+   we offer the following examples for improved privacy considerations
+   through a variety of typical data-transfer methodologies, which
+   together show a rough progression from less privacy-focused to more
+   privacy-focused usages, all of which are possible with envelopes:
+
+   *  Privacy-Focused Data Transfer: structured data can be publicly
+      released; data can be authenticated through signatures and
+      validation; data can be differently elided for different sorts of
+      queries; data can be released through a model of progressive trust
+      by offering less elision over time; data can be further elided by
+      later holders based on their own risk models; data can be entirely
+      elided so that it's only visible to queries that know to ask for
+      the data; data can be entirely elided so that it's only visible to
+      queries if someone provides a hash and a proof that allows them to
+      verify the data; data can be bundled to support herd privacy.
+
+1.7.  Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
@@ -1220,7 +1264,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    content: it could reference the subject of the envelope, or one of
    the assertions in the envelope, or at the predicate or object of a
    given assertion.  Of course, those elements are all envelopes
-   themselves, and thus potentiall the root of their own subtree.
+   themselves, and thus potentially the root of their own subtree.
 
    In a merkle tree, the minumum subset of hashes necessary to confirm
    that a specific leaf node (the "target") must be present is called a
@@ -1243,8 +1287,9 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
        "knows": "Dan"
    ]
 
-   We then elide the entire envlope, leaving only the root-level digest.
-   This digest is a cryptographic commitment to the envelope's contents.
+   We then elide the entire envelope, leaving only the root-level
+   digest.  This digest is a cryptographic commitment to the envelope's
+   contents.
 
    $ COMMITMENT=`envelope elide $ALICE_FRIENDS`
    $ envelope --tree $COMMITMENT
@@ -1351,15 +1396,23 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
    This section is informative unless noted otherwise.
 
-9.1.  Cryptographic Considerations
+9.1.  Structural Considerations
 
-9.1.1.  Inherited Considerations
+9.1.1.  CBOR Considerations
 
    Generally, this document inherits the security considerations of CBOR
-   [RFC8949] and any of the cryptographic constructs it uses such as
-   IETF-ChaCha20-Poly1305 [RFC7539] and BLAKE3 [BLAKE3].
+   [RFC8949].  Though CBOR has limited web usage, it has received strong
+   usage in hardware, resulting in a mature specification.
 
-9.1.2.  Choice of Cryptographic Primitives (No Set Curve)
+9.2.  Cryptographic Considerations
+
+9.2.1.  Inherited Considerations
+
+   Generally, this document inherits the security considerations of the
+   cryptographic constructs it uses such as IETF-ChaCha20-Poly1305
+   [RFC7539] and BLAKE3 [BLAKE3].
+
+9.2.2.  Choice of Cryptographic Primitives (No Set Curve)
 
    Though envelope recommends the use of certain cryptographic
    algorithms, most are not required (with the exception of BLAKE3
@@ -1367,7 +1420,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    Different choices will obviously result in different security
    considerations.
 
-9.2.  Validation Requirements
+9.3.  Validation Requirements
 
    Unlike HTML, envelope is intended to be conservative in both what it
    sends _and_ what it accepts.  This means that receivers of envelope-
@@ -1376,9 +1429,18 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    rejection of the entire envelope.  Even after validation, envelope
    contents should be treated with due skepticism.
 
-9.3.  Hashing
+9.4.  Signature Considerations
 
-9.3.1.  Choice of BLAKE3 Hash Primitive
+   This specification allows the signing of envelopes that are partially
+   (or even entirely) elided.  There may be use cases for this, such as
+   when multiple users are each signing partially elided envelopes that
+   will then be united.  However, it's generally a dangerous practice.
+   Our own tools require overrides to allow it.  Other developes should
+   take care to warn users of the dangers of signing elided envelopes.
+
+9.5.  Hashing
+
+9.5.1.  Choice of BLAKE3 Hash Primitive
 
    Although BLAKE2 is more widely supported by IETF specifications,
    envelope instead makes use of BLAKE3.  This is to take advantage of
@@ -1395,7 +1457,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    Thus, any security considerations related to BLAKE3 should be given
    careful attention.
 
-9.3.2.  Well-Known Hashes
+9.5.2.  Well-Known Hashes
 
    Because they are short unsigned integers, well-known values produce
    well-known digests.  Elided envelopes may in some cases inadvertently
@@ -1404,7 +1466,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    contain random data to perturb the digest tree, hence decorrelating
    it from any known values.
 
-9.3.3.  Digest Trees
+9.5.3.  Digest Trees
 
    Existence proofs include the minimal set of digests that are
    necessary to calculate the digest tree from the target to the root,
@@ -1414,19 +1476,41 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    such attacks and use decorrelation mechanisms like salting where
    necessary.
 
-9.3.4.  Collisions
+9.5.4.  A Tree, Not a List
+
+   Envelope makes use of a hash tree instead of a hash list to allow
+   this sort of minimal revelation.  This decision may also have
+   advantages in scaling.  However, there should be further
+   investigation of the limitations of hash trees regarding scaling,
+   particularly for the scaling of large, elided structures.
+
+   There should also be careful consideration of the best practices
+   needed for the creation of deeply nested envelopes, for the usage of
+   subenvelopes created at different times, and for other technical
+   details related to the use of a potentially broad hash tree, as such
+   best practices do not currently exist.
+
+9.5.5.  Salts
+
+   Specifics for the size and usage of salt are not included in this
+   specifications.  There are also no requirements for whether salts
+   should be revealed or can be elided.  Careful attention may be
+   required for these factors to ensure that they don't accidentally
+   introduce vulnerabilities into usage.
+
+9.5.6.  Collisions
 
    Hash trees tend to make it harder to create collisions than the use
    of a raw hash function.  If attackers manage to find a collision for
    a hash, they can only replace one node (and its children), so the
    impact is limited, especially since finding collisions higher in a
    hash tree grows increasingly difficult because the collision must be
-   a concatenation of two hashes.  This should generally reduce issues
-   with collisions: finding collisions that fit a hash tree tends to be
-   harder than finding regular collisions.  But, the issue always should
-   be considered.
+   a concatenation of multiple hashes.  This should generally reduce
+   issues with collisions: finding collisions that fit a hash tree tends
+   to be harder than finding regular collisions.  But, the issue always
+   should be considered.
 
-9.3.5.  Leaf-Node Attacks
+9.5.7.  Leaf-Node Attacks
 
    Envelope's hash tree is proof against the leaf-node weakness of
    Bitcoin that can affect SPVs because its predicates are an unordered
@@ -1435,20 +1519,20 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    the tree.
 
    See https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-
-   merkle-tree-design/.
+   merkle-tree-design/ for the leaf-node attack.
 
-9.3.6.  Forgery Attacks on Unbalanced Trees
+9.5.8.  Forgery Attacks on Unbalanced Trees
 
    Envelopes should also be proof against forgery attacks before of
    their different construction, where all nodes contain both data and
    hashes.  Nonetheless, care must still be taken with trees, especially
    when also using redaction, which limits visible information.
 
-   See https://bitcointalk.org/?topic=102395 for the core attack.
+   See https://bitcointalk.org/?topic=102395 for the forgery attack.
 
-9.4.  Elision
+9.6.  Elision
 
-9.4.1.  Duplication of Claims
+9.6.1.  Duplication of Claims
 
    Support for elision allows for the possibility of contradictory
    claims where one is kept hidden at any time.  So, for example, an
@@ -1457,7 +1541,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    result, revealed material should be carefully assessed for this
    possibility when redacted material also exists.
 
-9.5.  Additional Specification Creation
+9.7.  Additional Specification Creation
 
    Creators of specifications for envelope-based documents should give
    due consideration to security implications that are outside the scope
@@ -1656,10 +1740,20 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    [PROTOBUF] "Protocol Buffers", n.d.,
               <https://developers.google.com/protocol-buffers/>.
 
+   [RFC6973]  Cooper, A., Tschofenig, H., Aboba, B., Peterson, J.,
+              Morris, J., Hansen, M., and R. Smith, "Privacy
+              Considerations for Internet Protocols", RFC 6973,
+              DOI 10.17487/RFC6973, July 2013,
+              <https://www.rfc-editor.org/rfc/rfc6973>.
+
    [RFC8259]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
               Interchange Format", STD 90, RFC 8259,
               DOI 10.17487/RFC8259, December 2017,
               <https://www.rfc-editor.org/rfc/rfc8259>.
+
+   [RFC8280]  ten Oever, N. and C. Cath, "Research into Human Rights
+              Protocol Considerations", RFC 8280, DOI 10.17487/RFC8280,
+              October 2017, <https://www.rfc-editor.org/rfc/rfc8280>.
 
    [SSKR]     "Sharded Secret Key Recovery (SSKR)", n.d.,
               <https://github.com/BlockchainCommons/Research/blob/
