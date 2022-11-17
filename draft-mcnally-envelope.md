@@ -55,6 +55,8 @@ informative:
         title: "Semantic Triple"
         target: https://en.wikipedia.org/wiki/Semantic_triple
     RFC8259: JSON
+    RFC6973: PRIVACY
+    RFC8280: HUMAN-RIGHTS
     JSONLD:
         title: "JSON-LD, Latest Specifications"
         target: https://json-ld.org/spec/latest/
@@ -114,7 +116,7 @@ The simplest envelope is just a subject with no assertions, e.g., a simple plain
 
 Because of the strictly invariant nature of the digest tree, envelopes are suitable for use in applications that employ cryptographic signatures. Such signatures in an envelope take the form of `verifiedBy-Signature` assertions on a `subject`, which is the target of the signature. Other cryptographic structures are readily supported.
 
-One of the innovative features of envelope is that these signatures will remain valid even through encryption and elision. 
+One of the innovative features of envelope is that these signatures will remain valid even through encryption and elision.
 
 ## Feature: Binary Efficiency, Built on Deterministic CBOR
 
@@ -135,9 +137,10 @@ When an element is elided, only its digest remains in the envelope as a placehol
 These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) necessarily contains another envelope by revealing only a minimum spanning set of digests.
 
 One of the most notable elements of these features is that any holder of an envelope can engage in the elision or encryption, not just the original creator.
+
 ## Feature: Privacy Protection
 
-As per RFC-6973 "Privacy Considerations" §5.2 & RFC-8280 "Research into Human Rights Protocol Considerations" §6.2.15 "Does the protocol provide ways for initiators to limit which information is shared with intermediaries?" we offer the following examples for improved privacy considerations through a variety of typical data-transfer methodologies, which together show a rough progression from less privacy-focused to more privacy-focused usages, all of which are possible with envelopes:
+As per {{-PRIVACY}} "Privacy Considerations for Internet Protocols" §5.2 & {{-HUMAN-RIGHTS}} "Research into Human Rights Protocol Considerations" §6.2.15 "Does the protocol provide ways for initiators to limit which information is shared with intermediaries?" we offer the following examples for improved privacy considerations through a variety of typical data-transfer methodologies, which together show a rough progression from less privacy-focused to more privacy-focused usages, all of which are possible with envelopes:
 
 * Privacy-Focused Data Transfer: structured data can be publicly released; data can be authenticated through signatures and validation; data can be differently elided for different sorts of queries; data can be released through a model of progressive trust by offering less elision over time; data can be further elided by later holders based on their own risk models; data can be entirely elided so that it's only visible to queries that know to ask for the data; data can be entirely elided so that it's only visible to queries if someone provides a hash and a proof that allows them to verify the data; data can be bundled to support herd privacy.
 
@@ -1129,9 +1132,9 @@ Existence proofs include the minimal set of digests that are necessary to calcul
 
 ### A Tree, Not a List
 
-Envelope makes use of a hash tree instead of a hash list to allow this sort of minimal revelation. This decision may also have advantages in scaling. However, there should be further investigation of the limitations of hash trees regarding scaling, particularly for the scaling of large, elided structures. 
+Envelope makes use of a hash tree instead of a hash list to allow this sort of minimal revelation. This decision may also have advantages in scaling. However, there should be further investigation of the limitations of hash trees regarding scaling, particularly for the scaling of large, elided structures.
 
-There should also be careful consideration of the best practices needed for the creation of deeply nested envelopes, for the usage of subenvelopes created at different times, and for other technical details related to the use of a potentially broad hash tree, as such best practices do not currently exist. 
+There should also be careful consideration of the best practices needed for the creation of deeply nested envelopes, for the usage of subenvelopes created at different times, and for other technical details related to the use of a potentially broad hash tree, as such best practices do not currently exist.
 
 ### Salts
 
