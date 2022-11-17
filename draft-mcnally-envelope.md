@@ -134,8 +134,7 @@ When an element is elided, only its digest remains in the envelope as a placehol
 
 These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) necessarily contains another envelope by revealing only a minimum spanning set of digests.
 
-One of the most notable elements of these features is that the holder or even a third party can engage in the elision or encryption, not just the issuer as is the case with traditional credentials.
-
+One of the most notable elements of these features is that any holder of an envelope can engage in the elision or encryption, not just the original creator.
 ## Feature: Privacy Protection
 
 As per RFC-6973 "Privacy Considerations" §5.2 & RFC-8280 "Research into Human Rights Protocol Considerations" §6.2.15 "Does the protocol provide ways for initiators to limit which information is shared with intermediaries?" we offer the following examples for improved privacy considerations through a variety of typical data-transfer methodologies, which together show a rough progression from less privacy-focused to more privacy-focused usages, all of which are possible with envelopes:
