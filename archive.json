@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-11-17T00:00:31.753843+00:00",
+  "timestamp": "2022-11-20T00:00:26.815621+00:00",
   "repo": "BlockchainCommons/WIPs-IETF-draft-envelope",
   "labels": [
     {
@@ -129,6 +129,48 @@
           "body": "LGTM",
           "createdAt": "2022-11-09T22:46:15Z",
           "updatedAt": "2022-11-09T22:46:15Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOIRf-ms5DElIk",
+      "title": "Edits & Expansions to IETF Draft",
+      "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/pull/2",
+      "state": "MERGED",
+      "author": "shannona",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "My two goals here were to:\r\n(1) Improve selling points in early section / description of why we're doing this (2) Add some additional security considerations per discussions with Christopher",
+      "createdAt": "2022-11-17T00:37:55Z",
+      "updatedAt": "2022-11-17T03:53:46Z",
+      "baseRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "baseRefName": "master",
+      "baseRefOid": "dcf0d13b4061cd61957498e27f428b3926fc39e0",
+      "headRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "headRefName": "shannona-ietf-suggestions",
+      "headRefOid": "a548a167d597982fa8ae068be8daf9e21159f40f",
+      "closedAt": "2022-11-17T03:53:38Z",
+      "mergedAt": "2022-11-17T03:53:38Z",
+      "mergedBy": "wolfmcnally",
+      "mergeCommit": {
+        "oid": "5df73a3d1823bae19f76054598eeaf0a38b76176"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOIRf-ms5GjN9r",
+          "commit": {
+            "abbreviatedOid": "a548a16"
+          },
+          "author": "wolfmcnally",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM. I'll make a few minor edits for style, particularly reference links to RFCs.",
+          "createdAt": "2022-11-17T03:53:04Z",
+          "updatedAt": "2022-11-17T03:53:04Z",
           "comments": []
         }
       ]
