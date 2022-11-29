@@ -81,7 +81,7 @@ informative:
 
 --- abstract
 
-The `envelope` protocol specifies a format for hierarchical binary data built on CBOR. Envelopes are designed with "smart documents" in mind, and have a number of unique features including easy representation of semantic structures like triples, built-in normalization, a built-in Merkle-like digest tree, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document without invalidating the digest tree or cryptographic signatures that rely on it.
+The `envelope` protocol specifies a format for hierarchical binary data focused on the structured storage of information and the ability to transmit it in a privacy-focused way. Envelopes are designed as "smart documents" and have a number of unique features including easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR,  and the ability for the holder of a document to selectively encrypt or elide specific parts of a document without invalidating the digest tree or cryptographic signatures that rely on it.
 
 --- middle
 
