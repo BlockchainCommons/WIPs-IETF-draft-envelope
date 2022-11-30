@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 2 June 2023                                    29 November 2022
+Expires: 3 June 2023                                    30 November 2022
 
 
                   The Envelope Structured Data Format
@@ -20,8 +20,9 @@ Abstract
    representation of a variety of semantic structures, a built-in
    Merkle-like digest tree, deterministic representation using CBOR, and
    the ability for the holder of a document to selectively encrypt or
-   elide specific parts of a document without invalidating the digest
-   tree or cryptographic signatures that rely on it.
+   elide specific parts of a document without invalidating the document
+   structure, the digest tree, or any cryptographic signatures that rely
+   on it.
 
 Discussion Venues
 
@@ -45,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 June 2023.
+   This Internet-Draft will expire on 3 June 2023.
 
 Copyright Notice
 
