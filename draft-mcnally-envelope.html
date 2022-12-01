@@ -1516,6 +1516,9 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
                 <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-media-type" class="internal xref">Media Type</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="auto internal xref">10.3</a>.  <a href="#name-appendix-why-cbor" class="internal xref">Appendix: Why CBOR?</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
@@ -4058,6 +4061,41 @@ version = uint           ; absent for old method, 1 for new method
         </ul>
 </section>
 </div>
+<div id="appendix-why-cbor">
+<section id="section-10.3">
+        <h3 id="name-appendix-why-cbor">
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-appendix-why-cbor" class="section-name selfRef">Appendix: Why CBOR?</a>
+        </h3>
+<p id="section-10.3-1">The Concise Binary Object Representation, or CBOR, was chosen as the foundational data structure for Gordian specifications such as Envelope and URs for a variety of reasons. These include:<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-10.3-2">
+<li id="section-10.3-2.1">
+            <strong>IETF Standardization.</strong> CBOR is a mature open international IETF standard <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span>.<a href="#section-10.3-2.1" class="pilcrow">¶</a>
+</li>
+          <li id="section-10.3-2.2">
+            <strong>IANA Registration.</strong> CBOR is further standardized by the registration of common data types through IANA <span>[<a href="#IANA-CBOR-TAGS" class="cite xref">IANA-CBOR-TAGS</a>]</span>.<a href="#section-10.3-2.2" class="pilcrow">¶</a>
+</li>
+          <li id="section-10.3-2.3">
+            <strong>Fully Extensible.</strong> Beyond that, CBOR is entirely extensible with any data types desired, such as our own listing of UR tags <span>[<a href="#BC-UR-TAGS" class="cite xref">BC-UR-TAGS</a>]</span>.<a href="#section-10.3-2.3" class="pilcrow">¶</a>
+</li>
+          <li id="section-10.3-2.4">
+            <strong>Self-describing Descriptions.</strong> Data is self-describing, so there are no requirements for pre-defined schemas nor more complex descriptions such as those found in ASN.1.<a href="#section-10.3-2.4" class="pilcrow">¶</a>
+</li>
+          <li id="section-10.3-2.5">
+            <strong>Constraint Friendly.</strong> CBOR is built to be frugal with CPU and memory, so it works well in constrained environments such as on cryptographic silicon chips.<a href="#section-10.3-2.5" class="pilcrow">¶</a>
+</li>
+          <li id="section-10.3-2.6">
+            <strong>Unambiguous Encoding.</strong> Our use of Deterministic CBOR, combined with our own specification rules, such as the sorting of Envelopes by hash, results in a singular, unambiguous encoding.<a href="#section-10.3-2.6" class="pilcrow">¶</a>
+</li>
+          <li id="section-10.3-2.7">
+            <strong>Multiple Implementations.</strong> Implementation are available in a variety of languages <span>[<a href="#CBOR-IMPLS" class="cite xref">CBOR-IMPLS</a>]</span>.<a href="#section-10.3-2.7" class="pilcrow">¶</a>
+</li>
+          <li id="section-10.3-2.8">
+            <strong>Compact Implementations.</strong> Compactness of encoding and decoding is one of CBOR's core goals; implementations are built on headers or snippets of code, and do not require any external tools.<a href="#section-10.3-2.8" class="pilcrow">¶</a>
+</li>
+        </ol>
+<p id="section-10.3-3">Also see a comparison to Protocol Buffers <span>[<a href="#UR-QA" class="cite xref">UR-QA</a>]</span>, a comparison to Flatbuffers <span>[<a href="#CBOR-FLATBUFFERS" class="cite xref">CBOR-FLATBUFFERS</a>]</span>, and a comparison to other binary formats <span>[<a href="#CBOR-FORMAT-COMPARISON" class="cite xref">CBOR-FORMAT-COMPARISON</a>]</span>.<a href="#section-10.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <section id="section-11">
@@ -4120,6 +4158,22 @@ version = uint           ; absent for old method, 1 for new method
 <a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
+<dt id="BC-UR-TAGS">[BC-UR-TAGS]</dt>
+        <dd>
+<span class="refTitle">"Registry of Uniform Resource (UR) Types"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md">https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CBOR-FLATBUFFERS">[CBOR-FLATBUFFERS]</dt>
+        <dd>
+<span class="refTitle">"Flatbuffers vs CBOR"</span>, <span>n.d.</span>, <span>&lt;<a href="https://stackoverflow.com/questions/47799396/flatbuffers-vs-cbor">https://stackoverflow.com/questions/47799396/flatbuffers-vs-cbor</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CBOR-FORMAT-COMPARISON">[CBOR-FORMAT-COMPARISON]</dt>
+        <dd>
+<span class="refTitle">"Comparison of Other Binary Formats to CBOR's Design Objectives"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949#name-comparison-of-other-binary-">https://www.rfc-editor.org/rfc/rfc8949#name-comparison-of-other-binary-</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CBOR-IMPLS">[CBOR-IMPLS]</dt>
+        <dd>
+<span class="refTitle">"CBOR Implementations"</span>, <span>n.d.</span>, <span>&lt;<a href="http://cbor.io/impls.html">http://cbor.io/impls.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="FOAF">[FOAF]</dt>
         <dd>
 <span class="refTitle">"Friend of a Friend (FOAF)"</span>, <span>n.d.</span>, <span>&lt;<a href="https://en.wikipedia.org/wiki/FOAF">https://en.wikipedia.org/wiki/FOAF</a>&gt;</span>. </dd>
@@ -4165,8 +4219,12 @@ version = uint           ; absent for old method, 1 for new method
 <span class="refTitle">"Sharded Secret Key Recovery (SSKR)"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-011-sskr.md">https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-011-sskr.md</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="TRIPLE">[TRIPLE]</dt>
-      <dd>
+        <dd>
 <span class="refTitle">"Semantic Triple"</span>, <span>n.d.</span>, <span>&lt;<a href="https://en.wikipedia.org/wiki/Semantic_triple">https://en.wikipedia.org/wiki/Semantic_triple</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="UR-QA">[UR-QA]</dt>
+      <dd>
+<span class="refTitle">"UR (Uniform Resources) Q&amp;A"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-005-ur.md#qa">https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-005-ur.md#qa</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
