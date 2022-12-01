@@ -24,7 +24,7 @@ author:
     ins: C. Allen
     name: Christopher Allen
     organization: Blockchain Commons
-    email: christophera@blockchaincommons.com
+    email: christophera@lifewithalacrity.com
 
 normative:
     RFC8949: CBOR
