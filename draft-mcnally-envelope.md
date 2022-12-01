@@ -78,6 +78,21 @@ informative:
     ISO639:
         title: "ISO 639 - Standard for representation of names for language and language groups"
         target: https://en.wikipedia.org/wiki/ISO_639
+    BC-UR-TAGS:
+        title: "Registry of Uniform Resource (UR) Types"
+        target: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-006-urtypes.md
+    CBOR-IMPLS:
+        title: "CBOR Implementations"
+        target: http://cbor.io/impls.html
+    UR-QA:
+        title: "UR (Uniform Resources) Q&A"
+        target: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-005-ur.md#qa
+    CBOR-FLATBUFFERS:
+        title: "Flatbuffers vs CBOR"
+        target: https://stackoverflow.com/questions/47799396/flatbuffers-vs-cbor
+    CBOR-FORMAT-COMPARISON:
+        title: "Comparison of Other Binary Formats to CBOR's Design Objectives"
+        target: https://www.rfc-editor.org/rfc/rfc8949#name-comparison-of-other-binary-
 
 --- abstract
 
@@ -1226,6 +1241,21 @@ The proposed media type {{-MIME}} for envelope is `application/envelope+cbor`.
     * Wolf McNally <wolf@wolfmcnally.com>
 * Change controller:
     * The IESG <iesg@ietf.org>
+
+## Appendix: Why CBOR?
+
+The Concise Binary Object Representation, or CBOR, was chosen as the foundational data structure for Gordian specifications such as Envelope and URs for a variety of reasons. These include:
+
+1. **IETF Standardization.** CBOR is a mature open international IETF standard {{-CBOR}}.
+2. **IANA Registration.** CBOR is further standardized by the registration of common data types through IANA {{IANA-CBOR-TAGS}}.
+3. **Fully Extensible.** Beyond that, CBOR is entirely extensible with any data types desired, such as our own listing of UR tags {{BC-UR-TAGS}}.
+4. **Self-describing Descriptions.** Data is self-describing, so there are no requirements for pre-defined schemas nor more complex descriptions such as those found in ASN.1.
+5. **Constraint Friendly.** CBOR is built to be frugal with CPU and memory, so it works well in constrained environments such as on cryptographic silicon chips.
+6. **Unambiguous Encoding.** Our use of Deterministic CBOR, combined with our own specification rules, such as the sorting of Envelopes by hash, results in a singular, unambiguous encoding.
+7. **Multiple Implementations.** Implementation are available in a variety of languages {{CBOR-IMPLS}}.
+8. **Compact Implementations.** Compactness of encoding and decoding is one of CBOR's core goals; implementations are built on headers or snippets of code, and do not require any external tools.
+
+Also see a comparison to Protocol Buffers {{UR-QA}}, a comparison to Flatbuffers {{CBOR-FLATBUFFERS}}, and a comparison to other binary formats {{CBOR-FORMAT-COMPARISON}}.
 
 --- back
 
