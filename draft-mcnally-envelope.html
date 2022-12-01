@@ -1134,7 +1134,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
         </h2>
 <nav class="toc"><ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
-            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduciton" class="internal xref">Introduciton</a></p>
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
                 <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-elision-support" class="internal xref">Elision Support</a></p>
@@ -1536,21 +1536,21 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </nav>
 </section>
 </div>
-<div id="introduciton">
+<div id="introduction">
 <section id="section-1">
-      <h2 id="name-introduciton">
-<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduciton" class="section-name selfRef">Introduciton</a>
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">Gordian Envelope was designed with two key goals in mind: to be <strong>Structure-Ready</strong>, allowing for the reliable and interopable storage of information; and to be <strong>Privacy-Ready</strong>, ensuring that transmission of that data can occur in a privacy-protecting manner.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">Gordian Envelope was designed with two key goals in mind: to be <em>Structure-Ready</em>, allowing for the reliable and interopable storage of information; and to be <em>Privacy-Ready</em>, ensuring that transmission of that data can occur in a privacy-protecting manner.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-2.1">
-          <strong>Structure-Ready.</strong> Gordian Envelope is designed as a Smart Document, meant to store information about a subject. More than that, it's a meta-document that can contain or refer to other documents. It can support multiple data formats, from simple hierarchical structures to labeled property graphs, semantic triples, and other forms of structured graphs. Though its fundamental structure is a tree, it can even be used to create DAGs through references between Envelopes.<a href="#section-1-2.1" class="pilcrow">¶</a>
+          <strong>Structure-Ready.</strong> Gordian Envelope is designed as a Smart Document, meant to store information about a subject. More than that, it's a meta-document that can contain or refer to other documents. It can support multiple data formats, from simple hierarchical structures to labeled property graphs, semantic triples, and other forms of structured graphs. Though its fundamental structure is a tree, it can be used to create Directed Acyclic Graphs (DAGs) through references between Envelopes.<a href="#section-1-2.1" class="pilcrow">¶</a>
 </li>
         <li class="normal" id="section-1-2.2">
           <strong>Privacy-Ready.</strong> Gordian Envelope protects the privacy of its data through progressive trust, allowing for holders to minimally disclose information by using elision or encryption, and then to optionally increase that disclosure over time. The fact that a holder can control data revelation, not just an issuer, creates a new level of privacy for all stakeholders. The progressive trust in Gordian Envelopes is accomplished through hashing of all elements, which creates foundational support for cryptographic functions such as signing and encryption, without actually defining which cryptographic functions must be used.<a href="#section-1-2.2" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-1-3">The following structural decisions support these goals:<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-3">The following architectural decisions support these goals:<a href="#section-1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-4.1">
           <strong>Structured Merkle Tree.</strong> A variant of the Merkle Tree structure is created by forming the hashing of the elements in the Envelope into a tree of digests. (In this "structured Merkele Tree", all nodes contain both semantic content and digests, rather than semantic content being limited to leaves.)<a href="#section-1-4.1" class="pilcrow">¶</a>
@@ -1578,7 +1578,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
             <strong>Granular Holder Control.</strong> Elision can not only be performed by any Holder, but also for any data, allowing each entity to elide data as is appropriate for the management of their personal (or business) risk.<a href="#section-1.1-1.4" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-1.1-1.5">
-            <strong>Progressive Trust.</strong> The elision mechanics in Gordian Envelopes allow for progressive trust, where increasing amounts of data are revealed over time. It can even be combined with encryption to escrow data to later be revealed.<a href="#section-1.1-1.5" class="pilcrow">¶</a>
+            <strong>Progressive Trust.</strong> The elision mechanics in Gordian Envelopes allow for progressive trust, where increasing amounts of data are revealed over time, and can be combined with encryption to escrow data to later be revealed.<a href="#section-1.1-1.5" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-1.1-1.6">
             <strong>Consistent Hashing.</strong> Even when elided or encrypted, hashes for those parts of the Gordian Envelope remain the same.<a href="#section-1.1-1.6" class="pilcrow">¶</a>

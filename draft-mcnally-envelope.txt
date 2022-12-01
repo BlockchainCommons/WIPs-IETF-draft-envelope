@@ -64,7 +64,7 @@ Copyright Notice
 
 Table of Contents
 
-   1.  Introduciton
+   1.  Introduction
      1.1.  Elision Support
      1.2.  Privacy Support
      1.3.  Authentication Support
@@ -180,11 +180,11 @@ Table of Contents
    Acknowledgments
    Authors' Addresses
 
-1.  Introduciton
+1.  Introduction
 
    Gordian Envelope was designed with two key goals in mind: to be
-   *Structure-Ready*, allowing for the reliable and interopable storage
-   of information; and to be *Privacy-Ready*, ensuring that transmission
+   _Structure-Ready_, allowing for the reliable and interopable storage
+   of information; and to be _Privacy-Ready_, ensuring that transmission
    of that data can occur in a privacy-protecting manner.
 
    *  *Structure-Ready.* Gordian Envelope is designed as a Smart
@@ -193,8 +193,8 @@ Table of Contents
       documents.  It can support multiple data formats, from simple
       hierarchical structures to labeled property graphs, semantic
       triples, and other forms of structured graphs.  Though its
-      fundamental structure is a tree, it can even be used to create
-      DAGs through references between Envelopes.
+      fundamental structure is a tree, it can be used to create Directed
+      Acyclic Graphs (DAGs) through references between Envelopes.
 
    *  *Privacy-Ready.* Gordian Envelope protects the privacy of its data
       through progressive trust, allowing for holders to minimally
@@ -207,7 +207,7 @@ Table of Contents
       functions such as signing and encryption, without actually
       defining which cryptographic functions must be used.
 
-   The following structural decisions support these goals:
+   The following architectural decisions support these goals:
 
    *  *Structured Merkle Tree.* A variant of the Merkle Tree structure
       is created by forming the hashing of the elements in the Envelope
@@ -246,8 +246,8 @@ Table of Contents
 
    *  *Progressive Trust.* The elision mechanics in Gordian Envelopes
       allow for progressive trust, where increasing amounts of data are
-      revealed over time.  It can even be combined with encryption to
-      escrow data to later be revealed.
+      revealed over time, and can be combined with encryption to escrow
+      data to later be revealed.
 
    *  *Consistent Hashing.* Even when elided or encrypted, hashes for
       those parts of the Gordian Envelope remain the same.
