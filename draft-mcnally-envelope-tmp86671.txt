@@ -5,24 +5,22 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 4 June 2023                                     1 December 2022
+Expires: 20 May 2023                                    16 November 2022
 
 
                   The Envelope Structured Data Format
-                     draft-mcnally-envelope-latest
+                 draft-mcnally-envelope-tmp86671-latest
 
 Abstract
 
-   The envelope protocol specifies a structured format for hierarchical
-   binary data focused on the ability to transmit it in a privacy-
-   focused way.  Envelopes are designed to facilitate "smart documents"
-   and have a number of unique features including: easy representation
-   of a variety of semantic structures, a built-in Merkle-like digest
-   tree, deterministic representation using CBOR, and the ability for
-   the holder of a document to selectively encrypt or elide specific
-   parts of a document without invalidating the document structure
-   including the digest tree, or any cryptographic signatures that rely
-   on it.
+   The envelope protocol specifies a format for hierarchical binary data
+   built on CBOR.  Envelopes are designed with "smart documents" in
+   mind, and have a number of unique features including easy
+   representation of semantic structures like triples, built-in
+   normalization, a built-in Merkle-like digest tree, and the ability
+   for the holder of a document to selectively encrypt or elide specific
+   parts of a document without invalidating the digest tree or
+   cryptographic signatures that rely on it.
 
 Discussion Venues
 
@@ -46,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 June 2023.
+   This Internet-Draft will expire on 20 May 2023.
 
 Copyright Notice
 
@@ -1777,4 +1775,4 @@ Authors' Addresses
 
    Christopher Allen
    Blockchain Commons
-   Email: christophera@lifewithalacrity.com
+   Email: christophera@blockchaincommons.com
