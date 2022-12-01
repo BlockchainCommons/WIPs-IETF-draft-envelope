@@ -51,18 +51,6 @@ informative:
     MERKLE:
         title: "Merkle Tree"
         target: https://en.wikipedia.org/wiki/Merkle_tree
-    TRIPLE:
-        title: "Semantic Triple"
-        target: https://en.wikipedia.org/wiki/Semantic_triple
-    RFC8259: JSON
-    RFC6973: PRIVACY
-    RFC8280: HUMAN-RIGHTS
-    JSONLD:
-        title: "JSON-LD, Latest Specifications"
-        target: https://json-ld.org/spec/latest/
-    PROTOBUF:
-        title: "Protocol Buffers"
-        target: https://developers.google.com/protocol-buffers/
     MERMAID:
         title: "Mermaid.js"
         target: https://mermaid-js.github.io/mermaid/#/
@@ -93,6 +81,9 @@ informative:
     CBOR-FORMAT-COMPARISON:
         title: "Comparison of Other Binary Formats to CBOR's Design Objectives"
         target: https://www.rfc-editor.org/rfc/rfc8949#name-comparison-of-other-binary-
+    ASN-1:
+        title: "X.680 : Information technology - Abstract Syntax Notation One (ASN.1): Specification of basic notation"
+        target: https://www.itu.int/rec/T-REC-X.680/
 
 --- abstract
 
@@ -100,66 +91,49 @@ The `envelope` protocol specifies a structured format for hierarchical binary da
 
 --- middle
 
-# Introduction
+# Introduciton
 
-This document specifies the `envelope` protocol for hierarchical structured binary data. Envelope has a number of features that distinguish it from other forms of structured data formats, for example JSON {{-JSON}} (envelopes are binary, not text), JSON-LD {{JSONLD}} (envelopes require no normalization because they are always constructed in canonical form), and protocol buffers {{PROTOBUF}} (envelopes allow for, but do not require a pre-existing schema.)
+Gordian Envelope was designed with two key goals in mind: to be Structure-Ready, allowing for the reliable and interopable storage of information; and to be Privacy-Ready, ensuring that transmission of that data can occur in a privacy-protecting manner.
 
-Together these features create a smart document format with considerable privacy-enhancing, resilience, and efficiency improvements over extant structures while simultaneously maintaining it all under user control.
+- **Structure-Ready.** Gordian Envelope is designed as a Smart Document, meant to store information about a subject. More than that, it's a meta-document that can contain or refer to other documents. It can support multiple data formats, from simple hierarchical structures to labeled property graphs, semantic triples, and other forms of structured graphs. Though its fundamental structure is a tree, it can even be used to create DAGs through references between Envelopes.
+- **Privacy-Ready.** Gordian Envelope protects the privacy of its data through progressive trust, allowing for holders to minimally disclose information by using elision or encryption, and then to optionally increase that disclosure over time. The fact that a holder can control data revelation, not just an issuer, creates a new level of privacy for all stakeholders. The progressive trust in Gordian Envelopes is accomplished through hashing of all elements, which creates foundational support for cryptographic functions such as signing and encryption, without actually defining which cryptographic functions must be used.
 
-## Feature: Digest Tree
+The following structural decisions support these goals:
 
-One of the key features of envelope is that it structurally provides a tree of digests for all its elements, similar to a Merkle Tree {{MERKLE}}. Additionally, each element in an envelope's hierarchy is itself an envelope, making it a recursive structure. Each element in an envelope MAY be abitrary CBOR, or one of several other types of elements that provide the envelope's structure.
+- **Structured Merkle Tree.** A variant of the Merkle Tree structure is created by forming the hashing of the elements in the Envelope into a tree of digests. (In this "structured Merkele Tree", all nodes contain both semantic content and digests, rather than semantic content being limited to leaves.)
+- **Deterministic Representation.** There is only one way to encode any semantic representation within a Gordian Envelope. This is accomplished through the use of Deterministic CBOR and the sorting of the Envelope by hashes to create a lexicographic order. Any Envelope that doesn't follow these strict rules can be rejected; as a result, there's no need to worry about different people adding the assertions in a different order or at different times: if two Envelopes contain the same data, they will be encoded the same way.
 
-The creation of a digest tree allows for various efficiency improvements over hash lists and is also the fundamental basis for authentication and elision within the envelope.
+## Elision Support
 
-## Feature: Semantic Structure
+- **Elision of All Elements.** Gordian Envelopes innately support elision for any part of its data, including subjects, predicates, and objects.
+- **Elision, Compression, and Encryption.** Elision can be used for a variety of purposes including redaction (removing information), compression (removing duplicate information), and encryption (enciphering information).
+- **Holder-initiated Elision.** Elision can be performed by the Holder of a Gordian Envelope, not just the Issuer.
+- **Granular Holder Control.** Elision can not only be performed by any Holder, but also for any data, allowing each entity to elide data as is appropriate for the management of their personal (or business) risk.
+- **Progressive Trust.** The elision mechanics in Gordian Envelopes allow for progressive trust, where increasing amounts of data are revealed over time. It can even be combined with encryption to escrow data to later be revealed.
+- **Consistent Hashing.** Even when elided or encrypted, hashes for those parts of the Gordian Envelope remain the same.
 
-Envelope is designed to facilitate the encoding of semantic triples {{TRIPLE}}, i.e., "subject-predicate-object", e.g. "Alice knows Bob." At its top structural level, an envelope encodes a single `subject` and a set of zero or more `assertion`s about the subject, which are `predicate-object` pairs:
+## Privacy Support
 
-~~~
-subject [
-    predicate0: object0
-    predicate1: object1
-    ...
-    predicateN: objectN
-]
-~~~
+- **Proof of Inclusion.** As an alternative to presenting elided structures, proofs of inclusion can be included in top-level hashes.
+- **Herd Privacy.** Proofs of inclusion allow for herd privacy where all members of a class can share data such as a VC or DID without revealing individual information.
+- **Non-Correlation.** Encrypted Gordian Envelope data can optionally be made less correlatable with the addition of salt.
 
-The simplest envelope is just a subject with no assertions, e.g., a simple plaintext string (or any other CBOR construct.) But since every element in an envelope is itelf an envelope, every element can therefore hold its own assertions. This allows any element to carry additional context, e.g. an assertion declaring the language in which a human-readable string is written. This mechanism for "assertions with assertions" provides for arbitrarily complex metadata.
+## Authentication Support
 
-## Feature: Cryptography Ready
+- **Symmetric Key Permits.** Gordian Envelopes can be locked ("closed") using a symmetric key.
+- **SSKR Permits.** Gordian Envelopes can alternatively be locked ("closed") using a symmetric key sharded with Shamir's Secret Sharing, with the shares stored with copies of the Envelope, and the whole enveloped thus openable if copies of the Envelope with a quorum of different shares are gathered.
+- **Public Key Permits.** Gordian Envelopes can alternatively be locked ("closed") with a public key and then be opened with the associated private key, or vice versa.
+- **Multiple Permits.** Gordian Envelopes can simultaneously be locked ("closed") via a variety of means and then openable by any appropriate individual method, with different methods likely held by different people.
 
-Because of the strictly invariant nature of the digest tree, envelopes are suitable for use in applications that employ cryptographic signatures. Such signatures in an envelope take the form of `verifiedBy-Signature` assertions on a `subject`, which is the target of the signature. Other cryptographic structures are readily supported.
+## Future Looking
 
-One of the innovative features of envelope is that these signatures will remain valid even through encryption and elision.
+- **Data Storage.** The initial inspiration for Gordian Envelopes was for secure data storage.
+- **Credentials & Presentations.** The usage of Gordian Envelope signing techniques allows for the creation of credentials and the ability to present them to different verifiers in different ways.
+- **Distributed or Decentralized Identifiers.** Self-Certifying Identifiers (SCIDs) can be created and shared with peers, certified with a trust authority, or registered on blockchain.
+- **Future Techniques.** Beyonds its technical specifics, Gordian Envelopes still allows for cl-sigs, bbs+, and other privacy-preserving techniques such as zk-proofs, differential privacy, etc.
+- **Cryptography Agnostic.** Generally, the Gordian Envelope architecture is cryptography agnostic, allowing it to work with everything from older algorithms with silicon support through more modern algorithms suited to blockchains and to future zk-proof or quantum-attack resistent cryptographic choices. These choices are made in sets via ciphersuites.
 
-## Feature: Binary Efficiency, Built on Deterministic CBOR
-
-Envelopes are a binary structure built on CBOR {{-CBOR}}, and MUST adhere to the requirements in section 4.2., "Deterministically Encoded CBOR". This requirement is one of several design factors ensuring that two envelopes that have the same top-level digest, and therefore contain the same digest tree, MUST represent exactly the same information. This holds true even if the two identical envelopes were assembled by different parties, at different times, and particularly in different orders.
-
-## Feature: Digest-Preserving Encryption and Elision
-
-Envelope supports two digest tree-preserving transformations for any of its elements: encryption and elision.
-
-When an element is encrypted, its ciphertext remains in the envelope, and the transformation can be reversed using the symmetric key used to perform the encryption. The encrypted envelope declares the digest of its plaintext content using HMAC authentication. More sophisticated cryptographic constructs such as encryption to a set of public keys are readily supported.
-
-When an element is elided, only its digest remains in the envelope as a placeholder, and the transformation can only be reversed by subsitution with the envelope having the same root digest. Elision has several use cases:
-
-* As a form of redaction, where the holder of a document reveals part of it while deliberately withholding other parts;
-* As a form of referencing, where the digest is used as the unique identifier of a digital object that can be found outside the envelope;
-* As a form of compression, where many identical sub-elements of an envelope (except one) are elided.
-
-These digest tree-preserving transformations allow the holder of an envelope-based document to selectively reveal parts of it to third parties without invalidating its signatures. It is also possible to produce proofs that one envelope (or even just the root digest of an envelope) necessarily contains another envelope by revealing only a minimum spanning set of digests.
-
-One of the most notable elements of these features is that any holder of an envelope can engage in the elision or encryption, not just the original creator.
-
-## Feature: Privacy Protection
-
-As per {{-PRIVACY}} "Privacy Considerations for Internet Protocols" §5.2 & {{-HUMAN-RIGHTS}} "Research into Human Rights Protocol Considerations" §6.2.15 "Does the protocol provide ways for initiators to limit which information is shared with intermediaries?" we offer the following examples for improved privacy considerations through a variety of typical data-transfer methodologies, which together show a rough progression from less privacy-focused to more privacy-focused usages, all of which are possible with envelopes:
-
-* Privacy-Focused Data Transfer: structured data can be publicly released; data can be authenticated through signatures and validation; data can be differently elided for different sorts of queries; data can be released through a model of progressive trust by offering less elision over time; data can be further elided by later holders based on their own risk models; data can be entirely elided so that it's only visible to queries that know to ask for the data; data can be entirely elided so that it's only visible to queries if someone provides a hash and a proof that allows them to verify the data; data can be bundled to support herd privacy.
-
-## Terminology
+# Terminology
 
 {::boilerplate bcp14-tagged}
 
@@ -1167,7 +1141,7 @@ See https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-merkle-tree-des
 
 ### Forgery Attacks on Unbalanced Trees
 
-Envelopes should also be proof against forgery attacks before of their different construction, where all nodes contain both data and hashes. Nonetheless, care must still be taken with trees, especially when also using redaction, which limits visible information.
+Envelopes should also be proof against forgery attacks before of their different construction, where all nodes contain both data and hashes. Nonetheless, care must still be taken with trees, especially when also using elision, which limits visible information.
 
 See https://bitcointalk.org/?topic=102395 for the forgery attack.
 
@@ -1175,7 +1149,7 @@ See https://bitcointalk.org/?topic=102395 for the forgery attack.
 
 ### Duplication of Claims
 
-Support for elision allows for the possibility of contradictory claims where one is kept hidden at any time. So, for example, an evelope could contain contradictory predictions of election results and only reveal the one that matches the actual results. As a result, revealed material should be carefully assessed for this possibility when redacted material also exists.
+Support for elision allows for the possibility of contradictory claims where one is kept hidden at any time. So, for example, an evelope could contain contradictory predictions of election results and only reveal the one that matches the actual results. As a result, revealed material should be carefully assessed for this possibility when elided material also exists.
 
 ## Additional Specification Creation
 
@@ -1242,14 +1216,14 @@ The proposed media type {{-MIME}} for envelope is `application/envelope+cbor`.
 * Change controller:
     * The IESG <iesg@ietf.org>
 
-## Appendix: Why CBOR?
+# Appendix: Why CBOR?
 
-The Concise Binary Object Representation, or CBOR, was chosen as the foundational data structure for Gordian specifications such as Envelope and URs for a variety of reasons. These include:
+The Concise Binary Object Representation, or CBOR, was chosen as the foundational data structure envelopes for a variety of reasons. These include:
 
 1. **IETF Standardization.** CBOR is a mature open international IETF standard {{-CBOR}}.
-2. **IANA Registration.** CBOR is further standardized by the registration of common data types through IANA {{IANA-CBOR-TAGS}}.
+2. **IANA Registration.** CBOR is further standardized by the registration of common data type tags through IANA {{IANA-CBOR-TAGS}}.
 3. **Fully Extensible.** Beyond that, CBOR is entirely extensible with any data types desired, such as our own listing of UR tags {{BC-UR-TAGS}}.
-4. **Self-describing Descriptions.** Data is self-describing, so there are no requirements for pre-defined schemas nor more complex descriptions such as those found in ASN.1.
+4. **Self-describing Descriptions.** CBOR-encoded data is self-describing, so there are no requirements for pre-defined schemas nor more complex descriptions such as those found in ASN.1 {{ASN-1}}.
 5. **Constraint Friendly.** CBOR is built to be frugal with CPU and memory, so it works well in constrained environments such as on cryptographic silicon chips.
 6. **Unambiguous Encoding.** Our use of Deterministic CBOR, combined with our own specification rules, such as the sorting of Envelopes by hash, results in a singular, unambiguous encoding.
 7. **Multiple Implementations.** Implementation are available in a variety of languages {{CBOR-IMPLS}}.
