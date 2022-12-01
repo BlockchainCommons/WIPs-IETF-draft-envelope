@@ -64,259 +64,253 @@ Copyright Notice
 
 Table of Contents
 
-   1.  Introduction
-     1.1.  Feature: Digest Tree
-     1.2.  Feature: Semantic Structure
-     1.3.  Feature: Cryptography Ready
-     1.4.  Feature: Binary Efficiency, Built on Deterministic CBOR
-     1.5.  Feature: Digest-Preserving Encryption and Elision
-     1.6.  Feature: Privacy Protection
-     1.7.  Terminology
-   2.  Envelope Format Specification
-     2.1.  Top Level
-     2.2.  Cases Without Children
-       2.2.1.  Leaf Case Format
-       2.2.2.  Known Value Case Format
-       2.2.3.  Encrypted Case Format
-       2.2.4.  Elided Case Format
-     2.3.  Cases With Children
-       2.3.1.  Node Case Format
-       2.3.2.  Wrapped Envelope Case Format
-       2.3.3.  Assertion Case Format
-   3.  Computing the Digest Tree
-     3.1.  Leaf Case Digest Calculation
-       3.1.1.  Example
-     3.2.  Known Value Case Digest Calculation
-       3.2.1.  Example
-     3.3.  Encrypted Case Digest Calculation
-       3.3.1.  Example
-     3.4.  Elided Case Digest Calculation
-       3.4.1.  Example
-     3.5.  Node Case Digest Calculation
-       3.5.1.  Example
-     3.6.  Wrapped Envelope Case Digest Calculation
-       3.6.1.  Example
-     3.7.  Assertion Case Digest Calculation
-       3.7.1.  Example
-   4.  Envelope Hierarchy
-     4.1.  Leaf Case
-       4.1.1.  Envelope CLI Command Line
-       4.1.2.  Envelope Notation
-       4.1.3.  Tree
-       4.1.4.  Mermaid
-       4.1.5.  CBOR Diagnostic Notation
-       4.1.6.  CBOR Hex
-     4.2.  Known Value Case
-       4.2.1.  Envelope CLI Command Line
-       4.2.2.  Envelope Notation
-       4.2.3.  Tree
-       4.2.4.  Mermaid
-       4.2.5.  CBOR Diagnostic Notation
-       4.2.6.  CBOR Hex
-     4.3.  Encrypted Case
-       4.3.1.  Envelope CLI Command Line
-       4.3.2.  Envelope Notation
-       4.3.3.  Tree
-       4.3.4.  Mermaid
-       4.3.5.  CBOR Diagnostic Notation
-       4.3.6.  CBOR Hex
-     4.4.  Elided Case
-       4.4.1.  Envelope CLI Command Line
-       4.4.2.  Envelope Notation
-       4.4.3.  Tree
-       4.4.4.  Mermaid
-       4.4.5.  CBOR Diagnostic Notation
-       4.4.6.  CBOR Hex
-     4.5.  Node Case
-       4.5.1.  Envelope CLI Command Line
-       4.5.2.  Envelope Notation
-       4.5.3.  Tree
-       4.5.4.  Mermaid
-       4.5.5.  CBOR Diagnostic Notation
-       4.5.6.  CBOR Hex
-     4.6.  Wrapped Envelope Case
-       4.6.1.  Envelope CLI Command Line
-       4.6.2.  Envelope Notation
-       4.6.3.  Tree
-       4.6.4.  Mermaid
-       4.6.5.  CBOR Diagnostic Notation
-       4.6.6.  CBOR Hex
-     4.7.  Assertion Case
-       4.7.1.  Envelope CLI Command Line
-       4.7.2.  Envelope Notation
-       4.7.3.  Tree
-       4.7.4.  Mermaid
-       4.7.5.  CBOR Diagnostic Notation
-       4.7.6.  CBOR Hex
-   5.  Known Values
-   6.  Existence Proofs
-   7.  Reference Implementation
-   8.  Future Proofing
-   9.  Security Considerations
-     9.1.  Structural Considerations
-       9.1.1.  CBOR Considerations
-     9.2.  Cryptographic Considerations
-       9.2.1.  Inherited Considerations
-       9.2.2.  Choice of Cryptographic Primitives (No Set Curve)
-     9.3.  Validation Requirements
-     9.4.  Signature Considerations
-     9.5.  Hashing
-       9.5.1.  Choice of BLAKE3 Hash Primitive
-       9.5.2.  Well-Known Hashes
-       9.5.3.  Digest Trees
-       9.5.4.  A Tree, Not a List
-       9.5.5.  Salts
-       9.5.6.  Collisions
-       9.5.7.  Leaf-Node Attacks
-       9.5.8.  Forgery Attacks on Unbalanced Trees
-     9.6.  Elision
-       9.6.1.  Duplication of Claims
-     9.7.  Additional Specification Creation
-   10. IANA Considerations
-     10.1.  CBOR Tags
-     10.2.  Media Type
-     10.3.  Appendix: Why CBOR?
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+   1.  Introduciton
+     1.1.  Elision Support
+     1.2.  Privacy Support
+     1.3.  Authentication Support
+     1.4.  Future Looking
+   2.  Terminology
+   3.  Envelope Format Specification
+     3.1.  Top Level
+     3.2.  Cases Without Children
+       3.2.1.  Leaf Case Format
+       3.2.2.  Known Value Case Format
+       3.2.3.  Encrypted Case Format
+       3.2.4.  Elided Case Format
+     3.3.  Cases With Children
+       3.3.1.  Node Case Format
+       3.3.2.  Wrapped Envelope Case Format
+       3.3.3.  Assertion Case Format
+   4.  Computing the Digest Tree
+     4.1.  Leaf Case Digest Calculation
+       4.1.1.  Example
+     4.2.  Known Value Case Digest Calculation
+       4.2.1.  Example
+     4.3.  Encrypted Case Digest Calculation
+       4.3.1.  Example
+     4.4.  Elided Case Digest Calculation
+       4.4.1.  Example
+     4.5.  Node Case Digest Calculation
+       4.5.1.  Example
+     4.6.  Wrapped Envelope Case Digest Calculation
+       4.6.1.  Example
+     4.7.  Assertion Case Digest Calculation
+       4.7.1.  Example
+   5.  Envelope Hierarchy
+     5.1.  Leaf Case
+       5.1.1.  Envelope CLI Command Line
+       5.1.2.  Envelope Notation
+       5.1.3.  Tree
+       5.1.4.  Mermaid
+       5.1.5.  CBOR Diagnostic Notation
+       5.1.6.  CBOR Hex
+     5.2.  Known Value Case
+       5.2.1.  Envelope CLI Command Line
+       5.2.2.  Envelope Notation
+       5.2.3.  Tree
+       5.2.4.  Mermaid
+       5.2.5.  CBOR Diagnostic Notation
+       5.2.6.  CBOR Hex
+     5.3.  Encrypted Case
+       5.3.1.  Envelope CLI Command Line
+       5.3.2.  Envelope Notation
+       5.3.3.  Tree
+       5.3.4.  Mermaid
+       5.3.5.  CBOR Diagnostic Notation
+       5.3.6.  CBOR Hex
+     5.4.  Elided Case
+       5.4.1.  Envelope CLI Command Line
+       5.4.2.  Envelope Notation
+       5.4.3.  Tree
+       5.4.4.  Mermaid
+       5.4.5.  CBOR Diagnostic Notation
+       5.4.6.  CBOR Hex
+     5.5.  Node Case
+       5.5.1.  Envelope CLI Command Line
+       5.5.2.  Envelope Notation
+       5.5.3.  Tree
+       5.5.4.  Mermaid
+       5.5.5.  CBOR Diagnostic Notation
+       5.5.6.  CBOR Hex
+     5.6.  Wrapped Envelope Case
+       5.6.1.  Envelope CLI Command Line
+       5.6.2.  Envelope Notation
+       5.6.3.  Tree
+       5.6.4.  Mermaid
+       5.6.5.  CBOR Diagnostic Notation
+       5.6.6.  CBOR Hex
+     5.7.  Assertion Case
+       5.7.1.  Envelope CLI Command Line
+       5.7.2.  Envelope Notation
+       5.7.3.  Tree
+       5.7.4.  Mermaid
+       5.7.5.  CBOR Diagnostic Notation
+       5.7.6.  CBOR Hex
+   6.  Known Values
+   7.  Existence Proofs
+   8.  Reference Implementation
+   9.  Future Proofing
+   10. Security Considerations
+     10.1.  Structural Considerations
+       10.1.1.  CBOR Considerations
+     10.2.  Cryptographic Considerations
+       10.2.1.  Inherited Considerations
+       10.2.2.  Choice of Cryptographic Primitives (No Set Curve)
+     10.3.  Validation Requirements
+     10.4.  Signature Considerations
+     10.5.  Hashing
+       10.5.1.  Choice of BLAKE3 Hash Primitive
+       10.5.2.  Well-Known Hashes
+       10.5.3.  Digest Trees
+       10.5.4.  A Tree, Not a List
+       10.5.5.  Salts
+       10.5.6.  Collisions
+       10.5.7.  Leaf-Node Attacks
+       10.5.8.  Forgery Attacks on Unbalanced Trees
+     10.6.  Elision
+       10.6.1.  Duplication of Claims
+     10.7.  Additional Specification Creation
+   11. IANA Considerations
+     11.1.  CBOR Tags
+     11.2.  Media Type
+   12. Appendix: Why CBOR?
+   13. References
+     13.1.  Normative References
+     13.2.  Informative References
    Acknowledgments
    Authors' Addresses
 
-1.  Introduction
+1.  Introduciton
 
-   This document specifies the envelope protocol for hierarchical
-   structured binary data.  Envelope has a number of features that
-   distinguish it from other forms of structured data formats, for
-   example JSON [RFC8259] (envelopes are binary, not text), JSON-LD
-   [JSONLD] (envelopes require no normalization because they are always
-   constructed in canonical form), and protocol buffers [PROTOBUF]
-   (envelopes allow for, but do not require a pre-existing schema.)
+   Gordian Envelope was designed with two key goals in mind: to be
+   Structure-Ready, allowing for the reliable and interopable storage of
+   information; and to be Privacy-Ready, ensuring that transmission of
+   that data can occur in a privacy-protecting manner.
 
-   Together these features create a smart document format with
-   considerable privacy-enhancing, resilience, and efficiency
-   improvements over extant structures while simultaneously maintaining
-   it all under user control.
+   *  *Structure-Ready.* Gordian Envelope is designed as a Smart
+      Document, meant to store information about a subject.  More than
+      that, it's a meta-document that can contain or refer to other
+      documents.  It can support multiple data formats, from simple
+      hierarchical structures to labeled property graphs, semantic
+      triples, and other forms of structured graphs.  Though its
+      fundamental structure is a tree, it can even be used to create
+      DAGs through references between Envelopes.
 
-1.1.  Feature: Digest Tree
+   *  *Privacy-Ready.* Gordian Envelope protects the privacy of its data
+      through progressive trust, allowing for holders to minimally
+      disclose information by using elision or encryption, and then to
+      optionally increase that disclosure over time.  The fact that a
+      holder can control data revelation, not just an issuer, creates a
+      new level of privacy for all stakeholders.  The progressive trust
+      in Gordian Envelopes is accomplished through hashing of all
+      elements, which creates foundational support for cryptographic
+      functions such as signing and encryption, without actually
+      defining which cryptographic functions must be used.
 
-   One of the key features of envelope is that it structurally provides
-   a tree of digests for all its elements, similar to a Merkle Tree
-   [MERKLE].  Additionally, each element in an envelope's hierarchy is
-   itself an envelope, making it a recursive structure.  Each element in
-   an envelope MAY be abitrary CBOR, or one of several other types of
-   elements that provide the envelope's structure.
+   The following structural decisions support these goals:
 
-   The creation of a digest tree allows for various efficiency
-   improvements over hash lists and is also the fundamental basis for
-   authentication and elision within the envelope.
+   *  *Structured Merkle Tree.* A variant of the Merkle Tree structure
+      is created by forming the hashing of the elements in the Envelope
+      into a tree of digests.  (In this "structured Merkele Tree", all
+      nodes contain both semantic content and digests, rather than
+      semantic content being limited to leaves.)
 
-1.2.  Feature: Semantic Structure
+   *  *Deterministic Representation.* There is only one way to encode
+      any semantic representation within a Gordian Envelope.  This is
+      accomplished through the use of Deterministic CBOR and the sorting
+      of the Envelope by hashes to create a lexicographic order.  Any
+      Envelope that doesn't follow these strict rules can be rejected;
+      as a result, there's no need to worry about different people
+      adding the assertions in a different order or at different times:
+      if two Envelopes contain the same data, they will be encoded the
+      same way.
 
-   Envelope is designed to facilitate the encoding of semantic triples
-   [TRIPLE], i.e., "subject-predicate-object", e.g.  "Alice knows Bob."
-   At its top structural level, an envelope encodes a single subject and
-   a set of zero or more assertions about the subject, which are
-   predicate-object pairs:
+1.1.  Elision Support
 
-   subject [
-       predicate0: object0
-       predicate1: object1
-       ...
-       predicateN: objectN
-   ]
+   *  *Elision of All Elements.* Gordian Envelopes innately support
+      elision for any part of its data, including subjects, predicates,
+      and objects.
 
-   The simplest envelope is just a subject with no assertions, e.g., a
-   simple plaintext string (or any other CBOR construct.)  But since
-   every element in an envelope is itelf an envelope, every element can
-   therefore hold its own assertions.  This allows any element to carry
-   additional context, e.g. an assertion declaring the language in which
-   a human-readable string is written.  This mechanism for "assertions
-   with assertions" provides for arbitrarily complex metadata.
+   *  *Elision, Compression, and Encryption.* Elision can be used for a
+      variety of purposes including redaction (removing information),
+      compression (removing duplicate information), and encryption
+      (enciphering information).
 
-1.3.  Feature: Cryptography Ready
+   *  *Holder-initiated Elision.* Elision can be performed by the Holder
+      of a Gordian Envelope, not just the Issuer.
 
-   Because of the strictly invariant nature of the digest tree,
-   envelopes are suitable for use in applications that employ
-   cryptographic signatures.  Such signatures in an envelope take the
-   form of verifiedBy-Signature assertions on a subject, which is the
-   target of the signature.  Other cryptographic structures are readily
-   supported.
+   *  *Granular Holder Control.* Elision can not only be performed by
+      any Holder, but also for any data, allowing each entity to elide
+      data as is appropriate for the management of their personal (or
+      business) risk.
 
-   One of the innovative features of envelope is that these signatures
-   will remain valid even through encryption and elision.
+   *  *Progressive Trust.* The elision mechanics in Gordian Envelopes
+      allow for progressive trust, where increasing amounts of data are
+      revealed over time.  It can even be combined with encryption to
+      escrow data to later be revealed.
 
-1.4.  Feature: Binary Efficiency, Built on Deterministic CBOR
+   *  *Consistent Hashing.* Even when elided or encrypted, hashes for
+      those parts of the Gordian Envelope remain the same.
 
-   Envelopes are a binary structure built on CBOR [RFC8949], and MUST
-   adhere to the requirements in section 4.2., "Deterministically
-   Encoded CBOR".  This requirement is one of several design factors
-   ensuring that two envelopes that have the same top-level digest, and
-   therefore contain the same digest tree, MUST represent exactly the
-   same information.  This holds true even if the two identical
-   envelopes were assembled by different parties, at different times,
-   and particularly in different orders.
+1.2.  Privacy Support
 
-1.5.  Feature: Digest-Preserving Encryption and Elision
+   *  *Proof of Inclusion.* As an alternative to presenting elided
+      structures, proofs of inclusion can be included in top-level
+      hashes.
 
-   Envelope supports two digest tree-preserving transformations for any
-   of its elements: encryption and elision.
+   *  *Herd Privacy.* Proofs of inclusion allow for herd privacy where
+      all members of a class can share data such as a VC or DID without
+      revealing individual information.
 
-   When an element is encrypted, its ciphertext remains in the envelope,
-   and the transformation can be reversed using the symmetric key used
-   to perform the encryption.  The encrypted envelope declares the
-   digest of its plaintext content using HMAC authentication.  More
-   sophisticated cryptographic constructs such as encryption to a set of
-   public keys are readily supported.
+   *  *Non-Correlation.* Encrypted Gordian Envelope data can optionally
+      be made less correlatable with the addition of salt.
 
-   When an element is elided, only its digest remains in the envelope as
-   a placeholder, and the transformation can only be reversed by
-   subsitution with the envelope having the same root digest.  Elision
-   has several use cases:
+1.3.  Authentication Support
 
-   *  As a form of redaction, where the holder of a document reveals
-      part of it while deliberately withholding other parts;
+   *  *Symmetric Key Permits.* Gordian Envelopes can be locked
+      ("closed") using a symmetric key.
 
-   *  As a form of referencing, where the digest is used as the unique
-      identifier of a digital object that can be found outside the
-      envelope;
+   *  *SSKR Permits.* Gordian Envelopes can alternatively be locked
+      ("closed") using a symmetric key sharded with Shamir's Secret
+      Sharing, with the shares stored with copies of the Envelope, and
+      the whole enveloped thus openable if copies of the Envelope with a
+      quorum of different shares are gathered.
 
-   *  As a form of compression, where many identical sub-elements of an
-      envelope (except one) are elided.
+   *  *Public Key Permits.* Gordian Envelopes can alternatively be
+      locked ("closed") with a public key and then be opened with the
+      associated private key, or vice versa.
 
-   These digest tree-preserving transformations allow the holder of an
-   envelope-based document to selectively reveal parts of it to third
-   parties without invalidating its signatures.  It is also possible to
-   produce proofs that one envelope (or even just the root digest of an
-   envelope) necessarily contains another envelope by revealing only a
-   minimum spanning set of digests.
+   *  *Multiple Permits.* Gordian Envelopes can simultaneously be locked
+      ("closed") via a variety of means and then openable by any
+      appropriate individual method, with different methods likely held
+      by different people.
 
-   One of the most notable elements of these features is that any holder
-   of an envelope can engage in the elision or encryption, not just the
-   original creator.
+1.4.  Future Looking
 
-1.6.  Feature: Privacy Protection
+   *  *Data Storage.* The initial inspiration for Gordian Envelopes was
+      for secure data storage.
 
-   As per [RFC6973] "Privacy Considerations for Internet Protocols"
-   S.5.2 & [RFC8280] "Research into Human Rights Protocol
-   Considerations" S.6.2.15 "Does the protocol provide ways for
-   initiators to limit which information is shared with intermediaries?"
-   we offer the following examples for improved privacy considerations
-   through a variety of typical data-transfer methodologies, which
-   together show a rough progression from less privacy-focused to more
-   privacy-focused usages, all of which are possible with envelopes:
+   *  *Credentials & Presentations.* The usage of Gordian Envelope
+      signing techniques allows for the creation of credentials and the
+      ability to present them to different verifiers in different ways.
 
-   *  Privacy-Focused Data Transfer: structured data can be publicly
-      released; data can be authenticated through signatures and
-      validation; data can be differently elided for different sorts of
-      queries; data can be released through a model of progressive trust
-      by offering less elision over time; data can be further elided by
-      later holders based on their own risk models; data can be entirely
-      elided so that it's only visible to queries that know to ask for
-      the data; data can be entirely elided so that it's only visible to
-      queries if someone provides a hash and a proof that allows them to
-      verify the data; data can be bundled to support herd privacy.
+   *  *Distributed or Decentralized Identifiers.* Self-Certifying
+      Identifiers (SCIDs) can be created and shared with peers,
+      certified with a trust authority, or registered on blockchain.
 
-1.7.  Terminology
+   *  *Future Techniques.* Beyonds its technical specifics, Gordian
+      Envelopes still allows for cl-sigs, bbs+, and other privacy-
+      preserving techniques such as zk-proofs, differential privacy,
+      etc.
+
+   *  *Cryptography Agnostic.* Generally, the Gordian Envelope
+      architecture is cryptography agnostic, allowing it to work with
+      everything from older algorithms with silicon support through more
+      modern algorithms suited to blockchains and to future zk-proof or
+      quantum-attack resistent cryptographic choices.  These choices are
+      made in sets via ciphersuites.
+
+2.  Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
@@ -334,7 +328,7 @@ Table of Contents
    image  The source data from which a cryptographic digest is
       calculated.
 
-2.  Envelope Format Specification
+3.  Envelope Format Specification
 
    This section is normative, and specifies the binary format of
    envelopes in terms of its CBOR components and their sequencing.  The
@@ -343,7 +337,7 @@ Table of Contents
    bytes MUST be well-formed deterministic CBOR [RFC8949] and MUST
    conform to the specifications in this section.
 
-2.1.  Top Level
+3.1.  Top Level
 
    An envelope is a tagged enumerated type with seven cases.  Four of
    these cases have no children:
@@ -387,9 +381,9 @@ Table of Contents
        assertion
    )
 
-2.2.  Cases Without Children
+3.2.  Cases Without Children
 
-2.2.1.  Leaf Case Format
+3.2.1.  Leaf Case Format
 
    A leaf case is used when the envelope contains only user-defined CBOR
    content.  It is tagged using #6.24, per [RFC8949] section 3.4.5.1,
@@ -397,7 +391,7 @@ Table of Contents
 
    leaf = #6.24(bytes)
 
-2.2.2.  Known Value Case Format
+3.2.2.  Known Value Case Format
 
    A known-value case is used to specify an unsigned integer in a
    namespace of well-known values.  Known values are frequently used as
@@ -407,7 +401,7 @@ Table of Contents
 
    known-value = #6.223(uint)
 
-2.2.3.  Encrypted Case Format
+3.2.3.  Encrypted Case Format
 
    An encrypted case is used for an envelope that has been encrypted
    using an Authenticated Encryption with Associated Data (AEAD), and
@@ -434,7 +428,7 @@ Table of Contents
    nonce = bytes .size 12   ; Random, generated at encryption-time
    auth = bytes .size 16    ; Authentication tag created by Poly1305
 
-2.2.4.  Elided Case Format
+3.2.4.  Elided Case Format
 
    An elided case is used as a placeholder for an element that has been
    elided and its digest, produced by a cryptographic hash algorithm is
@@ -451,9 +445,9 @@ Table of Contents
 
    blake3-digest = bytes .size 32
 
-2.3.  Cases With Children
+3.3.  Cases With Children
 
-2.3.1.  Node Case Format
+3.3.1.  Node Case Format
 
    A node case is encoded as a CBOR array, and MUST be used when one or
    more assertions are present on the envelope.  It MUST NOT be present
@@ -468,7 +462,7 @@ Table of Contents
 
    assertion-element = ( assertion / encrypted / elided )
 
-2.3.2.  Wrapped Envelope Case Format
+3.3.2.  Wrapped Envelope Case Format
 
    A wrapped-envelope case is used where an envelope including all its
    assertions should be treated as a single element, e.g. for the
@@ -476,7 +470,7 @@ Table of Contents
 
    wrapped-envelope = #6.224(envelope-content)
 
-2.3.3.  Assertion Case Format
+3.3.3.  Assertion Case Format
 
    An assertion case is used for each of the assertions in an envelope.
    It is encoded as a CBOR array with exactly two elements in order:
@@ -490,7 +484,7 @@ Table of Contents
    predicate-envelope = envelope
    object-envelope = envelope
 
-3.  Computing the Digest Tree
+4.  Computing the Digest Tree
 
    This section specifies how the digests for each of the envelope cases
    are computed.  The minimum size of the digest and order of operations
@@ -515,7 +509,7 @@ Table of Contents
 
    *  The || operator represents contactenation of byte sequences.
 
-3.1.  Leaf Case Digest Calculation
+4.1.  Leaf Case Digest Calculation
 
    The leaf case consists of any CBOR object.  Tagging the leaf CBOR is
    RECOMMENDED, especially for compound structures with a specified
@@ -523,7 +517,7 @@ Table of Contents
 
    digest(cbor)
 
-3.1.1.  Example
+4.1.1.  Example
 
    The CBOR serialization of the plaintext string "Hello" (not including
    the quotes) is 6548656C6C6F.  The following command line calculates
@@ -539,7 +533,7 @@ Table of Contents
    $ envelope subject "Hello" | envelope digest --hex
    bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 
-3.2.  Known Value Case Digest Calculation
+4.2.  Known Value Case Digest Calculation
 
    The envelope image of the known-value case is the CBOR serialization
    of the unsigned integer value of the value tagged with #6.223, as
@@ -547,7 +541,7 @@ Table of Contents
 
    digest(#6.223(uint))
 
-3.2.1.  Example
+4.2.1.  Example
 
    The known value verifiedBy in CBOR diagnostic notation is 223(3),
    which in hex is D8DF03.  The BLAKE3 sum of this sequence is:
@@ -562,7 +556,7 @@ Table of Contents
    $ envelope subject --known verifiedBy | envelope digest --hex
    d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
 
-3.3.  Encrypted Case Digest Calculation
+4.3.  Encrypted Case Digest Calculation
 
    The encrypted case declares its digest to be the digest of plaintext
    before encryption.  The declaration is made using an HMAC, and when
@@ -570,7 +564,7 @@ Table of Contents
    the decrypted element to the declared digest and flag an error if
    they do not match.
 
-3.3.1.  Example
+4.3.1.  Example
 
    If we create the envelope from the leaf example above, encrypt it,
    and then request its digest:
@@ -584,12 +578,12 @@ bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
    $ envelope subject "Hello" | envelope digest --hex
    bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 
-3.4.  Elided Case Digest Calculation
+4.4.  Elided Case Digest Calculation
 
    The elided case declares its digest to be the digest of the envelope
    for which it is a placeholder.
 
-3.4.1.  Example
+4.4.1.  Example
 
    If we create the envelope from the leaf example above, elide it, and
    then request its digest:
@@ -602,7 +596,7 @@ bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
    $ envelope subject "Hello" | envelope digest --hex
    bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 
-3.5.  Node Case Digest Calculation
+4.5.  Node Case Digest Calculation
 
    The envelope image of the node case is the concatenation of the
    digest of its subject and the digests of its assertions sorted in
@@ -612,7 +606,7 @@ bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 
 digest(subject.digest || assertion-0.digest || assertion-1.digest || ... || assertion-n.digest)
 
-3.5.1.  Example
+4.5.1.  Example
 
    We create four separate envelopes and display their digests:
 
@@ -688,14 +682,14 @@ echo "278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f1101e0b049b8d
 $ envelope digest --hex $ENVELOPE
 0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
 
-3.6.  Wrapped Envelope Case Digest Calculation
+4.6.  Wrapped Envelope Case Digest Calculation
 
    The envelope image of the wrapped-envelope case is the digest of the
    wrapped envelope:
 
    digest(envelope.digest)
 
-3.6.1.  Example
+4.6.1.  Example
 
    As above, we note the digest of a leaf envelope is the digest of its
    CBOR:
@@ -715,14 +709,14 @@ $ envelope subject "Hello" | envelope subject --wrapped | envelope digest --hex
 $ echo "bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea" | xxd -r -p | b3sum --no-names
 55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f28c31b
 
-3.7.  Assertion Case Digest Calculation
+4.7.  Assertion Case Digest Calculation
 
    The envelope image of the assertion case is the concatenation of the
    digests of the assertion's predicate and object in that order:
 
    digest(predicate.digest || object.digest)
 
-3.7.1.  Example
+4.7.1.  Example
 
    We create an assertion from two separate envelopes and display their
    digests:
@@ -755,7 +749,7 @@ echo "7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8ee62fab9a7717153d
 $ envelope digest --hex $ASSERTION
 55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
 
-4.  Envelope Hierarchy
+5.  Envelope Hierarchy
 
    This section is informative, and describes envelopes from the
    perspective of their hierachical structure and the various ways they
@@ -853,83 +847,83 @@ $ envelope digest --hex $ASSERTION
    subsection starts with the envelope command line [ENVELOPE-CLI]
    needed to generate the envelope being formatted.
 
-4.1.  Leaf Case
+5.1.  Leaf Case
 
-4.1.1.  Envelope CLI Command Line
+5.1.1.  Envelope CLI Command Line
 
    envelope subject "Alice"
 
-4.1.2.  Envelope Notation
+5.1.2.  Envelope Notation
 
    "Alice"
 
-4.1.3.  Tree
+5.1.3.  Tree
 
    27840350 "Alice"
 
-4.1.4.  Mermaid
+5.1.4.  Mermaid
 
    (Artwork only available as svg: images/svg-validated/leaf_case.svg)
 
-4.1.5.  CBOR Diagnostic Notation
+5.1.5.  CBOR Diagnostic Notation
 
    200(   ; envelope
       24("Alice")   ; leaf
    )
 
-4.1.6.  CBOR Hex
+5.1.6.  CBOR Hex
 
    d8c8d81865416c696365
 
-4.2.  Known Value Case
+5.2.  Known Value Case
 
-4.2.1.  Envelope CLI Command Line
+5.2.1.  Envelope CLI Command Line
 
    envelope subject --known verifiedBy
 
-4.2.2.  Envelope Notation
+5.2.2.  Envelope Notation
 
    verifiedBy
 
-4.2.3.  Tree
+5.2.3.  Tree
 
    d59f8c0f verifiedBy
 
-4.2.4.  Mermaid
+5.2.4.  Mermaid
 
    (Artwork only available as svg: images/svg-validated/
    known_value_case.svg)
 
-4.2.5.  CBOR Diagnostic Notation
+5.2.5.  CBOR Diagnostic Notation
 
    200(   ; envelope
       223(3)   ; known-value
    )
 
-4.2.6.  CBOR Hex
+5.2.6.  CBOR Hex
 
    d8c8d8df03
 
-4.3.  Encrypted Case
+5.3.  Encrypted Case
 
-4.3.1.  Envelope CLI Command Line
+5.3.1.  Envelope CLI Command Line
 
 envelope subject "Alice" | envelope encrypt --key `envelope generate key`
 
-4.3.2.  Envelope Notation
+5.3.2.  Envelope Notation
 
    ENCRYPTED
 
-4.3.3.  Tree
+5.3.3.  Tree
 
    27840350 ENCRYPTED
 
-4.3.4.  Mermaid
+5.3.4.  Mermaid
 
    (Artwork only available as svg: images/svg-validated/
    encrypted_case.svg)
 
-4.3.5.  CBOR Diagnostic Notation
+5.3.5.  CBOR Diagnostic Notation
 
 200(   ; envelope
    201(   ; crypto-msg
@@ -942,29 +936,29 @@ envelope subject "Alice" | envelope encrypt --key `envelope generate key`
    )
 )
 
-4.3.6.  CBOR Hex
+5.3.6.  CBOR Hex
 
 d8c8d8c984486bfa027df241def04c5520ca6d9d798ffd32d075c450d4b43d97a37eb280fdd89cf152ccf57d5824d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
 
-4.4.  Elided Case
+5.4.  Elided Case
 
-4.4.1.  Envelope CLI Command Line
+5.4.1.  Envelope CLI Command Line
 
    envelope subject "Alice" | envelope elide
 
-4.4.2.  Envelope Notation
+5.4.2.  Envelope Notation
 
    ELIDED
 
-4.4.3.  Tree
+5.4.3.  Tree
 
    27840350 ELIDED
 
-4.4.4.  Mermaid
+5.4.4.  Mermaid
 
    (Artwork only available as svg: images/svg-validated/elided_case.svg)
 
-4.4.5.  CBOR Diagnostic Notation
+5.4.5.  CBOR Diagnostic Notation
 
 200(   ; envelope
    203(   ; crypto-digest
@@ -972,23 +966,23 @@ d8c8d8c984486bfa027df241def04c5520ca6d9d798ffd32d075c450d4b43d97a37eb280fdd89cf1
    )
 )
 
-4.4.6.  CBOR Hex
+5.4.6.  CBOR Hex
 
 d8c8d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
 
-4.5.  Node Case
+5.5.  Node Case
 
-4.5.1.  Envelope CLI Command Line
+5.5.1.  Envelope CLI Command Line
 
    envelope subject "Alice" | envelope assertion "knows" "Bob"
 
-4.5.2.  Envelope Notation
+5.5.2.  Envelope Notation
 
    "Alice" [
        "knows": "Bob"
    ]
 
-4.5.3.  Tree
+5.5.3.  Tree
 
    e54d6fd3 NODE
        27840350 subj "Alice"
@@ -996,11 +990,11 @@ d8c8d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
            7092d620 pred "knows"
            9a771715 obj "Bob"
 
-4.5.4.  Mermaid
+5.5.4.  Mermaid
 
    (Artwork only available as svg: images/svg-validated/node_case.svg)
 
-4.5.5.  CBOR Diagnostic Notation
+5.5.5.  CBOR Diagnostic Notation
 
    200(   ; envelope
       [
@@ -1022,33 +1016,33 @@ d8c8d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
       ]
    )
 
-4.5.6.  CBOR Hex
+5.5.6.  CBOR Hex
 
 d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
-4.6.  Wrapped Envelope Case
+5.6.  Wrapped Envelope Case
 
-4.6.1.  Envelope CLI Command Line
+5.6.1.  Envelope CLI Command Line
 
    envelope subject "Alice" | envelope subject --wrapped
 
-4.6.2.  Envelope Notation
+5.6.2.  Envelope Notation
 
    {
        "Alice"
    }
 
-4.6.3.  Tree
+5.6.3.  Tree
 
    aaed47e8 WRAPPED
        27840350 subj "Alice"
 
-4.6.4.  Mermaid
+5.6.4.  Mermaid
 
    (Artwork only available as svg: images/svg-validated/
    wrapped_envelope_case.svg)
 
-4.6.5.  CBOR Diagnostic Notation
+5.6.5.  CBOR Diagnostic Notation
 
    200(   ; envelope
       224(   ; wrapped-envelope
@@ -1056,32 +1050,32 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
       )
    )
 
-4.6.6.  CBOR Hex
+5.6.6.  CBOR Hex
 
    d8c8d8e0d81865416c696365
 
-4.7.  Assertion Case
+5.7.  Assertion Case
 
-4.7.1.  Envelope CLI Command Line
+5.7.1.  Envelope CLI Command Line
 
    envelope subject assertion "knows" "Bob"
 
-4.7.2.  Envelope Notation
+5.7.2.  Envelope Notation
 
    "knows": "Bob"
 
-4.7.3.  Tree
+5.7.3.  Tree
 
    55560bdf ASSERTION
        7092d620 pred "knows"
        9a771715 obj "Bob"
 
-4.7.4.  Mermaid
+5.7.4.  Mermaid
 
    (Artwork only available as svg: images/svg-validated/
    assertion_case.svg)
 
-4.7.5.  CBOR Diagnostic Notation
+5.7.5.  CBOR Diagnostic Notation
 
    200(   ; envelope
       221(   ; assertion
@@ -1096,11 +1090,11 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
       )
    )
 
-4.7.6.  CBOR Hex
+5.7.6.  CBOR Hex
 
    d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
-5.  Known Values
+6.  Known Values
 
    This section is informative.
 
@@ -1248,7 +1242,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
                                  Table 1
 
-6.  Existence Proofs
+7.  Existence Proofs
 
    This section is informative.
 
@@ -1340,7 +1334,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    $ envelope proof confirm --silent $COMMITMENT $KNOWS_BOB_PROOF $KNOWS_BOB_DIGEST && echo "Success"
    Success
 
-7.  Reference Implementation
+8.  Reference Implementation
 
    This section is informative.
 
@@ -1351,7 +1345,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    The envelope command line tool [ENVELOPE-CLI] is also written in
    Swift.
 
-8.  Future Proofing
+9.  Future Proofing
 
    This section is informative.
 
@@ -1395,27 +1389,27 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    numbered versions, the storage cost of specifying a later version is
    one byte, and backwards compatibility is preserved.
 
-9.  Security Considerations
+10.  Security Considerations
 
    This section is informative unless noted otherwise.
 
-9.1.  Structural Considerations
+10.1.  Structural Considerations
 
-9.1.1.  CBOR Considerations
+10.1.1.  CBOR Considerations
 
    Generally, this document inherits the security considerations of CBOR
    [RFC8949].  Though CBOR has limited web usage, it has received strong
    usage in hardware, resulting in a mature specification.
 
-9.2.  Cryptographic Considerations
+10.2.  Cryptographic Considerations
 
-9.2.1.  Inherited Considerations
+10.2.1.  Inherited Considerations
 
    Generally, this document inherits the security considerations of the
    cryptographic constructs it uses such as IETF-ChaCha20-Poly1305
    [RFC7539] and BLAKE3 [BLAKE3].
 
-9.2.2.  Choice of Cryptographic Primitives (No Set Curve)
+10.2.2.  Choice of Cryptographic Primitives (No Set Curve)
 
    Though envelope recommends the use of certain cryptographic
    algorithms, most are not required (with the exception of BLAKE3
@@ -1423,7 +1417,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    Different choices will obviously result in different security
    considerations.
 
-9.3.  Validation Requirements
+10.3.  Validation Requirements
 
    Unlike HTML, envelope is intended to be conservative in both what it
    sends _and_ what it accepts.  This means that receivers of envelope-
@@ -1432,7 +1426,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    rejection of the entire envelope.  Even after validation, envelope
    contents should be treated with due skepticism.
 
-9.4.  Signature Considerations
+10.4.  Signature Considerations
 
    This specification allows the signing of envelopes that are partially
    (or even entirely) elided.  There may be use cases for this, such as
@@ -1441,9 +1435,9 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    Our own tools require overrides to allow it.  Other developes should
    take care to warn users of the dangers of signing elided envelopes.
 
-9.5.  Hashing
+10.5.  Hashing
 
-9.5.1.  Choice of BLAKE3 Hash Primitive
+10.5.1.  Choice of BLAKE3 Hash Primitive
 
    Although BLAKE2 is more widely supported by IETF specifications,
    envelope instead makes use of BLAKE3.  This is to take advantage of
@@ -1460,7 +1454,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    Thus, any security considerations related to BLAKE3 should be given
    careful attention.
 
-9.5.2.  Well-Known Hashes
+10.5.2.  Well-Known Hashes
 
    Because they are short unsigned integers, well-known values produce
    well-known digests.  Elided envelopes may in some cases inadvertently
@@ -1469,7 +1463,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    contain random data to perturb the digest tree, hence decorrelating
    it from any known values.
 
-9.5.3.  Digest Trees
+10.5.3.  Digest Trees
 
    Existence proofs include the minimal set of digests that are
    necessary to calculate the digest tree from the target to the root,
@@ -1479,7 +1473,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    such attacks and use decorrelation mechanisms like salting where
    necessary.
 
-9.5.4.  A Tree, Not a List
+10.5.4.  A Tree, Not a List
 
    Envelope makes use of a hash tree instead of a hash list to allow
    this sort of minimal revelation.  This decision may also have
@@ -1493,7 +1487,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    details related to the use of a potentially broad hash tree, as such
    best practices do not currently exist.
 
-9.5.5.  Salts
+10.5.5.  Salts
 
    Specifics for the size and usage of salt are not included in this
    specifications.  There are also no requirements for whether salts
@@ -1501,7 +1495,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    required for these factors to ensure that they don't accidentally
    introduce vulnerabilities into usage.
 
-9.5.6.  Collisions
+10.5.6.  Collisions
 
    Hash trees tend to make it harder to create collisions than the use
    of a raw hash function.  If attackers manage to find a collision for
@@ -1513,7 +1507,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    to be harder than finding regular collisions.  But, the issue always
    should be considered.
 
-9.5.7.  Leaf-Node Attacks
+10.5.7.  Leaf-Node Attacks
 
    Envelope's hash tree is proof against the leaf-node weakness of
    Bitcoin that can affect SPVs because its predicates are an unordered
@@ -1524,27 +1518,27 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    See https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-
    merkle-tree-design/ for the leaf-node attack.
 
-9.5.8.  Forgery Attacks on Unbalanced Trees
+10.5.8.  Forgery Attacks on Unbalanced Trees
 
    Envelopes should also be proof against forgery attacks before of
    their different construction, where all nodes contain both data and
    hashes.  Nonetheless, care must still be taken with trees, especially
-   when also using redaction, which limits visible information.
+   when also using elision, which limits visible information.
 
    See https://bitcointalk.org/?topic=102395 for the forgery attack.
 
-9.6.  Elision
+10.6.  Elision
 
-9.6.1.  Duplication of Claims
+10.6.1.  Duplication of Claims
 
    Support for elision allows for the possibility of contradictory
    claims where one is kept hidden at any time.  So, for example, an
    evelope could contain contradictory predictions of election results
    and only reveal the one that matches the actual results.  As a
    result, revealed material should be carefully assessed for this
-   possibility when redacted material also exists.
+   possibility when elided material also exists.
 
-9.7.  Additional Specification Creation
+10.7.  Additional Specification Creation
 
    Creators of specifications for envelope-based documents should give
    due consideration to security implications that are outside the scope
@@ -1553,9 +1547,9 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    and whether additional assertions (metadata) are allowed on those
    assertions.
 
-10.  IANA Considerations
+11.  IANA Considerations
 
-10.1.  CBOR Tags
+11.1.  CBOR Tags
 
    This section proposes a number of IANA allocated specific CBOR tags
    [IANA-CBOR-TAGS].
@@ -1611,7 +1605,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    (mailto:christophera@blockchaincommons.com) * Wolf McNally
    wolf@wolfmcnally.com (mailto:wolf@wolfmcnally.com)
 
-10.2.  Media Type
+11.2.  Media Type
 
    The proposed media type [RFC6838] for envelope is application/
    envelope+cbor.
@@ -1663,25 +1657,27 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
       -  The IESG iesg@ietf.org (mailto:iesg@ietf.org)
 
-10.3.  Appendix: Why CBOR?
+12.  Appendix: Why CBOR?
 
    The Concise Binary Object Representation, or CBOR, was chosen as the
-   foundational data structure for Gordian specifications such as
-   Envelope and URs for a variety of reasons.  These include:
+   foundational data structure envelopes for a variety of reasons.
+   These include:
 
    1.  *IETF Standardization.* CBOR is a mature open international IETF
        standard [RFC8949].
 
    2.  *IANA Registration.* CBOR is further standardized by the
-       registration of common data types through IANA [IANA-CBOR-TAGS].
+       registration of common data type tags through IANA
+       [IANA-CBOR-TAGS].
 
    3.  *Fully Extensible.* Beyond that, CBOR is entirely extensible with
        any data types desired, such as our own listing of UR tags
        [BC-UR-TAGS].
 
-   4.  *Self-describing Descriptions.* Data is self-describing, so there
-       are no requirements for pre-defined schemas nor more complex
-       descriptions such as those found in ASN.1.
+   4.  *Self-describing Descriptions.* CBOR-encoded data is self-
+       describing, so there are no requirements for pre-defined schemas
+       nor more complex descriptions such as those found in ASN.1
+       [ASN-1].
 
    5.  *Constraint Friendly.* CBOR is built to be frugal with CPU and
        memory, so it works well in constrained environments such as on
@@ -1702,9 +1698,9 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    Flatbuffers [CBOR-FLATBUFFERS], and a comparison to other binary
    formats [CBOR-FORMAT-COMPARISON].
 
-11.  References
+13.  References
 
-11.1.  Normative References
+13.1.  Normative References
 
    [BLAKE3]   "BLAKE3 Cryptographic Hash Function", n.d.,
               <https://blake3.io>.
@@ -1758,7 +1754,11 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
               DOI 10.17487/RFC8949, December 2020,
               <https://www.rfc-editor.org/rfc/rfc8949>.
 
-11.2.  Informative References
+13.2.  Informative References
+
+   [ASN-1]    "X.680 : Information technology - Abstract Syntax Notation
+              One (ASN.1): Specification of basic notation", n.d.,
+              <https://www.itu.int/rec/T-REC-X.680/>.
 
    [BC-UR-TAGS]
               "Registry of Uniform Resource (UR) Types", n.d.,
@@ -1785,9 +1785,6 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
               language and language groups", n.d.,
               <https://en.wikipedia.org/wiki/ISO_639>.
 
-   [JSONLD]   "JSON-LD, Latest Specifications", n.d.,
-              <https://json-ld.org/spec/latest/>.
-
    [MERKLE]   "Merkle Tree", n.d.,
               <https://en.wikipedia.org/wiki/Merkle_tree>.
 
@@ -1797,30 +1794,9 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    [OWL]      "Web Ontology Language (OWL)", n.d.,
               <https://www.w3.org/OWL/>.
 
-   [PROTOBUF] "Protocol Buffers", n.d.,
-              <https://developers.google.com/protocol-buffers/>.
-
-   [RFC6973]  Cooper, A., Tschofenig, H., Aboba, B., Peterson, J.,
-              Morris, J., Hansen, M., and R. Smith, "Privacy
-              Considerations for Internet Protocols", RFC 6973,
-              DOI 10.17487/RFC6973, July 2013,
-              <https://www.rfc-editor.org/rfc/rfc6973>.
-
-   [RFC8259]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
-              Interchange Format", STD 90, RFC 8259,
-              DOI 10.17487/RFC8259, December 2017,
-              <https://www.rfc-editor.org/rfc/rfc8259>.
-
-   [RFC8280]  ten Oever, N. and C. Cath, "Research into Human Rights
-              Protocol Considerations", RFC 8280, DOI 10.17487/RFC8280,
-              October 2017, <https://www.rfc-editor.org/rfc/rfc8280>.
-
    [SSKR]     "Sharded Secret Key Recovery (SSKR)", n.d.,
               <https://github.com/BlockchainCommons/Research/blob/
               master/papers/bcr-2020-011-sskr.md>.
-
-   [TRIPLE]   "Semantic Triple", n.d.,
-              <https://en.wikipedia.org/wiki/Semantic_triple>.
 
    [UR-QA]    "UR (Uniform Resources) Q&A", n.d.,
               <https://github.com/BlockchainCommons/Research/blob/
