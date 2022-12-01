@@ -183,9 +183,9 @@ Table of Contents
 1.  Introduciton
 
    Gordian Envelope was designed with two key goals in mind: to be
-   Structure-Ready, allowing for the reliable and interopable storage of
-   information; and to be Privacy-Ready, ensuring that transmission of
-   that data can occur in a privacy-protecting manner.
+   *Structure-Ready*, allowing for the reliable and interopable storage
+   of information; and to be *Privacy-Ready*, ensuring that transmission
+   of that data can occur in a privacy-protecting manner.
 
    *  *Structure-Ready.* Gordian Envelope is designed as a Smart
       Document, meant to store information about a subject.  More than
