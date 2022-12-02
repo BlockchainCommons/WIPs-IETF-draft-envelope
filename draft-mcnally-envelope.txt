@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 4 June 2023                                     1 December 2022
+Expires: 5 June 2023                                     2 December 2022
 
 
                   The Envelope Structured Data Format
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 June 2023.
+   This Internet-Draft will expire on 5 June 2023.
 
 Copyright Notice
 
@@ -419,7 +419,7 @@ Table of Contents
    Protocols" as described in [RFC7539].  When used with envelopes, the
    crypto-msg construct aad (additional authenticated data) field
    contains the digest of the plaintext, authenticating the declared
-   digest using the Poly1305 HMAC.
+   digest using the Poly1305 MAC.
 
    crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
 
@@ -559,7 +559,7 @@ Table of Contents
 4.3.  Encrypted Case Digest Calculation
 
    The encrypted case declares its digest to be the digest of plaintext
-   before encryption.  The declaration is made using an HMAC, and when
+   before encryption.  The declaration is made using an MAC, and when
    decrypting an element the implementation MUST compare the digest of
    the decrypted element to the declared digest and flag an error if
    they do not match.
