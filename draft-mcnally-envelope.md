@@ -211,7 +211,7 @@ An `encrypted` case is used for an envelope that has been encrypted using an Aut
 encrypted = crypto-msg
 ~~~
 
-For `crypto-msg`, the reference implementation {{ENVELOPE-REFIMPL}} uses the definition in "UR Type Definition for Secure Messages" {{CRYPTO-MSG}} and we repeat the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in {{-CHACHA}}. When used with envelopes, the `crypto-msg` construct `aad` (additional authenticated data) field contains the `digest` of the plaintext, authenticating the declared digest using the Poly1305 HMAC.
+For `crypto-msg`, the reference implementation {{ENVELOPE-REFIMPL}} uses the definition in "UR Type Definition for Secure Messages" {{CRYPTO-MSG}} and we repeat the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in {{-CHACHA}}. When used with envelopes, the `crypto-msg` construct `aad` (additional authenticated data) field contains the `digest` of the plaintext, authenticating the declared digest using the Poly1305 MAC.
 
 ~~~ cddl
 crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
@@ -335,7 +335,7 @@ d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
 
 ## Encrypted Case Digest Calculation
 
-The `encrypted` case declares its digest to be the digest of plaintext before encryption. The declaration is made using an HMAC, and when decrypting an element the implementation MUST compare the digest of the decrypted element to the declared digest and flag an error if they do not match.
+The `encrypted` case declares its digest to be the digest of plaintext before encryption. The declaration is made using an MAC, and when decrypting an element the implementation MUST compare the digest of the decrypted element to the declared digest and flag an error if they do not match.
 
 ### Example
 
