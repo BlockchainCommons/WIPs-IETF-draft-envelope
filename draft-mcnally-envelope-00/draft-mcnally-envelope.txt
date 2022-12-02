@@ -416,7 +416,7 @@ Table of Contents
    the definition in "UR Type Definition for Secure Messages"
    [CRYPTO-MSG] and we repeat the salient specification here.  This
    format specifies the use of "ChaCha20 and Poly1305 for IETF
-   Protocols" as described in [RFC7539].  When used with envelopes, the
+   Protocols" as described in [RFC8439].  When used with envelopes, the
    crypto-msg construct aad (additional authenticated data) field
    contains the digest of the plaintext, authenticating the declared
    digest using the Poly1305 MAC.
@@ -569,9 +569,11 @@ Table of Contents
    If we create the envelope from the leaf example above, encrypt it,
    and then request its digest:
 
-$ KEY=`envelope generate key`
-$ envelope subject "Hello" | envelope encrypt --key $KEY | envelope digest --hex
-bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+   $ KEY=`envelope generate key`
+   $ envelope subject "Hello" | \
+       envelope encrypt --key $KEY | \
+       envelope digest --hex
+   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 
    ...we see that its digest is the same as its plaintext form:
 
@@ -604,7 +606,8 @@ bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
 
    With a node case, there MUST always be at least one assertion.
 
-digest(subject.digest || assertion-0.digest || assertion-1.digest || ... || assertion-n.digest)
+   digest(subject.digest || assertion-0.digest ||
+       assertion-1.digest || ... || assertion-n.digest)
 
 4.5.1.  Example
 
@@ -676,11 +679,15 @@ digest(subject.digest || assertion-0.digest || assertion-1.digest || ... || asse
    digests, and note that this is the same digest as the composite
    envelope's digest:
 
-echo "278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f1101e0b049b8d2b21d4bb32f90b4a9e6b5031526f868da303268a9c1c75c008244655560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d41871a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b5f77aa3159a711" | xxd -r -p | b3sum --no-names
-0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
+   echo "278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd2\
+   5a37f1101e0b049b8d2b21d4bb32f90b4a9e6b5031526f868da303268a9c1c\
+   75c008244655560bdf060f1220199c87e84e29cecef96ef811de4f399dab2f\
+   de9425d0d41871a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b\
+   5f77aa3159a711" | xxd -r -p | b3sum --no-names
+   0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
 
-$ envelope digest --hex $ENVELOPE
-0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
+   $ envelope digest --hex $ENVELOPE
+   0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
 
 4.6.  Wrapped Envelope Case Digest Calculation
 
@@ -703,11 +710,15 @@ $ envelope digest --hex $ENVELOPE
    Now we note that the digest of a wrapped envelope is the digest of
    the wrapped envelope's digest:
 
-$ envelope subject "Hello" | envelope subject --wrapped | envelope digest --hex
-55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f28c31b
+   $ envelope subject "Hello" | \
+       envelope subject --wrapped | \
+       envelope digest --hex
+   55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f2\
+   8c31b
 
-$ echo "bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea" | xxd -r -p | b3sum --no-names
-55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f28c31b
+   $ echo "bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66\
+   c2d1d6b455ea" | xxd -r -p | b3sum --no-names
+   55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f28c31b
 
 4.7.  Assertion Case Digest Calculation
 
@@ -743,11 +754,13 @@ $ echo "bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea" | xxd 
    digests, and note that this is the same digest as the composite
    envelope's digest:
 
-echo "7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8ee62fab9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab25df1a" | xxd -r -p | b3sum --no-names
-55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+   echo "7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8e\
+   e62fab9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab\
+   25df1a" | xxd -r -p | b3sum --no-names
+   55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
 
-$ envelope digest --hex $ASSERTION
-55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+   $ envelope digest --hex $ASSERTION
+   55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
 
 5.  Envelope Hierarchy
 
@@ -807,7 +820,8 @@ $ envelope digest --hex $ASSERTION
 
    We can also show the digest tree graphically using Mermaid [MERMAID]:
 
-   (Artwork only available as svg: images/svg-validated/example.svg)
+   (Artwork only available as svg: No external link available, see
+   draft-mcnally-envelope-latest.html for artwork.)
 
    For easy recognition, envelope trees and Mermaid diagrams only show
    the first four bytes of each digest, but internally all digests are
@@ -863,7 +877,8 @@ $ envelope digest --hex $ASSERTION
 
 5.1.4.  Mermaid
 
-   (Artwork only available as svg: images/svg-validated/leaf_case.svg)
+   (Artwork only available as svg: No external link available, see
+   draft-mcnally-envelope-latest.html for artwork.)
 
 5.1.5.  CBOR Diagnostic Notation
 
@@ -891,8 +906,8 @@ $ envelope digest --hex $ASSERTION
 
 5.2.4.  Mermaid
 
-   (Artwork only available as svg: images/svg-validated/
-   known_value_case.svg)
+   (Artwork only available as svg: No external link available, see
+   draft-mcnally-envelope-latest.html for artwork.)
 
 5.2.5.  CBOR Diagnostic Notation
 
@@ -908,7 +923,8 @@ $ envelope digest --hex $ASSERTION
 
 5.3.1.  Envelope CLI Command Line
 
-envelope subject "Alice" | envelope encrypt --key `envelope generate key`
+   envelope subject "Alice" | envelope encrypt \
+       --key `envelope generate key`
 
 5.3.2.  Envelope Notation
 
@@ -920,25 +936,28 @@ envelope subject "Alice" | envelope encrypt --key `envelope generate key`
 
 5.3.4.  Mermaid
 
-   (Artwork only available as svg: images/svg-validated/
-   encrypted_case.svg)
+   (Artwork only available as svg: No external link available, see
+   draft-mcnally-envelope-latest.html for artwork.)
 
 5.3.5.  CBOR Diagnostic Notation
 
-200(   ; envelope
-   201(   ; crypto-msg
-      [
-         h'6bfa027df241def0',
-         h'5520ca6d9d798ffd32d075c4',
-         h'd4b43d97a37eb280fdd89cf152ccf57d',
-         h'd8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110'
-      ]
+   200(   ; envelope
+      201(   ; crypto-msg
+         [
+            h'6bfa027df241def0',
+            h'5520ca6d9d798ffd32d075c4',
+            h'd4b43d97a37eb280fdd89cf152ccf57d',
+            h'd8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d52\
+            3f8d2a5cf5ce6dd25a37f110'
+         ]
+      )
    )
-)
 
 5.3.6.  CBOR Hex
 
-d8c8d8c984486bfa027df241def04c5520ca6d9d798ffd32d075c450d4b43d97a37eb280fdd89cf152ccf57d5824d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
+   d8c8d8c984486bfa027df241def04c5520ca6d9d798ffd32d075c450d4b4\
+   3d97a37eb280fdd89cf152ccf57d5824d8cb5820278403504ad3a9a9c24c\
+   1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
 
 5.4.  Elided Case
 
@@ -956,19 +975,22 @@ d8c8d8c984486bfa027df241def04c5520ca6d9d798ffd32d075c450d4b43d97a37eb280fdd89cf1
 
 5.4.4.  Mermaid
 
-   (Artwork only available as svg: images/svg-validated/elided_case.svg)
+   (Artwork only available as svg: No external link available, see
+   draft-mcnally-envelope-latest.html for artwork.)
 
 5.4.5.  CBOR Diagnostic Notation
 
-200(   ; envelope
-   203(   ; crypto-digest
-      h'278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110'
+   200(   ; envelope
+      203(   ; crypto-digest
+         h'278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37\
+         f110'
+      )
    )
-)
 
 5.4.6.  CBOR Hex
 
-d8c8d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
+   d8c8d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd2\
+   5a37f110
 
 5.5.  Node Case
 
@@ -992,7 +1014,8 @@ d8c8d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
 
 5.5.4.  Mermaid
 
-   (Artwork only available as svg: images/svg-validated/node_case.svg)
+   (Artwork only available as svg: No external link available, see
+   draft-mcnally-envelope-latest.html for artwork.)
 
 5.5.5.  CBOR Diagnostic Notation
 
@@ -1018,7 +1041,8 @@ d8c8d8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
 
 5.5.6.  CBOR Hex
 
-d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
+   d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d8\
+   1863426f62
 
 5.6.  Wrapped Envelope Case
 
@@ -1039,8 +1063,8 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
 5.6.4.  Mermaid
 
-   (Artwork only available as svg: images/svg-validated/
-   wrapped_envelope_case.svg)
+   (Artwork only available as svg: No external link available, see
+   draft-mcnally-envelope-latest.html for artwork.)
 
 5.6.5.  CBOR Diagnostic Notation
 
@@ -1072,8 +1096,8 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
 5.7.4.  Mermaid
 
-   (Artwork only available as svg: images/svg-validated/
-   assertion_case.svg)
+   (Artwork only available as svg: No external link available, see
+   draft-mcnally-envelope-latest.html for artwork.)
 
 5.7.5.  CBOR Diagnostic Notation
 
@@ -1309,7 +1333,8 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
    $ KNOWS_BOB_DIGEST=`envelope digest $REQUESTED_ASSERTION`
 
-   $ KNOWS_BOB_PROOF=`envelope proof create $ALICE_FRIENDS $KNOWS_BOB_DIGEST`
+   $ KNOWS_BOB_PROOF=`envelope proof create $ALICE_FRIENDS \
+       $KNOWS_BOB_DIGEST`
 
    $ envelope --tree $KNOWS_BOB_PROOF
    cd84aa96 NODE
@@ -1331,7 +1356,8 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
    Criteria 3 was met when the proof was produced.  Critera 1 and 2 are
    checked by the command line tool when confirming the proof:
 
-   $ envelope proof confirm --silent $COMMITMENT $KNOWS_BOB_PROOF $KNOWS_BOB_DIGEST && echo "Success"
+   $ envelope proof confirm --silent $COMMITMENT $KNOWS_BOB_PROOF \
+       $KNOWS_BOB_DIGEST && echo "Success"
    Success
 
 8.  Reference Implementation
@@ -1407,7 +1433,7 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
    Generally, this document inherits the security considerations of the
    cryptographic constructs it uses such as IETF-ChaCha20-Poly1305
-   [RFC7539] and BLAKE3 [BLAKE3].
+   [RFC8439] and BLAKE3 [BLAKE3].
 
 10.2.2.  Choice of Cryptographic Primitives (No Set Curve)
 
@@ -1735,13 +1761,13 @@ d8c882d8c8d81865416c696365d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
               RFC 6838, DOI 10.17487/RFC6838, January 2013,
               <https://www.rfc-editor.org/rfc/rfc6838>.
 
-   [RFC7539]  Nir, Y. and A. Langley, "ChaCha20 and Poly1305 for IETF
-              Protocols", RFC 7539, DOI 10.17487/RFC7539, May 2015,
-              <https://www.rfc-editor.org/rfc/rfc7539>.
-
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8439]  Nir, Y. and A. Langley, "ChaCha20 and Poly1305 for IETF
+              Protocols", RFC 8439, DOI 10.17487/RFC8439, June 2018,
+              <https://www.rfc-editor.org/rfc/rfc8439>.
 
    [RFC8610]  Birkholz, H., Vigano, C., and C. Bormann, "Concise Data
               Definition Language (CDDL): A Notational Convention to
