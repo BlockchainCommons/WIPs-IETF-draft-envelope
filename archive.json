@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-12-01T00:00:36.063452+00:00",
+  "timestamp": "2022-12-04T00:00:55.600624+00:00",
   "repo": "BlockchainCommons/WIPs-IETF-draft-envelope",
   "labels": [
     {
@@ -55,15 +55,15 @@
       "id": "I_kwDOIRf-ms5XokGB",
       "title": "Poly1305 is referred to as a HMAC, which it isn't",
       "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/issues/4",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "simonratner",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Several places in https://blockchaincommons.github.io/WIPs-IETF-draft-envelope/draft-mcnally-envelope.html refer to HMAC:\r\nSections 1.5, 2.2.3, and 3.3.\r\n\r\nFor example:\r\n> When used with envelopes, the `crypto-msg` construct `aad` (additional authenticated data) field contains the digest of the plaintext, authenticating the declared digest using the Poly1305 HMAC.\r\n\r\nI believe Poly1305 isn't technically an HMAC (which refers to a specific MD-hash-based construction).\r\nReplacing with `MAC` without narrowing it further is probably fine.",
       "createdAt": "2022-11-30T21:42:00Z",
-      "updatedAt": "2022-11-30T21:42:00Z",
-      "closedAt": null,
+      "updatedAt": "2022-12-02T01:10:26Z",
+      "closedAt": "2022-12-02T01:10:26Z",
       "comments": []
     }
   ],
@@ -197,26 +197,42 @@
       "id": "PR_kwDOIRf-ms5D7clw",
       "title": "Revised Abstract",
       "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/pull/3",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "shannona",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2022-11-29T23:30:15Z",
-      "updatedAt": "2022-11-30T18:54:24Z",
+      "updatedAt": "2022-12-01T03:29:45Z",
       "baseRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
       "baseRefName": "master",
       "baseRefOid": "1961f7ab3b4bcb09c1ae65a340285d3cb7322863",
       "headRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
       "headRefName": "shannona-updated-abstract",
       "headRefOid": "c23bda8b3a91ab6119c6fae1a6f67c4bb1b41390",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2022-12-01T03:29:45Z",
+      "mergedAt": "2022-12-01T03:29:45Z",
+      "mergedBy": "wolfmcnally",
+      "mergeCommit": {
+        "oid": "a85b9e36e442a5ec152471c1070654f339b88596"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOIRf-ms5Hi1_1",
+          "commit": {
+            "abbreviatedOid": "c23bda8"
+          },
+          "author": "wolfmcnally",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2022-12-01T03:29:37Z",
+          "updatedAt": "2022-12-01T03:29:37Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
