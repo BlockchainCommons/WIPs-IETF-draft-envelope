@@ -85,6 +85,12 @@ informative:
         title: "X.680 : Information technology - Abstract Syntax Notation One (ASN.1): Specification of basic notation"
         target: https://www.itu.int/rec/T-REC-X.680/
 
+--- abstract
+
+The `envelope` protocol specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document without invalidating the document structure including the digest tree, or any cryptographic signatures that rely on it.
+
+--- middle
+
 # Introduction
 
 Gordian Envelope was designed with two key goals in mind: to be *Structure-Ready*, allowing for the reliable and interoperable storage of information; and to be *Privacy-Ready*, ensuring that transmission of that data can occur in a privacy-protecting manner.
