@@ -85,22 +85,16 @@ informative:
         title: "X.680 : Information technology - Abstract Syntax Notation One (ASN.1): Specification of basic notation"
         target: https://www.itu.int/rec/T-REC-X.680/
 
---- abstract
-
-The `envelope` protocol specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document without invalidating the document structure including the digest tree, or any cryptographic signatures that rely on it.
-
---- middle
-
 # Introduction
 
-Gordian Envelope was designed with two key goals in mind: to be *Structure-Ready*, allowing for the reliable and interopable storage of information; and to be *Privacy-Ready*, ensuring that transmission of that data can occur in a privacy-protecting manner.
+Gordian Envelope was designed with two key goals in mind: to be *Structure-Ready*, allowing for the reliable and interoperable storage of information; and to be *Privacy-Ready*, ensuring that transmission of that data can occur in a privacy-protecting manner.
 
 - **Structure-Ready.** Gordian Envelope is designed as a Smart Document, meant to store information about a subject. More than that, it's a meta-document that can contain or refer to other documents. It can support multiple data formats, from simple hierarchical structures to labeled property graphs, semantic triples, and other forms of structured graphs. Though its fundamental structure is a tree, it can be used to create Directed Acyclic Graphs (DAGs) through references between Envelopes.
 - **Privacy-Ready.** Gordian Envelope protects the privacy of its data through progressive trust, allowing for holders to minimally disclose information by using elision or encryption, and then to optionally increase that disclosure over time. The fact that a holder can control data revelation, not just an issuer, creates a new level of privacy for all stakeholders. The progressive trust in Gordian Envelopes is accomplished through hashing of all elements, which creates foundational support for cryptographic functions such as signing and encryption, without actually defining which cryptographic functions must be used.
 
 The following architectural decisions support these goals:
 
-- **Structured Merkle Tree.** A variant of the Merkle Tree structure is created by forming the hashing of the elements in the Envelope into a tree of digests. (In this "structured Merkele Tree", all nodes contain both semantic content and digests, rather than semantic content being limited to leaves.)
+- **Structured Merkle Tree.** A variant of the Merkle Tree structure is created by forming the hashing of the elements in the Envelope into a tree of digests. (In this "structured Merkle Tree", all nodes contain both semantic content and digests, rather than semantic content being limited to leaves.)
 - **Deterministic Representation.** There is only one way to encode any semantic representation within a Gordian Envelope. This is accomplished through the use of Deterministic CBOR and the sorting of the Envelope by hashes to create a lexicographic order. Any Envelope that doesn't follow these strict rules can be rejected; as a result, there's no need to worry about different people adding the assertions in a different order or at different times: if two Envelopes contain the same data, they will be encoded the same way.
 
 ## Elision Support
@@ -129,9 +123,9 @@ The following architectural decisions support these goals:
 
 - **Data Storage.** The initial inspiration for Gordian Envelopes was for secure data storage.
 - **Credentials & Presentations.** The usage of Gordian Envelope signing techniques allows for the creation of credentials and the ability to present them to different verifiers in different ways.
-- **Distributed or Decentralized Identifiers.** Self-Certifying Identifiers (SCIDs) can be created and shared with peers, certified with a trust authority, or registered on blockchain.
-- **Future Techniques.** Beyonds its technical specifics, Gordian Envelopes still allows for cl-sigs, bbs+, and other privacy-preserving techniques such as zk-proofs, differential privacy, etc.
-- **Cryptography Agnostic.** Generally, the Gordian Envelope architecture is cryptography agnostic, allowing it to work with everything from older algorithms with silicon support through more modern algorithms suited to blockchains and to future zk-proof or quantum-attack resistent cryptographic choices. These choices are made in sets via ciphersuites.
+- **Distributed or Decentralized Identifiers.** Self-Certifying Identifiers (SCIDs) can be created and shared with peers, certified by a trust authority, or registered on blockchain.
+- **Future Techniques.** Beyond its technical specifics, Gordian Envelopes still allows for cl-sigs, bbs+, and other privacy-preserving techniques such as zk-proofs, differential privacy, etc.
+- **Cryptography Agnostic.** Generally, the Gordian Envelope architecture is cryptography agnostic, allowing it to work with everything from older algorithms with silicon support through more modern algorithms suited to blockchains and to future zk-proof or quantum-attack resistant cryptographic choices. These choices are made in sets via ciphersuites.
 
 # Terminology
 
@@ -161,7 +155,7 @@ An envelope is a tagged enumerated type with seven cases. Four of these cases ha
 * `encrypted`
 * `elided`
 
-Two of these cases, `encrypted` and `elided` "declare" their digest, i.e., they actually encode their digest in the envelope serialization. For all other cases, their digest is implicit in the data itself and may be computed and cached by implementations when an envelope is deserialized.
+Two of these cases, `encrypted` and `elided`, "declare" their digest, i.e., they actually encode their digest in the envelope serialization. For all other cases, their digest is implicit in the data itself and may be computed and cached by implementations when an envelope is deserialized.
 
 The other three cases have one or more children:
 
@@ -197,7 +191,7 @@ leaf = #6.24(bytes)
 
 ### Known Value Case Format
 
-A `known-value` case is used to specify an unsigned integer in a namespace of well-known values. Known values are frequently used as predicates. Any envelope can be used as a predicate in an assertion, but many predicates are commonly used, e.g., `verifiedBy` for signatures, hence it is desirable to keep common predicates short.
+A `known-value` case is used to specify an unsigned integer in a namespace of well-known values. Known values are frequently used as predicates. For example, any envelope can be used as a predicate in an assertion, but many predicates are commonly used, e.g., `verifiedBy` for signatures; hence it is desirable to keep common predicates short.
 
 ~~~ cddl
 known-value = #6.223(uint)
@@ -224,7 +218,7 @@ auth = bytes .size 16    ; Authentication tag created by Poly1305
 
 ### Elided Case Format
 
-An `elided` case is used as a placeholder for an element that has been elided and its digest, produced by a cryptographic hash algorithm is left as a placeholder. This subsection specifies the construct used in the current reference implementation and is informative.
+An `elided` case is used as a placeholder for an element that has been elided and its digest, produced by a cryptographic hash algorithm, is left as a placeholder. This subsection specifies the construct used in the current reference implementation and is informative.
 
 ~~~ cddl
 elided = digest
@@ -252,7 +246,7 @@ assertion-element = ( assertion / encrypted / elided )
 
 ### Wrapped Envelope Case Format
 
-A `wrapped-envelope` case is used where an envelope including all its assertions should be treated as a single element, e.g. for the purpose of signing.
+A `wrapped-envelope` case is used where an envelope, including all its assertions, should be treated as a single element, e.g. for the purpose of signing.
 
 ~~~ cddl
 wrapped-envelope = #6.224(envelope-content)
@@ -279,11 +273,11 @@ Each of the seven enumerated envelope cases produces an image which is used as i
 
 The overall digest of an envelope is the digest of its specific case.
 
-In this and subsequenct sections:
+In this and subsequent sections:
 
 *  `digest(image)` is the BLAKE3 hash function that produces a 32-byte digest.
 *  The `.digest` attribute is the digest of the named element computed as specified herein.
-*  The `||` operator represents contactenation of byte sequences.
+*  The `||` operator represents the concatenation of byte sequences.
 
 ## Leaf Case Digest Calculation
 
@@ -335,7 +329,7 @@ d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
 
 ## Encrypted Case Digest Calculation
 
-The `encrypted` case declares its digest to be the digest of plaintext before encryption. The declaration is made using an MAC, and when decrypting an element the implementation MUST compare the digest of the decrypted element to the declared digest and flag an error if they do not match.
+The `encrypted` case declares its digest to be the digest of plaintext before encryption. The declaration is made using a MAC, and when decrypting an element, the implementation MUST compare the digest of the decrypted element to the declared digest and flag an error if they do not match.
 
 ### Example
 
@@ -453,7 +447,7 @@ To replicate this, we make a list of digests, starting with the subject, and the
 71a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b5f77aa3159a711
 ~~~
 
-We then calculate the BLAKE3 hash of the concatenation of these four digests, and note that this is the same digest as the composite envelope's digest:
+We then calculate the BLAKE3 hash of the concatenation of these four digests. Note that this is the same digest as the composite envelope's digest:
 
 ~~~
 echo "278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd2\
@@ -534,7 +528,7 @@ To replicate this, we make a list of the predicate digest and the object digest,
 9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab25df1a
 ~~~
 
-We then calculate the BLAKE3 hash of the concatenation of these two digests, and note that this is the same digest as the composite envelope's digest:
+We then calculate the BLAKE3 hash of the concatenation of these two digests. Note that this is the same digest as the composite envelope's digest:
 
 ~~~
 echo "7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8e\
@@ -548,7 +542,7 @@ $ envelope digest --hex $ASSERTION
 
 # Envelope Hierarchy
 
-This section is informative, and describes envelopes from the perspective of their hierachical structure and the various ways they can be formatted.
+This section is informative, and describes envelopes from the perspective of their hierarchical structure and the various ways they can be formatted.
 
 An envelope consists of a `subject` and one or more `predicate-object` pairs called `assertions`:
 
@@ -858,9 +852,9 @@ From the above envelope and its tree, we make the following observations:
 
 * The envelope is a `node` case, which holds the overall envelope digest.
 * The subject "Alice" has its own digest.
-* Each of the three assertions have their own digests
+* Each of the three assertions has their own digests
 * The predicate and object of each assertion each have their own digests.
-* The assertions appear in the structure in ascending lexicographic order by digest, which is distinct from envelope notation where they appear sorted alphabeticaly.
+* The assertions appear in the structure in ascending lexicographic order by digest, which is distinct from envelope notation, where they appear sorted alphabeticaly.
 
 The following subsections present each of the seven enumerated envelope cases in five different output formats:
 
@@ -1488,9 +1482,9 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 
 This section is informative.
 
-Known values are a specific case of envelope that defines a namespace consisting of single unsigned integers. The expectation is that the most common and widely useful predicates will be assigned in this namespace, but known values may be used in any position in an envelope.
+Known values are a specific case of an envelope that defines a namespace consisting of single unsigned integers. The expectation is that the most common and widely useful predicates will be assigned in this namespace, but known values may be used in any position in an envelope.
 
-Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.
+Most of the examples in this document use UTF-8 strings as predicates, but in real-world applications, the same predicate may be used many times in a document and across a body of knowledge. Since the size of an envelope is proportionate to the size of its content, a predicate made using a string like a human-readable sentence or a URL could take up a great deal of space in a typical envelope. Even emplacing the digest of a known structure takes 32 bytes. Known values provide a way to compactly represent predicates and other common values in as few as three bytes.
 
 Other CBOR tags can be used to define completely separate namespaces if desired, but the reference implementation {{ENVELOPE-REFIMPL}} and its tools {{ENVELOPE-CLI}} recognize specific known values and their human-readable names.
 
@@ -1509,7 +1503,7 @@ Note that a work-in-progress specification for remote procedure calls using enve
 | 3     | `verifiedBy`     | predicate | A signature on the digest of the subject, verifiable with the signer's public key. |
 | 4     | `note`           | predicate | A human-readable informative note. |
 | 5     | `hasRecipient`   | predicate | A sealed message encrypting to a specific recipient the ephemeral encryption key that was used to encrypt the subject. |
-| 6     | `sskrShare`      | predicate | A single SSKR {{SSKR}} share of the emphemeral encryption key that was used to encrypt the subject. |
+| 6     | `sskrShare`      | predicate | A single SSKR {{SSKR}} share of the ephemeral encryption key that was used to encrypt the subject. |
 | 7     | `controller`     | predicate | A domain-unique identifier of the party that controls the contents of this document. |
 | 8     | `publicKeys`     | predicate | A "public key base" consisting of the information needed to encrypt messages to a party or verify messages signed by them. |
 | 9     | `dereferenceVia` | predicate | A domain-unique Pointer such as a URL indicating from where the elided envelope subject can be recovered. |
@@ -1522,7 +1516,7 @@ Note that a work-in-progress specification for remote procedure calls using enve
 | 16    | `date`           | predicate | A timestamp, e.g., the time at which a remote procedure call request was signed. |
 | 100   | `body`           | predicate | RPC: The body of a function call. The object is the function identifier and the assertions on the object are the function parameters. |
 | 101   | `result`         | predicate | RPC: A result of a successful function call. The object is the returned value. |
-| 102   | `error`          | predicate | RPC: A result of an unsuccessful function call. The object is message or other diagnostic state. |
+| 102   | `error`          | predicate | RPC: A result of an unsuccessful function call. The object is a message or other diagnostic state. |
 | 103   | `ok`             | object    | RPC: The object of a `result` predicate for a successful remote procedure call that has no other return value. |
 | 104   | `processing`     | object    | RPC: The object of a `result` predicate where a function call is accepted for processing and has not yet produced a result or error. |
 
@@ -1532,11 +1526,11 @@ This section is informative.
 
 Because each element of an envelope provides a unique digest, and because changing an element in an envelope changes the digest of all elements upwards towards its root, the structure of an envelope is comparable to a {{MERKLE}}.
 
-In a Merkle Tree, all semantically significant information is carried by the tree's leaves (for example, the transactions in a block of Bitcoin transactions) while the internal nodes of the tree are nothing but digests computed from combinations of pairs of lower nodes, all the way up to the root of the tree (the "Merkle root".)
+In a Merkle Tree, all semantically significant information is carried by the tree's leaves (for example, the transactions in a block of Bitcoin transactions), while the internal nodes of the tree are nothing but digests computed from combinations of pairs of lower nodes, all the way up to the root of the tree (the "Merkle root".)
 
 In an envelope, every digest references some semantically significant content: it could reference the subject of the envelope, or one of the assertions in the envelope, or at the predicate or object of a given assertion. Of course, those elements are all envelopes themselves, and thus potentially the root of their own subtree.
 
-In a merkle tree, the minumum subset of hashes necessary to confirm that a specific leaf node (the "target") must be present is called a "Merkle proof." For envelopes, an analogous proof would be a transformation of the envelope that is entirely elided but preserves the structure necesssary to reveal the target.
+In a Merkle tree, the minimum subset of hashes necessary to confirm that a specific leaf node (the "target") must be present is called a "Merkle proof." For envelopes, an analogous proof would be a transformation of the envelope that is entirely elided but preserves the structure necessary to reveal the target.
 
 As an example, we produce an envelope representing a simple FOAF {{FOAF}} style graph:
 
@@ -1573,7 +1567,7 @@ $ envelope --tree $REQUESTED_ASSERTION
     9a771715 obj "Bob"
 ~~~
 
-The holder can then produce a proof, which is an elided form of the original document that contains a minimum spanning set of digests including the target.
+The holder can then produce a proof, which is an elided form of the original document that contains a minimum spanning set of digests, including the target.
 
 ~~~ sh
 $ KNOWS_BOB_DIGEST=`envelope digest $REQUESTED_ASSERTION`
@@ -1595,7 +1589,7 @@ Note that the proof:
 2. includes the digest of the `knows-Bob` assertion: `55560bdf`,
 3. includes only the other digests necessary to calculate the digest tree from the target back to the root, without revealing any additional information about the envelope.
 
-Criteria 3 was met when the proof was produced. Critera 1 and 2 are checked by the command line tool when confirming the proof:
+Criteria 3 was met when the proof was produced. Criteria 1 and 2 are checked by the command line tool when confirming the proof:
 
 ~~~ sh
 $ envelope proof confirm --silent $COMMITMENT $KNOWS_BOB_PROOF \
@@ -1632,14 +1626,14 @@ nonce = bytes .size 12   ; Random, generated at encryption-time
 auth = bytes .size 16    ; Authentication tag created by Poly1305
 ~~~
 
-For the sake of this example we assume the new method to be supported has all the same fields, but needs to be processed differently. In this case, the first element of the array could become an optional integer:
+For the sake of this example, we assume the new method to be supported has all the same fields but needs to be processed differently. In this case, the first element of the array could become an optional integer:
 
 ~~~ cddl
 crypto-msg = #6.201([ ? version, ciphertext, nonce, auth, ? aad ])
 version = uint           ; absent for old method, 1 for new method
 ~~~
 
-If present, the first field specifies the later encryption method. If absent, the original encryption method is specified. For low numbered versions, the storage cost of specifying a later version is one byte, and backwards compatibility is preserved.
+If present, the first field specifies the later encryption method. If absent, the original encryption method is specified. For low-numbered versions, the storage cost of specifying a later version is one byte, and backward compatibility is preserved.
 
 # Security Considerations
 
@@ -1667,7 +1661,7 @@ Unlike HTML, envelope is intended to be conservative in both what it sends _and_
 
 ## Signature Considerations
 
-This specification allows the signing of envelopes that are partially (or even entirely) elided. There may be use cases for this, such as when multiple users are each signing partially elided envelopes that will then be united. However, it's generally a dangerous practice. Our own tools require overrides to allow it. Other developes should take care to warn users of the dangers of signing elided envelopes.
+This specification allows the signing of envelopes that are partially (or even entirely) elided. There may be use cases for this, such as when multiple users are each signing partially elided envelopes that will then be united. However, it's generally a dangerous practice. Our own tools require overrides to allow it. Other developers should take care to warn users of the dangers of signing elided envelopes.
 
 ## Hashing
 
@@ -1675,11 +1669,11 @@ This specification allows the signing of envelopes that are partially (or even e
 
 Although BLAKE2 is more widely supported by IETF specifications, envelope instead makes use of BLAKE3. This is to take advantage of advances in the updated protocol: the new BLAKE3 implementation uses a Merkle Tree format that allows for streaming and for incremental updates as well as high levels of parallelism. The fact that BLAKE3 is newer should be taken into consideration, but its foundation in BLAKE2 and its support by experts such as the Zcash Foundation are considered to grant it sufficient maturity.
 
-Whereas, envelope is written to allow for the easy exchange of most of its cryptographic protocols, this is not true for BLAKE3: swapping for another hash protocol would result in incompatible envelopes. Thus, any security considerations related to BLAKE3 should be given careful attention.
+Whereas envelope is written to allow for the easy exchange of most of its cryptographic protocols, this is not true for BLAKE3: swapping for another hash protocol would result in incompatible envelopes. Thus, any security considerations related to BLAKE3 should be given careful attention.
 
 ### Well-Known Hashes
 
-Because they are short unsigned integers, well-known values produce well-known digests. Elided envelopes may in some cases inadvertently reveal information by transmitting digests that may be correlated to known information. Envelopes can be salted by adding assertions that contain random data to perturb the digest tree, hence decorrelating it from any known values.
+Because they are short unsigned integers, well-known values produce well-known digests. Elided envelopes may, in some cases, inadvertently reveal information by transmitting digests that may be correlated to known information. Envelopes can be salted by adding assertions that contain random data to perturb the digest tree, hence decorrelating it from any known values.
 
 ### Digest Trees
 
@@ -1689,7 +1683,7 @@ Existence proofs include the minimal set of digests that are necessary to calcul
 
 Envelope makes use of a hash tree instead of a hash list to allow this sort of minimal revelation. This decision may also have advantages in scaling. However, there should be further investigation of the limitations of hash trees regarding scaling, particularly for the scaling of large, elided structures.
 
-There should also be careful consideration of the best practices needed for the creation of deeply nested envelopes, for the usage of subenvelopes created at different times, and for other technical details related to the use of a potentially broad hash tree, as such best practices do not currently exist.
+There should also be careful consideration of the best practices needed for the creation of deeply nested envelopes, for the usage of sub-envelopes created at different times, and for other technical details related to the use of a potentially broad hash tree, as such best practices do not currently exist.
 
 ### Salts
 
@@ -1697,11 +1691,11 @@ Specifics for the size and usage of salt are not included in this specifications
 
 ### Collisions
 
-Hash trees tend to make it harder to create collisions than the use of a raw hash function. If attackers manage to find a collision for a hash, they can only replace one node (and its children), so the impact is limited, especially since finding collisions higher in a hash tree grows increasingly difficult because the collision must be a concatenation of multiple hashes. This should generally reduce issues with collisions: finding collisions that fit a hash tree tends to be harder than finding regular collisions. But, the issue always should be considered.
+Hash trees tend to make it harder to create collisions than the use of a raw hash function. If attackers manage to find a collision for a hash, they can only replace one node (and its children), so the impact is limited, especially since finding collisions higher in a hash tree grows increasingly difficult because the collision must be a concatenation of multiple hashes. This should generally reduce issues with collisions: finding collisions that fit a hash tree tends to be harder than finding regular collisions. But, the issue should always be considered.
 
 ### Leaf-Node Attacks
 
-Envelope's hash tree  is proof against the leaf-node weakness of Bitcoin that can affect SPVs because its predicates are an unordered set, serialized in increasing lexicographic order by digest, with no possibility for duplication and thus fully deterministic ordering of the tree.
+Envelope's hash tree is proof against the leaf-node weakness of Bitcoin that can affect SPVs because its predicates are an unordered set, serialized in increasing lexicographic order by digest, with no possibility for duplication and thus fully deterministic ordering of the tree.
 
 See https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-merkle-tree-design/ for the leaf-node attack.
 
@@ -1715,7 +1709,7 @@ See https://bitcointalk.org/?topic=102395 for the forgery attack.
 
 ### Duplication of Claims
 
-Support for elision allows for the possibility of contradictory claims where one is kept hidden at any time. So, for example, an evelope could contain contradictory predictions of election results and only reveal the one that matches the actual results. As a result, revealed material should be carefully assessed for this possibility when elided material also exists.
+Support for elision allows for the possibility of contradictory claims where one is kept hidden at any time. So, for example, an envelope could contain contradictory predictions of election results and only reveal the one that matches the actual results. As a result, revealed material should be carefully assessed for this possibility when elided material also exists.
 
 ## Additional Specification Creation
 
