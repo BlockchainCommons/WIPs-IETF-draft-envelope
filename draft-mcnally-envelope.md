@@ -556,7 +556,7 @@ $ envelope digest --hex $ASSERTION
 
 This section is informative, and describes envelopes from the perspective of their hierarchical structure and the various ways they can be formatted.
 
-An envelope consists of a `subject` and one or more `predicate-object` pairs called `assertions`:
+Notionally an envelope can be thought of as a `subject` and one or more `predicate-object` pairs called `assertions`:
 
 ~~~
 subject [
@@ -577,7 +577,19 @@ A concrete example of this might be:
 ]
 ~~~
 
-In the diagram above, there are five distinct "positions" of elements, each of which is itself an envelope and which therefore produces its own digest:
+The notional concept of envelope is useful but not technically accurate because envelope is structurally implemented as an enumerated type consisting of seven cases. This allows actual envelope instances to be more flexible, for example a "bare assertion" consisting of a predicate-object pair with no subject, which is useful in some situations:
+
+~~~
+"knows": "Bob"
+~~~
+
+More common is the opposite case: a subject with no assertions:
+
+~~~
+"Alice"
+~~~
+
+In the diagrams above, there are five distinct "positions" of elements, each of which is itself an envelope and which therefore produces its own digest:
 
 1. envelope
 2. subject
@@ -1536,7 +1548,7 @@ Note that a work-in-progress specification for remote procedure calls using enve
 
 This section is informative.
 
-Because each element of an envelope provides a unique digest, and because changing an element in an envelope changes the digest of all elements upwards towards its root, the structure of an envelope is comparable to a {{MERKLE}}.
+Because each element of an envelope provides a unique digest, and because changing an element in an envelope changes the digest of all elements upwards towards its root, the structure of an envelope is comparable to a merkle tree {{MERKLE}}.
 
 In a Merkle Tree, all semantically significant information is carried by the tree's leaves (for example, the transactions in a block of Bitcoin transactions), while the internal nodes of the tree are nothing but digests computed from combinations of pairs of lower nodes, all the way up to the root of the tree (the "Merkle root".)
 
@@ -1713,13 +1725,13 @@ Hash trees tend to make it harder to create collisions than the use of a raw has
 
 Envelope's hash tree is proof against the leaf-node weakness of Bitcoin that can affect SPVs because its predicates are an unordered set, serialized in increasing lexicographic order by digest, with no possibility for duplication and thus fully deterministic ordering of the tree.
 
-See https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-merkle-tree-design/ for the leaf-node attack.
+See the leaf-node attack (here)[https://bitslog.com/2018/06/09/leaf-node-weakness-in-bitcoin-merkle-tree-design/].
 
 ### Forgery Attacks on Unbalanced Trees
 
-Envelopes should also be proof against forgery attacks before of their different construction, where all nodes contain both data and hashes. Nonetheless, care must still be taken with trees, especially when also using elision, which limits visible information.
+Envelopes should be proof against a known forgery attack against Bitcoin because of their different construction, in which all tree nodes contain semantically important data and duplicate assertions are not allowed.
 
-See https://bitcointalk.org/?topic=102395 for the forgery attack.
+See the forgery attack (here)[https://bitcointalk.org/?topic=102395].
 
 ## Elision
 
