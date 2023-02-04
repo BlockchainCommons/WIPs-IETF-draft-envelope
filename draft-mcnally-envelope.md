@@ -191,6 +191,10 @@ envelope-content = (
 
 A `leaf` case is used when the envelope contains only user-defined CBOR content. It is tagged using #6.24, per {{-CBOR}} section 3.4.5.1, "Encoded CBOR Data Item".
 
+To preserve deterministic encoding, developers using the envelope format MUST specify where tags MUST or MUST NOT be used to identify the type of CBOR within `leaf` elements. In cases where simple CBOR values like integers or UTF-8 strings are encoded, no additional tagging may be necessary because positionality within the envelope is sufficient to imply the type without ambiguity.
+
+For example, if a structure representing a person specifies that it MAY have a `firstName` predicate with a `string` object, there is no need for an additional tag within the object `leaf` element: it would be a coding error to place anything but a `string` in that position. But where developers are specifying a compound CBOR structure with a specified layout for inclusion in an envelope, especially one that may be used in a plurality of positions (for example a CBOR array of alias first names), they SHOULD specify a tag, and specify where it MUST or MUST NOT be used.
+
 ~~~ cddl
 leaf = #6.24(bytes)
 ~~~
@@ -289,7 +293,7 @@ In this and subsequent sections:
 
 ## Leaf Case Digest Calculation
 
-The `leaf` case consists of any CBOR object. Tagging the leaf CBOR is RECOMMENDED, especially for compound structures with a specified layout. The envelope image is the CBOR serialization of that object:
+The `leaf` case consists of any CBOR object. The envelope image is the CBOR serialization of that object:
 
 ~~~
 digest(cbor)
