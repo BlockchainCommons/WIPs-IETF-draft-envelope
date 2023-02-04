@@ -244,6 +244,8 @@ blake3-digest = bytes .size 32
 
 A `node` case is encoded as a CBOR array, and MUST be used when one or more assertions are present on the envelope. It MUST NOT be present when there is not at least one assertion. The first element of the array is the envelope's `subject`, Followed by one or more `assertion-element`s, each of which MUST be an `assertion`, or the `encrypted` or `elided` transformation of that assertion. The assertion elements MUST appear in ascending lexicographic order by their digest. The array MUST NOT contain any assertion elements with identical digests.
 
+Note that `assertion-elements` as defined here here explicitly include assertions that have been elided or encrypted, as specified in the CDDL below. The envelopes in the `node` case array MUST, when unelided/unencrypted be found to be actual `assertion` case envelopes, or it is a coding error.
+
 ~~~ cddl
 node = [envelope-content, + assertion-element]
 
