@@ -1747,7 +1747,7 @@ This specification allows the signing of envelopes that are partially (or even e
 
 ### Choice of SHA-256 Hash Primitive
 
-Envelope uses the SHA-256 digest algorithm, which is regarded as reliable and widely supported by many implementations in both software and hardware.
+Envelope uses the SHA-256 digest algorithm {{-SHA-256}}, which is regarded as reliable and widely supported by many implementations in both software and hardware.
 
 ### Well-Known Hashes
 
