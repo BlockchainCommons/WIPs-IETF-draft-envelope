@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 8 August 2023                                   4 February 2023
+Expires: 7 September 2023                                   6 March 2023
 
 
                   The Envelope Structured Data Format
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 August 2023.
+   This Internet-Draft will expire on 7 September 2023.
 
 Copyright Notice
 
@@ -160,7 +160,7 @@ Table of Contents
      10.3.  Validation Requirements
      10.4.  Signature Considerations
      10.5.  Hashing
-       10.5.1.  Choice of BLAKE3 Hash Primitive
+       10.5.1.  Choice of SHA-256 Hash Primitive
        10.5.2.  Well-Known Hashes
        10.5.3.  Digest Trees
        10.5.4.  A Tree, Not a List
@@ -457,12 +457,12 @@ Table of Contents
    elided = digest
 
    For digest, the reference implementation [ENVELOPE-REFIMPL] uses of
-   the BLAKE3 cryptographic hash function [BLAKE3] to generate a 32 byte
-   digest.
+   the SHA-256 cryptographic hash function [RFC6234] to generate a 32
+   byte digest.
 
-   digest = #6.203(blake3-digest)
+   digest = #6.203(sha256-digest)
 
-   blake3-digest = bytes .size 32
+   sha256-digest = bytes .size 32
 
 3.3.  Cases With Children
 
@@ -512,11 +512,8 @@ Table of Contents
 4.  Computing the Digest Tree
 
    This section specifies how the digests for each of the envelope cases
-   are computed.  The minimum size of the digest and order of operations
-   specified is normative, but the specific cryptographic hash algorithm
-   used by the reference implementation [BLAKE3] is informative.  When
-   implementing using BLAKE3, the examples in this section may be used
-   as test vectors.
+   are computed, and is normative.  The examples in this section may be
+   used as test vectors.
 
    Each of the seven enumerated envelope cases produces an image which
    is used as input to a cryptographic hash function to produce a digest
@@ -526,7 +523,7 @@ Table of Contents
 
    In this and subsequent sections:
 
-   *  digest(image) is the BLAKE3 hash function that produces a 32-byte
+   *  digest(image) is the SHA-256 hash function that produces a 32-byte
       digest.
 
    *  The .digest attribute is the digest of the named element computed
@@ -545,17 +542,18 @@ Table of Contents
 
    The CBOR serialization of the plaintext string "Hello" (not including
    the quotes) is 6548656C6C6F.  The following command line calculates
-   the BLAKE3 sum of this sequence:
+   the SHA-256 sum of this sequence:
 
-   $ echo "6548656C6C6F" | xxd -r -p | b3sum --no-names
-   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+ $ echo "6548656C6C6F" | xxd -r -p | shasum --binary --algorithm 256 | \
+     awk '{ print $1 }'
+ 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
    Using the envelope command line tool [ENVELOPE-CLI], we create an
    envelope with this string as the subject and display the envelope's
    digest.  The digest below matches the one above.
 
    $ envelope subject "Hello" | envelope digest --hex
-   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+   4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
 4.2.  Known Value Case Digest Calculation
 
@@ -568,17 +566,18 @@ Table of Contents
 4.2.1.  Example
 
    The known value verifiedBy in CBOR diagnostic notation is 223(3),
-   which in hex is D8DF03.  The BLAKE3 sum of this sequence is:
+   which in hex is D8DF03.  The SHA-256 sum of this sequence is:
 
-   $ echo "D8DF03" | xxd -r -p | b3sum --no-names
-   d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
+   $ echo "D8DF03" | xxd -r -p | shasum --binary --algorithm 256 | \
+       awk '{ print $1 }'
+   d933fc069551eae6c34b663e1c64dc8e62bfc43c1d43b3d22dbe57a3c4b84359
 
    Using the envelope command line tool [ENVELOPE-CLI], we create an
    envelope with this known value as the subject and display the
    envelope's digest.  The digest below matches the one above.
 
    $ envelope subject --known verifiedBy | envelope digest --hex
-   d59f8c0ffd798eac7602d1dfb15c457d8e51c3ce34d499e5d2a4fbd2cfe3773f
+   d933fc069551eae6c34b663e1c64dc8e62bfc43c1d43b3d22dbe57a3c4b84359
 
 4.3.  Encrypted Case Digest Calculation
 
@@ -597,12 +596,12 @@ Table of Contents
    $ envelope subject "Hello" | \
        envelope encrypt --key $KEY | \
        envelope digest --hex
-   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+   4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
    ...we see that its digest is the same as its plaintext form:
 
    $ envelope subject "Hello" | envelope digest --hex
-   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+   4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
 4.4.  Elided Case Digest Calculation
 
@@ -615,12 +614,12 @@ Table of Contents
    then request its digest:
 
    $ envelope subject "Hello" | envelope elide | envelope digest --hex
-   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+   4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
    ...we see that its digest is the same as its unelided form:
 
    $ envelope subject "Hello" | envelope digest --hex
-   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+   4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
 4.5.  Node Case Digest Calculation
 
@@ -639,19 +638,19 @@ Table of Contents
 
    $ SUBJECT=`envelope subject "Alice"`
    $ envelope digest --hex $SUBJECT
-   278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
+   13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
 
    $ ASSERTION_0=`envelope subject assertion "knows" "Bob"`
    $ envelope digest --hex $ASSERTION_0
-   55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+   78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2
 
    $ ASSERTION_1=`envelope subject assertion "knows" "Carol"`
    $ envelope digest --hex $ASSERTION_1
-   71a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b5f77aa3159a711
+   4012caf2d96bf3962514bcfdcf8dd70c351735dec72c856ec5cdcf2ee35d6a91
 
    $ ASSERTION_2=`envelope subject assertion "knows" "Edward"`
    $ envelope digest --hex $ASSERTION_2
-   1e0b049b8d2b21d4bb32f90b4a9e6b5031526f868da303268a9c1c75c0082446
+   65c3ebc3f056151a6091e738563dab4af8da1778da5a02afcd104560b612ca17
 
    We combine the envelopes into a single envelope with three
    assertions:
@@ -668,50 +667,50 @@ Table of Contents
    ]
 
    $ envelope digest --hex $ENVELOPE
-   0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
+   6255e3b67ad935caf07b5dce5105d913dcfb82f0392d4d302f6d406e85ab4769
 
    Note that in the envelope notation representation above, the
    assertions are sorted alphabetically, with "knows": "Edward" coming
    last.  But internally, the three assertions are ordered by digest in
-   ascending lexicographic order, with "Edward" coming first because its
-   digest starting with 1e0b049b is the lowest, as in the tree formatted
+   ascending lexicographic order, with "Carol" coming first because its
+   digest starting with 4012caf2 is the lowest, as in the tree formatted
    display below:
 
    $ envelope --tree $ENVELOPE
-   0abac60a NODE
-       27840350 subj "Alice"
-       1e0b049b ASSERTION
-           7092d620 pred "knows"
-           d5a375ff obj "Edward"
-       55560bdf ASSERTION
-           7092d620 pred "knows"
-           9a771715 obj "Bob"
-       71a30690 ASSERTION
-           7092d620 pred "knows"
-           ad2c454b obj "Carol"
+   6255e3b6 NODE
+       13941b48 subj "Alice"
+       4012caf2 ASSERTION
+           db7dd21c pred "knows"
+           afb8122e obj "Carol"
+       65c3ebc3 ASSERTION
+           db7dd21c pred "knows"
+           e9af7883 obj "Edward"
+       78d666eb ASSERTION
+           db7dd21c pred "knows"
+           13b74194 obj "Bob"
 
    To replicate this, we make a list of digests, starting with the
    subject, and then each assertion's digest in ascending lexicographic
    order:
 
-   278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
-   1e0b049b8d2b21d4bb32f90b4a9e6b5031526f868da303268a9c1c75c0082446
-   55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
-   71a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b5f77aa3159a711
+   13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
+   4012caf2d96bf3962514bcfdcf8dd70c351735dec72c856ec5cdcf2ee35d6a91
+   65c3ebc3f056151a6091e738563dab4af8da1778da5a02afcd104560b612ca17
+   78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2
 
-   We then calculate the BLAKE3 hash of the concatenation of these four
+   We then calculate the SHA-256 hash of the concatenation of these four
    digests.  Note that this is the same digest as the composite
    envelope's digest:
 
-   echo "278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd2\
-   5a37f1101e0b049b8d2b21d4bb32f90b4a9e6b5031526f868da303268a9c1c\
-   75c008244655560bdf060f1220199c87e84e29cecef96ef811de4f399dab2f\
-   de9425d0d41871a3069088c61c928f54ec50859f3f09b9318e9ca6734e6a3b\
-   5f77aa3159a711" | xxd -r -p | b3sum --no-names
-   0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
+ echo "13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f\
+ 4012caf2d96bf3962514bcfdcf8dd70c351735dec72c856ec5cdcf2ee35d6a91\
+ 65c3ebc3f056151a6091e738563dab4af8da1778da5a02afcd104560b612ca17\
+ 78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2" | \
+     xxd -r -p | shasum --binary --algorithm 256 | awk '{ print $1 }'
+ 6255e3b67ad935caf07b5dce5105d913dcfb82f0392d4d302f6d406e85ab4769
 
-   $ envelope digest --hex $ENVELOPE
-   0abac60ae3a45a8a7b448b309cca30bdd747f42f508a9a97ea64d657d1f7ea81
+ $ envelope digest --hex $ENVELOPE
+ 6255e3b67ad935caf07b5dce5105d913dcfb82f0392d4d302f6d406e85ab4769
 
 4.6.  Wrapped Envelope Case Digest Calculation
 
@@ -725,24 +724,25 @@ Table of Contents
    As above, we note the digest of a leaf envelope is the digest of its
    CBOR:
 
-   $ envelope subject "Hello" | envelope digest --hex
-   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+ $ envelope subject "Hello" | envelope digest --hex
+ 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
-   $ echo "6548656C6C6F" | xxd -r -p | b3sum --no-names
-   bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66c2d1d6b455ea
+ $ echo "6548656C6C6F" | xxd -r -p | shasum --binary --algorithm 256 | \
+     awk '{ print $1 }'
+ 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
    Now we note that the digest of a wrapped envelope is the digest of
    the wrapped envelope's digest:
 
-   $ envelope subject "Hello" | \
-       envelope subject --wrapped | \
-       envelope digest --hex
-   55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f2\
-   8c31b
+  $ envelope subject "Hello" | \
+      envelope subject --wrapped | \
+      envelope digest --hex
+  743a86a9f411b1441215fbbd3ece3de5206810e8a3dd8239182e123802677bd7
 
-   $ echo "bd6c78899fc1f22c667cfe6893aa2414f8124f25ae6ea80a1a66\
-   c2d1d6b455ea" | xxd -r -p | b3sum --no-names
-   55d4e04399c54bec23346ebf612bf237e659a72e34df14420e18e0290f28c31b
+  $ echo "4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb\
+  3d27ac1a55971e6b" \
+      | xxd -r -p | shasum --binary --algorithm 256 | awk '{ print $1 }'
+  743a86a9f411b1441215fbbd3ece3de5206810e8a3dd8239182e123802677bd7
 
 4.7.  Assertion Case Digest Calculation
 
@@ -758,33 +758,33 @@ Table of Contents
 
    $ PREDICATE=`envelope subject "knows"`
    $ envelope digest --hex $PREDICATE
-   7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8ee62fab
+   db7dd21c5169b4848d2a1bcb0a651c9617cdd90bae29156baaefbb2a8abef5ba
 
    $ OBJECT=`envelope subject "Bob"`
    $ envelope digest --hex $OBJECT
-   9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab25df1a
+   13b741949c37b8e09cc3daa3194c58e4fd6b2f14d4b1d0f035a46d6d5a1d3f11
 
    $ ASSERTION=`envelope subject assertion "knows" "Bob"`
    $ envelope digest --hex $ASSERTION
-   55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+   78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2
 
    To replicate this, we make a list of the predicate digest and the
    object digest, in that order:
 
-   7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8ee62fab
-   9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab25df1a
+   db7dd21c5169b4848d2a1bcb0a651c9617cdd90bae29156baaefbb2a8abef5ba
+   13b741949c37b8e09cc3daa3194c58e4fd6b2f14d4b1d0f035a46d6d5a1d3f11
 
-   We then calculate the BLAKE3 hash of the concatenation of these two
+   We then calculate the SHA-256 hash of the concatenation of these two
    digests.  Note that this is the same digest as the composite
    envelope's digest:
 
-   echo "7092d62002c3d0f3c889058092e6915bad908f03263c2dc91bfea6fd8e\
-   e62fab9a7717153d7a31b0390011413bdf9500ff4d8870ccf102ae31eaa165ab\
-   25df1a" | xxd -r -p | b3sum --no-names
-   55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+ echo "db7dd21c5169b4848d2a1bcb0a651c9617cdd90bae29156baaefbb2a8abef5ba\
+ 13b741949c37b8e09cc3daa3194c58e4fd6b2f14d4b1d0f035a46d6d5a1d3f11" | \
+     xxd -r -p | shasum --binary --algorithm 256 | awk '{ print $1 }'
+ 78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2
 
-   $ envelope digest --hex $ASSERTION
-   55560bdf060f1220199c87e84e29cecef96ef811de4f399dab2fde9425d0d418
+ $ envelope digest --hex $ASSERTION
+ 78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2
 
 5.  Envelope Hierarchy
 
@@ -860,7 +860,7 @@ Table of Contents
    (Artwork only available as svg: No external link available, see
    draft-mcnally-envelope-latest.html for artwork.)
 
-   For easy recognition, envelope trees and Mermaid diagrams only show
+   ` For easy recognition, envelope trees and Mermaid diagrams only show
    the first four bytes of each digest, but internally all digests are
    32 bytes.
 
@@ -910,7 +910,7 @@ Table of Contents
 
 5.1.3.  Tree
 
-   27840350 "Alice"
+   13941b48 "Alice"
 
 5.1.4.  Mermaid
 
@@ -939,7 +939,7 @@ Table of Contents
 
 5.2.3.  Tree
 
-   d59f8c0f verifiedBy
+   d933fc06 verifiedBy
 
 5.2.4.  Mermaid
 
@@ -969,7 +969,7 @@ Table of Contents
 
 5.3.3.  Tree
 
-   27840350 ENCRYPTED
+   13941b48 ENCRYPTED
 
 5.3.4.  Mermaid
 
@@ -981,11 +981,11 @@ Table of Contents
    200(   ; envelope
       201(   ; crypto-msg
          [
-            h'6bfa027df241def0',
-            h'5520ca6d9d798ffd32d075c4',
-            h'd4b43d97a37eb280fdd89cf152ccf57d',
-            h'd8cb5820278403504ad3a9a9c24c1b35a3673eee165a5d52\
-            3f8d2a5cf5ce6dd25a37f110'
+            h'130b06fd0bfed08e',
+            h'cbe81743cebf0e55dc77b55d',
+            h'02dc64f9c7d7b0a162b36030a1b6ecaa',
+            h'd8cb582013941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140\
+              db36062d9519dd2f'
          ]
       )
    )
@@ -1008,7 +1008,7 @@ Table of Contents
 
 5.4.3.  Tree
 
-   27840350 ELIDED
+   13941b48 ELIDED
 
 5.4.4.  Mermaid
 
@@ -1017,12 +1017,11 @@ Table of Contents
 
 5.4.5.  CBOR Diagnostic Notation
 
-   200(   ; envelope
-      203(   ; crypto-digest
-         h'278403504ad3a9a9c24c1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37\
-         f110'
-      )
+200(   ; envelope
+   203(   ; crypto-digest
+     h'13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f'
    )
+)
 
 5.4.6.  CBOR Hex
 
@@ -1043,11 +1042,11 @@ Table of Contents
 
 5.5.3.  Tree
 
-   e54d6fd3 NODE
-       27840350 subj "Alice"
-       55560bdf ASSERTION
-           7092d620 pred "knows"
-           9a771715 obj "Bob"
+   8955db5e NODE
+       13941b48 subj "Alice"
+       78d666eb ASSERTION
+           db7dd21c pred "knows"
+           13b74194 obj "Bob"
 
 5.5.4.  Mermaid
 
@@ -1095,8 +1094,8 @@ Table of Contents
 
 5.6.3.  Tree
 
-   aaed47e8 WRAPPED
-       27840350 subj "Alice"
+   2bc17c65 WRAPPED
+       13941b48 subj "Alice"
 
 5.6.4.  Mermaid
 
@@ -1127,9 +1126,9 @@ Table of Contents
 
 5.7.3.  Tree
 
-   55560bdf ASSERTION
-       7092d620 pred "knows"
-       9a771715 obj "Bob"
+   78d666eb ASSERTION
+       db7dd21c pred "knows"
+       13b74194 obj "Bob"
 
 5.7.4.  Mermaid
 
@@ -1457,16 +1456,16 @@ Table of Contents
    algorithm to produce the merkle tree digests, it would be necessary
    to use a different top-level CBOR tag to represent the envelope
    itself.  Currently the envelope tag is #6.200, and the choice of
-   digest algorithm in our reference implementation is BLAKE3.  If this
+   digest algorithm in our reference implementation is SHA-256.  If this
    version were officially released and a future version of Gordian
    Envelope was also released that supported SHA-256, it will need to
    have a different tag.  However, a problem for interoperability of
    these two distinct formats then arises in the choice of whether a
-   particular envelope is encoded assuming BLAKE3 or SHA-256.  Whenever
+   particular envelope is encoded assuming SHA-256 or SHA-256.  Whenever
    there is a choice about two or more ways to encode particular data,
    this violates the determinism requirement that Gordian Envelopes are
    designed to uphold.  In other words, an envelope encoding certain
-   information using BLAKE3 will not, in general, be structurally
+   information using SHA-256 will not, in general, be structurally
    identical to the same information encoded in an envelope using SHA-
    256.  For instance, they will both have different root hashes, and
    simply knowing which algorithm produced each one will not help you
@@ -1499,12 +1498,12 @@ Table of Contents
 
    Generally, this document inherits the security considerations of the
    cryptographic constructs it uses such as IETF-ChaCha20-Poly1305
-   [RFC8439] and BLAKE3 [BLAKE3].
+   [RFC8439] and SHA-256 [RFC6234].
 
 10.2.2.  Choice of Cryptographic Primitives (No Set Curve)
 
    Though envelope recommends the use of certain cryptographic
-   algorithms, most are not required (with the exception of BLAKE3
+   algorithms, most are not required (with the exception of SHA-256
    usage, noted below).  In particular, envelope has no required curve.
    Different choices will obviously result in different security
    considerations.
@@ -1529,21 +1528,21 @@ Table of Contents
 
 10.5.  Hashing
 
-10.5.1.  Choice of BLAKE3 Hash Primitive
+10.5.1.  Choice of SHA-256 Hash Primitive
 
    Although BLAKE2 is more widely supported by IETF specifications,
-   envelope instead makes use of BLAKE3.  This is to take advantage of
-   advances in the updated protocol: the new BLAKE3 implementation uses
+   envelope instead makes use of SHA-256.  This is to take advantage of
+   advances in the updated protocol: the new SHA-256 implementation uses
    a Merkle Tree format that allows for streaming and for incremental
-   updates as well as high levels of parallelism.  The fact that BLAKE3
+   updates as well as high levels of parallelism.  The fact that SHA-256
    is newer should be taken into consideration, but its foundation in
    BLAKE2 and its support by experts such as the Zcash Foundation are
    considered to grant it sufficient maturity.
 
    Whereas envelope is written to allow for the easy exchange of most of
-   its cryptographic protocols, this is not true for BLAKE3: swapping
+   its cryptographic protocols, this is not true for SHA-256: swapping
    for another hash protocol would result in incompatible envelopes.
-   Thus, any security considerations related to BLAKE3 should be given
+   Thus, any security considerations related to SHA-256 should be given
    careful attention.
 
 10.5.2.  Well-Known Hashes
@@ -1607,8 +1606,7 @@ Table of Contents
    possibility for duplication and thus fully deterministic ordering of
    the tree.
 
-   See the leaf-node attack (here)[https://bitslog.com/2018/06/09/leaf-
-   node-weakness-in-bitcoin-merkle-tree-design/].
+   See the leaf-node attack at [LEAF-MERKLE].
 
 10.5.8.  Forgery Attacks on Unbalanced Trees
 
@@ -1617,7 +1615,7 @@ Table of Contents
    nodes contain semantically important data and duplicate assertions
    are not allowed.
 
-   See the forgery attack (here)[https://bitcointalk.org/?topic=102395].
+   See the forgery attack here: [BLOCK-EXPLOIT].
 
 10.6.  Elision
 
@@ -1794,9 +1792,6 @@ Table of Contents
 
 13.1.  Normative References
 
-   [BLAKE3]   "BLAKE3 Cryptographic Hash Function", n.d.,
-              <https://blake3.io>.
-
    [CRYPTO-MSG]
               "UR Type Definition for Secure Messages", n.d.,
               <https://github.com/BlockchainCommons/Research/blob/
@@ -1821,6 +1816,11 @@ Table of Contents
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
+              (SHA and SHA-based HMAC and HKDF)", RFC 6234,
+              DOI 10.17487/RFC6234, May 2011,
+              <https://www.rfc-editor.org/rfc/rfc6234>.
 
    [RFC6838]  Freed, N., Klensin, J., and T. Hansen, "Media Type
               Specifications and Registration Procedures", BCP 13,
@@ -1857,6 +1857,10 @@ Table of Contents
               <https://github.com/BlockchainCommons/Research/blob/
               master/papers/bcr-2020-006-urtypes.md>.
 
+   [BLOCK-EXPLOIT]
+              "CVE-2012-2459 (block merkle calculation exploit)", n.d.,
+              <https://bitcointalk.org/?topic=102395>.
+
    [CBOR-FLATBUFFERS]
               "Flatbuffers vs CBOR", n.d.,
               <https://stackoverflow.com/questions/47799396/flatbuffers-
@@ -1876,6 +1880,11 @@ Table of Contents
    [ISO639]   "ISO 639 - Standard for representation of names for
               language and language groups", n.d.,
               <https://en.wikipedia.org/wiki/ISO_639>.
+
+   [LEAF-MERKLE]
+              "Leaf-Node weakness in Bitcoin Merkle Tree Design", n.d.,
+              <https://bitslog.com/2018/06/09/leaf-node-weakness-in-
+              bitcoin-merkle-tree-design/>.
 
    [MERKLE]   "Merkle Tree", n.d.,
               <https://en.wikipedia.org/wiki/Merkle_tree>.
