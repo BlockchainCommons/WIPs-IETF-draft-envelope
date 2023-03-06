@@ -1530,20 +1530,9 @@ Table of Contents
 
 10.5.1.  Choice of SHA-256 Hash Primitive
 
-   Although BLAKE2 is more widely supported by IETF specifications,
-   envelope instead makes use of SHA-256.  This is to take advantage of
-   advances in the updated protocol: the new SHA-256 implementation uses
-   a Merkle Tree format that allows for streaming and for incremental
-   updates as well as high levels of parallelism.  The fact that SHA-256
-   is newer should be taken into consideration, but its foundation in
-   BLAKE2 and its support by experts such as the Zcash Foundation are
-   considered to grant it sufficient maturity.
-
-   Whereas envelope is written to allow for the easy exchange of most of
-   its cryptographic protocols, this is not true for SHA-256: swapping
-   for another hash protocol would result in incompatible envelopes.
-   Thus, any security considerations related to SHA-256 should be given
-   careful attention.
+   Envelope uses the SHA-256 digest algorithm, which is regarded as
+   reliable and widely supported by many implementations in both
+   software and hardware.
 
 10.5.2.  Well-Known Hashes
 

@@ -3921,8 +3921,7 @@ version = uint           ; absent for old method, 1 for new method
           <h4 id="name-choice-of-sha-256-hash-prim">
 <a href="#section-10.5.1" class="section-number selfRef">10.5.1. </a><a href="#name-choice-of-sha-256-hash-prim" class="section-name selfRef">Choice of SHA-256 Hash Primitive</a>
           </h4>
-<p id="section-10.5.1-1">Although BLAKE2 is more widely supported by IETF specifications, envelope instead makes use of SHA-256. This is to take advantage of advances in the updated protocol: the new SHA-256 implementation uses a Merkle Tree format that allows for streaming and for incremental updates as well as high levels of parallelism. The fact that SHA-256 is newer should be taken into consideration, but its foundation in BLAKE2 and its support by experts such as the Zcash Foundation are considered to grant it sufficient maturity.<a href="#section-10.5.1-1" class="pilcrow">¶</a></p>
-<p id="section-10.5.1-2">Whereas envelope is written to allow for the easy exchange of most of its cryptographic protocols, this is not true for SHA-256: swapping for another hash protocol would result in incompatible envelopes. Thus, any security considerations related to SHA-256 should be given careful attention.<a href="#section-10.5.1-2" class="pilcrow">¶</a></p>
+<p id="section-10.5.1-1">Envelope uses the SHA-256 digest algorithm, which is regarded as reliable and widely supported by many implementations in both software and hardware.<a href="#section-10.5.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="well-known-hashes">
