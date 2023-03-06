@@ -1530,9 +1530,9 @@ Table of Contents
 
 10.5.1.  Choice of SHA-256 Hash Primitive
 
-   Envelope uses the SHA-256 digest algorithm, which is regarded as
-   reliable and widely supported by many implementations in both
-   software and hardware.
+   Envelope uses the SHA-256 digest algorithm [RFC6234], which is
+   regarded as reliable and widely supported by many implementations in
+   both software and hardware.
 
 10.5.2.  Well-Known Hashes
 
