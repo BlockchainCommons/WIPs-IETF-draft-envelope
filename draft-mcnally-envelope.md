@@ -232,13 +232,13 @@ auth = bytes .size 16    ; Authentication tag created by Poly1305
 
 ### Elided Case Format
 
-An `elided` case is used as a placeholder for an element that has been elided and its digest, produced by a cryptographic hash algorithm, is left as a placeholder. This subsection specifies the construct used in the current reference implementation and is informative.
+An `elided` case is used as a placeholder for an element that has been elided and its digest, produced by a cryptographic hash algorithm, is left as a placeholder.
 
 ~~~ cddl
 elided = digest
 ~~~
 
-For `digest`, the reference implementation {{ENVELOPE-REFIMPL}} uses of the SHA-256 cryptographic hash function {{-SHA-256}} to generate a 32 byte digest.
+For `digest`, the SHA-256 cryptographic hash function {{-SHA-256}} is used to generate a 32 byte digest.
 
 ~~~ cddl
 digest = #6.203(sha256-digest)
@@ -607,17 +607,17 @@ In the diagrams above, there are five distinct "positions" of elements, each of 
 The examples above are printed in "envelope notation," which is designed to make the semantic content of envelopes human-readable, but it doesn't show the actual digests associated with each of the positions. To see the structure more completely, we can display every element of the envelope in Tree Notation:
 
 ~~~
-0abac60a NODE
-    27840350 subj "Alice"
-    1e0b049b ASSERTION
-        7092d620 pred "knows"
-        d5a375ff obj "Edward"
-    55560bdf ASSERTION
-        7092d620 pred "knows"
-        9a771715 obj "Bob"
-    71a30690 ASSERTION
-        7092d620 pred "knows"
-        ad2c454b obj "Carol"
+6255e3b6 NODE
+    13941b48 subj "Alice"
+    4012caf2 ASSERTION
+        db7dd21c pred "knows"
+        afb8122e obj "Carol"
+    65c3ebc3 ASSERTION
+        db7dd21c pred "knows"
+        e9af7883 obj "Edward"
+    78d666eb ASSERTION
+        db7dd21c pred "knows"
+        13b74194 obj "Bob"
 ~~~
 
 We can also show the digest tree graphically using Mermaid {{MERMAID}}:
@@ -897,7 +897,7 @@ We can also show the digest tree graphically using Mermaid {{MERMAID}}:
 <rect x="374.4" y="475.8" fill-rule="evenodd" fill="none" width="117" height="27"/>
 </svg>
 </artwork>
-`
+
 For easy recognition, envelope trees and Mermaid diagrams only show the first four bytes of each digest, but internally all digests are 32 bytes.
 
 From the above envelope and its tree, we make the following observations:
@@ -1629,7 +1629,7 @@ We then elide the entire envelope, leaving only the root-level digest. This dige
 ~~~ sh
 $ COMMITMENT=`envelope elide $ALICE_FRIENDS`
 $ envelope --tree $COMMITMENT
-cd84aa96 ELIDED
+cc6fb8f6 ELIDED
 ~~~
 
 A third party, having received this commitment, can then request proof that the envelope contains a particular assertion, called the *target*.
@@ -1638,9 +1638,9 @@ A third party, having received this commitment, can then request proof that the 
 $ REQUESTED_ASSERTION=`envelope subject assertion knows Bob`
 
 $ envelope --tree $REQUESTED_ASSERTION
-55560bdf ASSERTION
-    7092d620 pred "knows"
-    9a771715 obj "Bob"
+78d666eb ASSERTION
+    db7dd21c pred "knows"
+    13b74194 obj "Bob"
 ~~~
 
 The holder can then produce a proof, which is an elided form of the original document that contains a minimum spanning set of digests, including the target.
@@ -1652,11 +1652,11 @@ $ KNOWS_BOB_PROOF=`envelope proof create $ALICE_FRIENDS \
     $KNOWS_BOB_DIGEST`
 
 $ envelope --tree $KNOWS_BOB_PROOF
-cd84aa96 NODE
-    27840350 subj ELIDED
-    55560bdf ELIDED
-    71a30690 ELIDED
-    907c8857 ELIDED
+cc6fb8f6 NODE
+    13941b48 subj ELIDED
+    10d8d5b0 ELIDED
+    4012caf2 ELIDED
+    78d666eb ELIDED
 ~~~
 
 Note that the proof:
@@ -1713,7 +1713,7 @@ If present, the first field specifies the later encryption method. If absent, th
 
 ## Commitment to the Hash Algorithm
 
-For changes that are more sweeping, like supporting a different hash algorithm to produce the merkle tree digests, it would be necessary to use a different top-level CBOR tag to represent the envelope itself. Currently the envelope tag is #6.200, and the choice of digest algorithm in our reference implementation is SHA-256. If this version were officially released and a future version of Gordian Envelope was also released that supported SHA-256, it will need to have a different tag. However, a problem for interoperability of these two distinct formats then arises in the choice of whether a particular envelope is encoded assuming SHA-256 or SHA-256. Whenever there is a choice about two or more ways to encode particular data, this violates the determinism requirement that Gordian Envelopes are designed to uphold. In other words, an envelope encoding certain information using SHA-256 will not, in general, be structurally identical to the same information encoded in an envelope using SHA-256. For instance, they will both have different root hashes, and simply knowing which algorithm produced each one will not help you know whether they have equivalent content. Only two envelope cases actually encode their digest in the binary stream: ELIDED and ENCRYPTED. If an envelope doesn't use either of these cases, then you could choose to decode the envelope with either algorithm, but if it does use either of these cases then the envelope will still decode, but attempting to decrypt or unelide its contents will result in mismatched digests. This is why the envelope itself needs to declare the hashing algorithm used using its top-level CBOR tag, and why the choice of which hash algorithm to commit to should be carefully considered.
+For changes that are more sweeping, like supporting a different hash algorithm to produce the merkle tree digests, it would be necessary to use a different top-level CBOR tag to represent the envelope itself. Currently the envelope tag is #6.200, and the choice of digest algorithm in our reference implementation is SHA-256. If this version were officially released and a future version of Gordian Envelope was also released that supported BLAKE3, it will need to have a different tag. However, a problem for interoperability of these two distinct formats then arises in the choice of whether a particular envelope is encoded assuming SHA-256 or BLAKE3. Whenever there is a choice about two or more ways to encode particular data, this violates the determinism requirement that Gordian Envelopes are designed to uphold. In other words, an envelope encoding certain information using SHA-256 will not, in general, be structurally identical to the same information encoded in an envelope using BLAKE3. For instance, they will both have different root hashes, and simply knowing which algorithm produced each one will not help you know whether they have equivalent content. Only two envelope cases actually encode their digest in the binary stream: ELIDED and ENCRYPTED. If an envelope doesn't use either of these cases, then you could choose to decode the envelope with either algorithm, but if it does use either of these cases then the envelope will still decode, but attempting to decrypt or unelide its contents will result in mismatched digests. This is why the envelope itself needs to declare the hashing algorithm used using its top-level CBOR tag, and why the choice of which hash algorithm to commit to should be carefully considered.
 
 # Security Considerations
 
