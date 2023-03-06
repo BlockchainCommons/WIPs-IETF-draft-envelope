@@ -6,11 +6,11 @@
 
 ```mermaid
 graph LR
-    1(("e54d6fd3<br/>NODE"))
-    2["27840350<br/>#quot;Alice#quot;"]
-    3(["55560bdf<br/>ASSERTION"])
-    4["7092d620<br/>#quot;knows#quot;"]
-    5["9a771715<br/>#quot;Bob#quot;"]
+    1(("8955db5e<br/>NODE"))
+    2["13941b48<br/>#quot;Alice#quot;"]
+    3(["78d666eb<br/>ASSERTION"])
+    4["db7dd21c<br/>#quot;knows#quot;"]
+    5["13b74194<br/>#quot;Bob#quot;"]
     1 -->|subj| 2
     1 --> 3
     3 -->|pred| 4
@@ -34,6 +34,8 @@ mmdc --input images/mermaid/node_case.mermaid \
     --outputFormat pdf \
     --configFile mermaid_config.json
 ```
+
+The `mermaid_convert_to_pdf.sh` script is set up to do this step.
 
 `mermaid_config.json:`
 
@@ -101,7 +103,16 @@ sed -e "s/ id=\"Layer_1\"//g" -i .backup images/svg-validated/node_case.svg
 rm images/svg-validated/node_case.svg.backup
 ```
 
-8. Include the SVG in the markdown file:
+The `postprocess_mermaid.sh` script does steps 7 and 8.
+
+1. Embed the SVG in the markdown file:
+
+```
+<artwork type="svg"><svg...>
+</svg></artwork>
+```
+
+Linking to the artwork is possible, but doesn't seem to work during submission:
 
 ```
 <artwork type="svg" src="images/svg-validated/node_case.svg"/>
