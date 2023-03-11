@@ -10,26 +10,26 @@
 <meta content='
        The  envelope  protocol specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively encrypt or elide specific parts of a document without invalidating the document structure including the digest tree, or any cryptographic signatures that rely on it. 
     ' name="description">
-<meta content="xml2rfc 3.15.2" name="generator">
+<meta content="xml2rfc 3.16.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-mcnally-envelope-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.15.2
-    Python 3.10.9
+  xml2rfc 3.16.0
+    Python 3.10.10
     appdirs 1.4.4
     ConfigArgParse 1.5.3
     google-i18n-address 2.5.2
     html5lib 1.1
     intervaltree 3.1.0
     Jinja2 3.1.2
-    lxml 4.9.1
+    lxml 4.9.2
     MarkupSafe 2.1.1
     pycountry 22.3.5
     PyYAML 6.0
     requests 2.28.1
-    setuptools 65.5.0
+    setuptools 65.6.0
     six 1.16.0
-    wcwidth 0.2.5
+    wcwidth 0.2.6
 -->
 <link href="draft-mcnally-envelope.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1721,8 +1721,8 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <li class="normal" id="section-3.1-5.3">The <code>assertion</code> case has exactly two children: the <code>predicate</code> and the <code>object</code>.<a href="#section-3.1-5.3" class="pilcrow">¶</a>
 </li>
         </ul>
-<div id="section-3.1-6">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.1-6">
+<pre>
 envelope = #6.200(
     envelope-content
 )
@@ -1753,8 +1753,8 @@ envelope-content = (
 <p id="section-3.2.1-1">A <code>leaf</code> case is used when the envelope contains only user-defined CBOR content. It is tagged using #6.24, per <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> section 3.4.5.1, "Encoded CBOR Data Item".<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.2.1-2">To preserve deterministic encoding, developers using the envelope format <span class="bcp14">MUST</span> specify where tags <span class="bcp14">MUST</span> or <span class="bcp14">MUST NOT</span> be used to identify the type of CBOR within <code>leaf</code> elements. In cases where simple CBOR values like integers or UTF-8 strings are encoded, no additional tagging may be necessary because positionality within the envelope is sufficient to imply the type without ambiguity.<a href="#section-3.2.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.2.1-3">For example, if a structure representing a person specifies that it <span class="bcp14">MAY</span> have a <code>firstName</code> predicate with a <code>string</code> object, there is no need for an additional tag within the object <code>leaf</code> element: it would be a coding error to place anything but a <code>string</code> in that position. But where developers are specifying a compound CBOR structure with a specified layout for inclusion in an envelope, especially one that may be used in a plurality of positions (for example a CBOR array of alias first names), they <span class="bcp14">SHOULD</span> specify a tag, and specify where it <span class="bcp14">MUST</span> or <span class="bcp14">MUST NOT</span> be used.<a href="#section-3.2.1-3" class="pilcrow">¶</a></p>
-<div id="section-3.2.1-4">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.2.1-4">
+<pre>
 leaf = #6.24(bytes)
 </pre><a href="#section-3.2.1-4" class="pilcrow">¶</a>
 </div>
@@ -1766,8 +1766,8 @@ leaf = #6.24(bytes)
 <a href="#section-3.2.2" class="section-number selfRef">3.2.2. </a><a href="#name-known-value-case-format" class="section-name selfRef">Known Value Case Format</a>
           </h4>
 <p id="section-3.2.2-1">A <code>known-value</code> case is used to specify an unsigned integer in a namespace of well-known values. Known values are frequently used as predicates. For example, any envelope can be used as a predicate in an assertion, but many predicates are commonly used, e.g., <code>verifiedBy</code> for signatures; hence it is desirable to keep common predicates short.<a href="#section-3.2.2-1" class="pilcrow">¶</a></p>
-<div id="section-3.2.2-2">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.2.2-2">
+<pre>
 known-value = #6.223(uint)
 </pre><a href="#section-3.2.2-2" class="pilcrow">¶</a>
 </div>
@@ -1779,14 +1779,14 @@ known-value = #6.223(uint)
 <a href="#section-3.2.3" class="section-number selfRef">3.2.3. </a><a href="#name-encrypted-case-format" class="section-name selfRef">Encrypted Case Format</a>
           </h4>
 <p id="section-3.2.3-1">An <code>encrypted</code> case is used for an envelope that has been encrypted using an Authenticated Encryption with Associated Data (AEAD), and where the digest of the plaintext is declared by the encrypted structure's Additional Authenticated Data (AAD) field. This subsection specifies the construct used in the current reference implementation and is informative.<a href="#section-3.2.3-1" class="pilcrow">¶</a></p>
-<div id="section-3.2.3-2">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.2.3-2">
+<pre>
 encrypted = crypto-msg
 </pre><a href="#section-3.2.3-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.2.3-3">For <code>crypto-msg</code>, the reference implementation <span>[<a href="#ENVELOPE-REFIMPL" class="cite xref">ENVELOPE-REFIMPL</a>]</span> uses the definition in "UR Type Definition for Secure Messages" <span>[<a href="#CRYPTO-MSG" class="cite xref">CRYPTO-MSG</a>]</span> and we repeat the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in <span>[<a href="#RFC8439" class="cite xref">RFC8439</a>]</span>. When used with envelopes, the <code>crypto-msg</code> construct <code>aad</code> (additional authenticated data) field contains the <code>digest</code> of the plaintext, authenticating the declared digest using the Poly1305 MAC.<a href="#section-3.2.3-3" class="pilcrow">¶</a></p>
-<div id="section-3.2.3-4">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.2.3-4">
+<pre>
 crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
 
 ciphertext = bytes       ; encrypted using ChaCha20
@@ -1803,14 +1803,14 @@ auth = bytes .size 16    ; Authentication tag created by Poly1305
 <a href="#section-3.2.4" class="section-number selfRef">3.2.4. </a><a href="#name-elided-case-format" class="section-name selfRef">Elided Case Format</a>
           </h4>
 <p id="section-3.2.4-1">An <code>elided</code> case is used as a placeholder for an element that has been elided and its digest, produced by a cryptographic hash algorithm, is left as a placeholder.<a href="#section-3.2.4-1" class="pilcrow">¶</a></p>
-<div id="section-3.2.4-2">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.2.4-2">
+<pre>
 elided = digest
 </pre><a href="#section-3.2.4-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.2.4-3">For <code>digest</code>, the SHA-256 cryptographic hash function <span>[<a href="#RFC6234" class="cite xref">RFC6234</a>]</span> is used to generate a 32 byte digest.<a href="#section-3.2.4-3" class="pilcrow">¶</a></p>
-<div id="section-3.2.4-4">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.2.4-4">
+<pre>
 digest = #6.203(sha256-digest)
 
 sha256-digest = bytes .size 32
@@ -1832,8 +1832,8 @@ sha256-digest = bytes .size 32
           </h4>
 <p id="section-3.3.1-1">A <code>node</code> case is encoded as a CBOR array, and <span class="bcp14">MUST</span> be used when one or more assertions are present on the envelope. It <span class="bcp14">MUST NOT</span> be present when there is not at least one assertion. The first element of the array is the envelope's <code>subject</code>, Followed by one or more <code>assertion-element</code>s, each of which <span class="bcp14">MUST</span> be an <code>assertion</code>, or the <code>encrypted</code> or <code>elided</code> transformation of that assertion. The assertion elements <span class="bcp14">MUST</span> appear in ascending lexicographic order by their digest. The array <span class="bcp14">MUST NOT</span> contain any assertion elements with identical digests.<a href="#section-3.3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.3.1-2">Note that <code>assertion-elements</code> as defined here here explicitly include assertions that have been elided or encrypted, as specified in the CDDL below. The envelopes in the <code>node</code> case array <span class="bcp14">MUST</span>, when unelided/unencrypted be found to be actual <code>assertion</code> case envelopes, or it is a coding error.<a href="#section-3.3.1-2" class="pilcrow">¶</a></p>
-<div id="section-3.3.1-3">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.3.1-3">
+<pre>
 node = [envelope-content, + assertion-element]
 
 assertion-element = ( assertion / encrypted / elided )
@@ -1847,8 +1847,8 @@ assertion-element = ( assertion / encrypted / elided )
 <a href="#section-3.3.2" class="section-number selfRef">3.3.2. </a><a href="#name-wrapped-envelope-case-forma" class="section-name selfRef">Wrapped Envelope Case Format</a>
           </h4>
 <p id="section-3.3.2-1">A <code>wrapped-envelope</code> case is used where an envelope, including all its assertions, should be treated as a single element, e.g. for the purpose of signing.<a href="#section-3.3.2-1" class="pilcrow">¶</a></p>
-<div id="section-3.3.2-2">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.3.2-2">
+<pre>
 wrapped-envelope = #6.224(envelope-content)
 </pre><a href="#section-3.3.2-2" class="pilcrow">¶</a>
 </div>
@@ -1866,8 +1866,8 @@ wrapped-envelope = #6.224(envelope-content)
             <li id="section-3.3.3-2.2">the envelope representing the object of the assertion.<a href="#section-3.3.3-2.2" class="pilcrow">¶</a>
 </li>
           </ol>
-<div id="section-3.3.3-3">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-3.3.3-3">
+<pre>
 assertion = #6.221([predicate-envelope, object-envelope])
 predicate-envelope = envelope
 object-envelope = envelope
@@ -2300,7 +2300,7 @@ subject [
 </div>
 <p id="section-5-14">We can also show the digest tree graphically using Mermaid <span>[<a href="#MERMAID" class="cite xref">MERMAID</a>]</span>:<a href="#section-5-14" class="pilcrow">¶</a></p>
 <div class="alignLeft art-svg artwork" id="section-5-15">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="539.8px" height="541.2px" viewBox="0 0 539.8 541.2" xml:space="preserve" font-family="Noto Serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="539.8px" height="541.2px" viewBox="0 0 539.8 541.2" xml:space="preserve">
           <path fill="none" stroke="#000000" stroke-width="1.4998" d="M77.9,179.3l8.5-21.2c8.5-21.2,25.6-63.6,39.1-84.8  C139,52,149,52,153.9,52h5"></path>
           <rect x="25" y="25" fill-rule="evenodd" fill="none" width="489.8" height="491.2"></rect>
           <polygon fill="black" points="150.8,47.5 159.8,52 150.8,56.5"></polygon>
@@ -2650,7 +2650,7 @@ envelope subject "Alice"
 <a href="#section-5.1.4" class="section-number selfRef">5.1.4. </a><a href="#name-mermaid" class="section-name selfRef">Mermaid</a>
           </h4>
 <div class="alignLeft art-svg artwork" id="section-5.1.4-1">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="199.2px" height="104px" viewBox="0 0 199.2 104" xml:space="preserve" font-family="Noto Serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="199.2px" height="104px" viewBox="0 0 199.2 104" xml:space="preserve">
               <rect x="31" y="31" fill="none" stroke="#000000" stroke-width="2.2528" width="137.2" height="42"></rect>
               <rect x="25" y="25" fill-rule="evenodd" fill="none" width="149.2" height="54"></rect>
               <path d="M77.3,49h-1.1v-6.7c-0.3,0.2-0.6,0.5-1,0.7c-0.4,0.2-0.8,0.4-1.1,0.5v-1c0.6-0.3,1.1-0.6,1.6-1c0.4-0.4,0.8-0.8,0.9-1.1h0.7  V49z"></path>
@@ -2748,7 +2748,7 @@ d933fc06 verifiedBy
 <a href="#section-5.2.4" class="section-number selfRef">5.2.4. </a><a href="#name-mermaid-2" class="section-name selfRef">Mermaid</a>
           </h4>
 <div class="alignLeft art-svg artwork" id="section-5.2.4-1">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="158px" height="104px" viewBox="0 0 158 104" xml:space="preserve" font-family="Noto Serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="158px" height="104px" viewBox="0 0 158 104" xml:space="preserve">
               <polygon fill="none" stroke="#000000" stroke-width="2.2532" points="31,73 105.9,73 127,31 52.1,31"></polygon>
               <rect x="25" y="25" fill-rule="evenodd" fill="none" width="108" height="54"></rect>
               <path d="M59.1,49v-0.8c-0.4,0.6-1,0.9-1.7,0.9c-0.5,0-1-0.1-1.4-0.4c-0.4-0.3-0.7-0.7-1-1.1c-0.2-0.5-0.3-1.1-0.3-1.7  c0-0.6,0.1-1.2,0.3-1.7s0.5-0.9,0.9-1.2c0.4-0.3,0.9-0.4,1.4-0.4c0.4,0,0.7,0.1,1,0.2s0.5,0.4,0.7,0.6v-3.1h1.1V49H59.1z M55.7,45.9  c0,0.8,0.2,1.4,0.5,1.8s0.7,0.6,1.2,0.6c0.5,0,0.9-0.2,1.2-0.6s0.5-1,0.5-1.7c0-0.9-0.2-1.5-0.5-1.9s-0.7-0.6-1.2-0.6  c-0.5,0-0.9,0.2-1.2,0.6C55.9,44.5,55.7,45.1,55.7,45.9z"></path>
@@ -2850,7 +2850,7 @@ ENCRYPTED
 <a href="#section-5.3.4" class="section-number selfRef">5.3.4. </a><a href="#name-mermaid-3" class="section-name selfRef">Mermaid</a>
           </h4>
 <div class="alignLeft art-svg artwork" id="section-5.3.4-1">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="171.5px" height="104px" viewBox="0 0 171.5 104" xml:space="preserve" font-family="Noto Serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="171.5px" height="104px" viewBox="0 0 171.5 104" xml:space="preserve">
               <path d="M31,71.9h3.7v2.2H31V71.9z M36,69.6l-2.6,2.7l-1.6-1.6l2.6-2.7L36,69.6z M41.3,64.3l-2.6,2.7l-1.6-1.6l2.6-2.7L41.3,64.3z   M46.6,59l-2.6,2.7L42.3,60l2.6-2.7L46.6,59z M51.9,53.7l-2.6,2.7l-1.6-1.6l2.6-2.7L51.9,53.7z M48.3,46.8l2.6,2.7L49.4,51l-2.6-2.7  L48.3,46.8z M43,41.5l2.6,2.7l-1.6,1.6L41.4,43L43,41.5z M37.7,36.2l2.6,2.7l-1.6,1.6l-2.6-2.7L37.7,36.2z M32.4,30.9l2.6,2.7  l-1.6,1.6l-2.6-2.7L32.4,30.9z M37.6,32.1h-3.7v-2.2h3.7V32.1z M45,32.1h-3.7v-2.2H45V32.1z M52.5,32.1h-3.7v-2.2h3.7V32.1z   M60,32.1h-3.7v-2.2H60V32.1z M67.5,32.1h-3.7v-2.2h3.7V32.1z M75,32.1h-3.7v-2.2H75V32.1z M82.4,32.1h-3.7v-2.2h3.7V32.1z   M89.9,32.1h-3.7v-2.2h3.7V32.1z M97.4,32.1h-3.7v-2.2h3.7V32.1z M104.9,32.1h-3.7v-2.2h3.7V32.1z M112.4,32.1h-3.7v-2.2h3.7V32.1z   M119.9,32.1h-3.7v-2.2h3.7V32.1z M127.3,32.1h-3.7v-2.2h3.7V32.1z M134.8,32.1h-3.7v-2.2h3.7V32.1z M139.4,32.8V31h1.1v1.1h-2v-2.2  h3.1v2.9H139.4z M139.4,40.3v-3.8h2.2v3.8H139.4z M139.4,47.8V44h2.2v3.8H139.4z M139.4,55.3v-3.8h2.2v3.8H139.4z M139.4,62.8V59  h2.2v3.8H139.4z M139.4,70.3v-3.8h2.2v3.8H139.4z M135.7,71.9h3.7v2.2h-3.7V71.9z M128.3,71.9h3.7v2.2h-3.7V71.9z M120.8,71.9h3.7  v2.2h-3.7V71.9z M113.3,71.9h3.7v2.2h-3.7V71.9z M105.8,71.9h3.7v2.2h-3.7V71.9z M98.3,71.9h3.7v2.2h-3.7V71.9z M90.8,71.9h3.7v2.2  h-3.7V71.9z M83.4,71.9h3.7v2.2h-3.7V71.9z M75.9,71.9h3.7v2.2h-3.7V71.9z M68.4,71.9h3.7v2.2h-3.7V71.9z M60.9,71.9h3.7v2.2h-3.7  V71.9z M53.4,71.9h3.7v2.2h-3.7V71.9z M45.9,71.9h3.7v2.2h-3.7V71.9z M38.5,71.9h3.7v2.2h-3.7V71.9z"></path>
               <rect x="25" y="25" fill-rule="evenodd" fill="none" width="121.5" height="54"></rect>
               <path d="M74,49H73v-6.7c-0.3,0.2-0.6,0.5-1,0.7s-0.8,0.4-1.1,0.5v-1c0.6-0.3,1.1-0.6,1.5-1s0.8-0.8,0.9-1.1H74V49z"></path>
@@ -2960,7 +2960,7 @@ ELIDED
 <a href="#section-5.4.4" class="section-number selfRef">5.4.4. </a><a href="#name-mermaid-4" class="section-name selfRef">Mermaid</a>
           </h4>
 <div class="alignLeft art-svg artwork" id="section-5.4.4-1">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="151.2px" height="104px" viewBox="0 0 151.2 104" xml:space="preserve" font-family="Noto Serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="151.2px" height="104px" viewBox="0 0 151.2 104" xml:space="preserve">
               <path d="M41.5,71.9h3.7v2.2h-3.7V71.9z M39.9,67.4l1.7,3.4l-2,1l-1.7-3.4L39.9,67.4z M36.6,60.7l1.7,3.4l-2,1l-1.7-3.4L36.6,60.7z   M33.2,54l1.7,3.4l-2,1L31.2,55L33.2,54z M34.1,48.3l-1.7,3.4l-2-1l1.7-3.4L34.1,48.3z M37.5,41.6l-1.7,3.4l-2-1l1.7-3.4L37.5,41.6z   M40.8,34.9l-1.7,3.4l-2-1l1.7-3.4L40.8,34.9z M45.2,32.1h-3.7V31l1,0.5l0,0l-2-1l0.3-0.6h4.4V32.1z M52.7,32.1H49v-2.2h3.7V32.1z   M60.2,32.1h-3.7v-2.2h3.7V32.1z M67.7,32.1h-3.7v-2.2h3.7V32.1z M75.2,32.1h-3.7v-2.2h3.7V32.1z M82.7,32.1h-3.7v-2.2h3.7V32.1z   M90.1,32.1h-3.7v-2.2h3.7V32.1z M97.6,32.1h-3.7v-2.2h3.7V32.1z M105.1,32.1h-3.7v-2.2h3.7V32.1z M110,34.1l-1.3-2.5l1-0.5v1.1  h-0.9v-2.2h1.6L112,33L110,34.1z M113.4,40.8l-1.7-3.4l2-1l1.7,3.4L113.4,40.8z M116.7,47.5l-1.7-3.4l2-1l1.7,3.4L116.7,47.5z   M118.4,53.2l0.8-1.7l1,0.5l-1,0.5l-0.8-1.7l2-1l1.1,2.2l-1.1,2.2L118.4,53.2z M115.1,59.9l1.7-3.4l2,1l-1.7,3.4L115.1,59.9z   M111.7,66.6l1.7-3.4l2,1l-1.7,3.4L111.7,66.6z M108.9,71.9h0.9V73l-1-0.5l1.3-2.6l2,1l-1.6,3.2h-1.6V71.9z M101.4,71.9h3.7v2.2  h-3.7V71.9z M93.9,71.9h3.7v2.2h-3.7V71.9z M86.4,71.9h3.7v2.2h-3.7V71.9z M78.9,71.9h3.7v2.2h-3.7V71.9z M71.4,71.9h3.7v2.2h-3.7  V71.9z M63.9,71.9h3.7v2.2h-3.7V71.9z M56.5,71.9h3.7v2.2h-3.7V71.9z M49,71.9h3.7v2.2H49V71.9z"></path>
               <rect x="25" y="25" fill-rule="evenodd" fill="none" width="101.2" height="54"></rect>
               <path d="M53.4,49h-1.1v-6.7c-0.3,0.2-0.6,0.5-1,0.7s-0.8,0.4-1.1,0.5v-1c0.6-0.3,1.1-0.6,1.5-1s0.8-0.8,0.9-1.1h0.7V49z"></path>
@@ -3066,7 +3066,7 @@ envelope subject "Alice" | envelope assertion "knows" "Bob"
 <a href="#section-5.5.4" class="section-number selfRef">5.5.4. </a><a href="#name-mermaid-5" class="section-name selfRef">Mermaid</a>
           </h4>
 <div class="alignLeft art-svg artwork" id="section-5.5.4-1">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="533px" height="223.2px" viewBox="0 0 533 223.2" xml:space="preserve" font-family="Noto Serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="533px" height="223.2px" viewBox="0 0 533 223.2" xml:space="preserve">
               <path fill="none" stroke="#000000" stroke-width="1.4997" d="M94.2,73.7l5.8-3.6c5.8-3.6,17.4-10.8,28.2-14.5s20.7-3.6,25.6-3.6h5"></path>
               <rect x="25" y="25" fill-rule="evenodd" fill="none" width="483" height="173.2"></rect>
               <polygon fill="black" points="150.8,47.5 159.8,52 150.8,56.5"></polygon>
@@ -3283,7 +3283,7 @@ envelope subject "Alice" | envelope subject --wrapped
 <a href="#section-5.6.4" class="section-number selfRef">5.6.4. </a><a href="#name-mermaid-6" class="section-name selfRef">Mermaid</a>
           </h4>
 <div class="alignLeft art-svg artwork" id="section-5.6.4-1">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="362px" height="104px" viewBox="0 0 362 104" xml:space="preserve" font-family="Noto Serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="362px" height="104px" viewBox="0 0 362 104" xml:space="preserve">
               <path fill="none" stroke="#000000" stroke-width="1.4998" d="M124.5,52.4l6.6-0.1c6.6-0.1,19.9-0.2,31.5-0.2s21.5-0.1,26.5-0.1h5"></path>
               <rect x="25" y="25" fill-rule="evenodd" fill="none" width="312" height="54"></rect>
               <polygon fill="black" points="186.1,47.5 195.1,52 186.1,56.5"></polygon>
@@ -3412,7 +3412,7 @@ envelope subject assertion "knows" "Bob"
 <a href="#section-5.7.4" class="section-number selfRef">5.7.4. </a><a href="#name-mermaid-7" class="section-name selfRef">Mermaid</a>
           </h4>
 <div class="alignLeft art-svg artwork" id="section-5.7.4-1">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="362.8px" height="183.5px" viewBox="0 0 362.8 183.5" xml:space="preserve" font-family="Noto Serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="362.8px" height="183.5px" viewBox="0 0 362.8 183.5" xml:space="preserve">
               <path fill="none" stroke="#000000" stroke-width="1.4993" d="M119.5,70.8l6.1-3.1c6.1-3.1,18.4-9.4,29.7-12.5  c11.3-3.1,21.5-3.1,26.6-3.1h5.1"></path>
               <rect x="25" y="25" fill-rule="evenodd" fill="none" width="312.8" height="133.5"></rect>
               <polygon fill="black" points="178.9,47.5 187.9,52 178.9,56.5"></polygon>
@@ -3734,8 +3734,8 @@ d8c8d8dd82d8c8d818656b6e6f7773d8c8d81863426f62
 <p id="section-7-4">In an envelope, every digest references some semantically significant content: it could reference the subject of the envelope, or one of the assertions in the envelope, or at the predicate or object of a given assertion. Of course, those elements are all envelopes themselves, and thus potentially the root of their own subtree.<a href="#section-7-4" class="pilcrow">¶</a></p>
 <p id="section-7-5">In a Merkle tree, the minimum subset of hashes necessary to confirm that a specific leaf node (the "target") must be present is called a "Merkle proof." For envelopes, an analogous proof would be a transformation of the envelope that is entirely elided but preserves the structure necessary to reveal the target.<a href="#section-7-5" class="pilcrow">¶</a></p>
 <p id="section-7-6">As an example, we produce an envelope representing a simple FOAF <span>[<a href="#FOAF" class="cite xref">FOAF</a>]</span> style graph:<a href="#section-7-6" class="pilcrow">¶</a></p>
-<div id="section-7-7">
-<pre class="lang-sh sourcecode">
+<div class="lang-sh sourcecode" id="section-7-7">
+<pre>
 $ ALICE_FRIENDS=`envelope subject Alice |
     envelope assertion knows Bob |
     envelope assertion knows Carol |
@@ -3750,16 +3750,16 @@ $ envelope $ALICE_FRIENDS
 </pre><a href="#section-7-7" class="pilcrow">¶</a>
 </div>
 <p id="section-7-8">We then elide the entire envelope, leaving only the root-level digest. This digest is a cryptographic commitment to the envelope's contents.<a href="#section-7-8" class="pilcrow">¶</a></p>
-<div id="section-7-9">
-<pre class="lang-sh sourcecode">
+<div class="lang-sh sourcecode" id="section-7-9">
+<pre>
 $ COMMITMENT=`envelope elide $ALICE_FRIENDS`
 $ envelope --tree $COMMITMENT
 cc6fb8f6 ELIDED
 </pre><a href="#section-7-9" class="pilcrow">¶</a>
 </div>
 <p id="section-7-10">A third party, having received this commitment, can then request proof that the envelope contains a particular assertion, called the <em>target</em>.<a href="#section-7-10" class="pilcrow">¶</a></p>
-<div id="section-7-11">
-<pre class="lang-sh sourcecode">
+<div class="lang-sh sourcecode" id="section-7-11">
+<pre>
 $ REQUESTED_ASSERTION=`envelope subject assertion knows Bob`
 
 $ envelope --tree $REQUESTED_ASSERTION
@@ -3769,8 +3769,8 @@ $ envelope --tree $REQUESTED_ASSERTION
 </pre><a href="#section-7-11" class="pilcrow">¶</a>
 </div>
 <p id="section-7-12">The holder can then produce a proof, which is an elided form of the original document that contains a minimum spanning set of digests, including the target.<a href="#section-7-12" class="pilcrow">¶</a></p>
-<div id="section-7-13">
-<pre class="lang-sh sourcecode">
+<div class="lang-sh sourcecode" id="section-7-13">
+<pre>
 $ KNOWS_BOB_DIGEST=`envelope digest $REQUESTED_ASSERTION`
 
 $ KNOWS_BOB_PROOF=`envelope proof create $ALICE_FRIENDS \
@@ -3794,8 +3794,8 @@ cc6fb8f6 NODE
 </li>
       </ol>
 <p id="section-7-16">Criteria 3 was met when the proof was produced. Criteria 1 and 2 are checked by the command line tool when confirming the proof:<a href="#section-7-16" class="pilcrow">¶</a></p>
-<div id="section-7-17">
-<pre class="lang-sh sourcecode">
+<div class="lang-sh sourcecode" id="section-7-17">
+<pre>
 $ envelope proof confirm --silent $COMMITMENT $KNOWS_BOB_PROOF \
     $KNOWS_BOB_DIGEST &amp;&amp; echo "Success"
 Success
@@ -3823,8 +3823,8 @@ Success
 <p id="section-9-3">The authors considered adding a version number to every envelope, but deemed this unnecessary as any code that parses later envelopes can determine what features are required from the CBOR structure alone.<a href="#section-9-3" class="pilcrow">¶</a></p>
 <p id="section-9-4">The general migration strategy is that the specific structure of envelopes defined in the first general release of this specification is the baseline, and later specifications may incrementally add structural features such as envelope cases, new tags, or support for new structures or algorithms, but are generally expected to maintain backward compatibility.<a href="#section-9-4" class="pilcrow">¶</a></p>
 <p id="section-9-5">An example of addition would be to add an additional supported method of encryption. The <code>crypto-msg</code> specification CDDL is a CBOR array with either three or four elements:<a href="#section-9-5" class="pilcrow">¶</a></p>
-<div id="section-9-6">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-9-6">
+<pre>
 crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
 ciphertext = bytes       ; encrypted using ChaCha20
 aad = digest             ; Additional Authenticated Data
@@ -3833,8 +3833,8 @@ auth = bytes .size 16    ; Authentication tag created by Poly1305
 </pre><a href="#section-9-6" class="pilcrow">¶</a>
 </div>
 <p id="section-9-7">For the sake of this example, we assume the new method to be supported has all the same fields but needs to be processed differently. In this case, the first element of the array could become an optional integer:<a href="#section-9-7" class="pilcrow">¶</a></p>
-<div id="section-9-8">
-<pre class="lang-cddl sourcecode">
+<div class="lang-cddl sourcecode" id="section-9-8">
+<pre>
 crypto-msg = #6.201([ ? version, ciphertext, nonce, auth, ? aad ])
 version = uint           ; absent for old method, 1 for new method
 </pre><a href="#section-9-8" class="pilcrow">¶</a>
