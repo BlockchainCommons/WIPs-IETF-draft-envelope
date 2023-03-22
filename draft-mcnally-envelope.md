@@ -31,11 +31,15 @@ normative:
     RFC8610: CDDL
     RFC8439: CHACHA
     RFC6838: MIME
+    RFC1951: DEFLATE
+    DCBOR-DRAFT:
+        title: "dCBOR: Deterministic CBOR Implementation Practices"
+        target: https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor/
     IANA-CBOR-TAGS:
         title: IANA, Concise Binary Object Representation (CBOR) Tags
         target: https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
     RFC6234: SHA-256
-    CRYPTO-MSG:
+    ENCRYPTED:
         title: UR Type Definition for Secure Messages
         target: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2022-001-secure-message.md
     ENVELOPE-REFIMPL:
@@ -99,26 +103,26 @@ The `envelope` protocol specifies a structured format for hierarchical binary da
 
 Gordian Envelope was designed with two key goals in mind: to be *Structure-Ready*, allowing for the reliable and interoperable storage of information; and to be *Privacy-Ready*, ensuring that transmission of that data can occur in a privacy-protecting manner.
 
-- **Structure-Ready.** Gordian Envelope is designed as a Smart Document, meant to store information about a subject. More than that, it's a meta-document that can contain or refer to other documents. It can support multiple data formats, from simple hierarchical structures to labeled property graphs, semantic triples, and other forms of structured graphs. Though its fundamental structure is a tree, it can be used to create Directed Acyclic Graphs (DAGs) through references between Envelopes.
+- **Structure-Ready.** Gordian Envelope is designed as a Smart Document, meant to store information about a subject. More than that, it's a meta-document that can contain or refer to other documents. It can support multiple data structures, from simple hierarchies to labeled property graphs, semantic triples, and other forms of structured graphs. Though its fundamental structure is a tree, it can be used to create Directed Acyclic Graphs (DAGs) through references within or between Envelopes.
 - **Privacy-Ready.** Gordian Envelope protects the privacy of its data through progressive trust, allowing for holders to minimally disclose information by using elision or encryption, and then to optionally increase that disclosure over time. The fact that a holder can control data revelation, not just an issuer, creates a new level of privacy for all stakeholders. The progressive trust in Gordian Envelopes is accomplished through hashing of all elements, which creates foundational support for cryptographic functions such as signing and encryption, without actually defining which cryptographic functions must be used.
 
 The following architectural decisions support these goals:
 
-- **Structured Merkle Tree.** A variant of the Merkle Tree structure is created by forming the hashing of the elements in the Envelope into a tree of digests. (In this "structured Merkle Tree", all nodes contain both semantic content and digests, rather than semantic content being limited to leaves.)
-- **Deterministic Representation.** There is only one way to encode any semantic representation within a Gordian Envelope. This is accomplished through the use of Deterministic CBOR and the sorting of the Envelope by hashes to create a lexicographic order. Any Envelope that doesn't follow these strict rules can be rejected; as a result, there's no need to worry about different people adding the assertions in a different order or at different times: if two Envelopes contain the same data, they will be encoded the same way.
+- **Structured Merkle Tree.** A variant of the Merkle Tree structure is created by hashing the elements in the Envelope into a tree of digests. (In this "structured Merkle Tree", all nodes contain both semantic content and digests, rather than semantic content being limited to leaves.)
+- **Deterministic Representation.** There is only one way to encode any semantic representation within a Gordian Envelope. This is accomplished through the use of Deterministic CBOR ("dCBOR") and the sorting of the Envelope's assertions into a lexicographic order. Any Envelope that doesn't follow these strict rules can be rejected; as a result, there's no need to worry about different people adding the assertions in a different order or at different times: if two Envelopes contain the same data, they will be encoded the same way.
 
 ## Elision Support
 
-- **Elision of All Elements.** Gordian Envelopes innately support elision for any part of its data, including subjects, predicates, and objects.
-- **Elision, Compression, and Encryption.** Elision can be used for a variety of purposes including redaction (removing information), compression (removing duplicate information), and encryption (enciphering information).
+- **Elision of All Elements.** Gordian Envelopes innately support elision for any part of its data, including subjects, predicates and objects of assertions, assertions as a whole, and envelopes as a whole.
+- **Elision, Encryption, and Compression.** Elision can be used for a variety of purposes including redaction (removing information), encryption (enciphering information), and compression (removing duplicate information). (In addition to "compression by elision", envelopes also support binary-level compression.)
 - **Holder-initiated Elision.** Elision can be performed by the Holder of a Gordian Envelope, not just the Issuer.
 - **Granular Holder Control.** Elision can not only be performed by any Holder, but also for any data, allowing each entity to elide data as is appropriate for the management of their personal (or business) risk.
 - **Progressive Trust.** The elision mechanics in Gordian Envelopes allow for progressive trust, where increasing amounts of data are revealed over time, and can be combined with encryption to escrow data to later be revealed.
-- **Consistent Hashing.** Even when elided or encrypted, hashes for those parts of the Gordian Envelope remain the same.
+- **Consistent Hashing.** Even when elided, encrypted, or compressed, digests for those parts of the Gordian Envelope remain the same.
 
 ## Privacy Support
 
-- **Proof of Inclusion.** As an alternative to presenting elided structures, proofs of inclusion can be included in top-level hashes.
+- **Proof of Inclusion.** As an alternative to presenting elided structures, proofs of inclusion can be included in top-level digests.
 - **Herd Privacy.** Proofs of inclusion allow for herd privacy where all members of a class can share data such as a VC or DID without revealing individual information.
 - **Non-Correlation.** Encrypted Gordian Envelope data can optionally be made less correlatable with the addition of salt.
 
@@ -154,18 +158,19 @@ image
 
 # Envelope Format Specification
 
-This section is normative, and specifies the binary format of envelopes in terms of its CBOR components and their sequencing. The formal language used is the Concise Data Definition Language (CDDL) {{-CDDL}}. To be considered a well-formed envelope, a sequence of bytes MUST be well-formed deterministic CBOR {{-CBOR}} and MUST conform to the specifications in this section.
+This section is normative, and specifies the binary format of envelopes in terms of its CBOR components and their sequencing. The formal language used is the Concise Data Definition Language (CDDL) {{-CDDL}}. To be considered a well-formed envelope, a sequence of bytes MUST be well-formed deterministic CBOR {{DCBOR-DRAFT}} and MUST conform to the specifications in this section.
 
 ## Top Level
 
-An envelope is a tagged enumerated type with seven cases. Four of these cases have no children:
+An envelope is a tagged enumerated type with eight cases. Five of these cases have no children:
 
 * `leaf`
 * `known-value`
 * `encrypted`
 * `elided`
+* `compressed`
 
-Two of these cases, `encrypted` and `elided`, "declare" their digest, i.e., they actually encode their digest in the envelope serialization. For all other cases, their digest is implicit in the data itself and may be computed and cached by implementations when an envelope is deserialized.
+Three of these cases, `encrypted`, `elided`, and `compressed`, "declare" their digest, i.e., they actually encode their digest in the envelope serialization. For all other cases, their digest is implicit in the data itself and may be computed and cached by implementations when an envelope is deserialized.
 
 The other three cases have one or more children:
 
@@ -183,6 +188,7 @@ envelope-content = (
     known-value /
     encrypted /
     elided /
+    compressed /
     node /
     wrapped-envelope /
     assertion
@@ -195,7 +201,7 @@ envelope-content = (
 
 A `leaf` case is used when the envelope contains only user-defined CBOR content. It is tagged using #6.24, per {{-CBOR}} section 3.4.5.1, "Encoded CBOR Data Item".
 
-To preserve deterministic encoding, developers using the envelope format MUST specify where tags MUST or MUST NOT be used to identify the type of CBOR within `leaf` elements. In cases where simple CBOR values like integers or UTF-8 strings are encoded, no additional tagging may be necessary because positionality within the envelope is sufficient to imply the type without ambiguity.
+To preserve deterministic encoding, developers using the envelope format MUST specify where tags MUST or MUST NOT be used to identify the type of CBOR within `leaf` elements. In cases where simple CBOR values like numbers or UTF-8 strings are encoded, no additional tagging may be necessary because positionality within the envelope is sufficient to imply the type without ambiguity.
 
 For example, if a structure representing a person specifies that it MAY have a `firstName` predicate with a `string` object, there is no need for an additional tag within the object `leaf` element: it would be a coding error to place anything but a `string` in that position. But where developers are specifying a compound CBOR structure with a specified layout for inclusion in an envelope, especially one that may be used in a plurality of positions (for example a CBOR array of alias first names), they SHOULD specify a tag, and specify where it MUST or MUST NOT be used.
 
@@ -208,27 +214,50 @@ leaf = #6.24(bytes)
 A `known-value` case is used to specify an unsigned integer in a namespace of well-known values. Known values are frequently used as predicates. For example, any envelope can be used as a predicate in an assertion, but many predicates are commonly used, e.g., `verifiedBy` for signatures; hence it is desirable to keep common predicates short.
 
 ~~~ cddl
-known-value = #6.223(uint)
+known-value = #6.202(uint)
 ~~~
 
 ### Encrypted Case Format
 
 An `encrypted` case is used for an envelope that has been encrypted using an Authenticated Encryption with Associated Data (AEAD), and where the digest of the plaintext is declared by the encrypted structure's Additional Authenticated Data (AAD) field. This subsection specifies the construct used in the current reference implementation and is informative.
 
-~~~ cddl
-encrypted = crypto-msg
-~~~
-
-For `crypto-msg`, the reference implementation {{ENVELOPE-REFIMPL}} uses the definition in "UR Type Definition for Secure Messages" {{CRYPTO-MSG}} and we repeat the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in {{-CHACHA}}. When used with envelopes, the `crypto-msg` construct `aad` (additional authenticated data) field contains the `digest` of the plaintext, authenticating the declared digest using the Poly1305 MAC.
+For `encrypted`, the reference implementation {{ENVELOPE-REFIMPL}} uses the definition in "UR Type Definition for Secure Messages" {{ENCRYPTED}} and we repeat the salient specification here. This format specifies the use of "ChaCha20 and Poly1305 for IETF Protocols" as described in {{-CHACHA}}. When used with envelopes, the `encrypted` construct `aad` (additional authenticated data) field contains the `digest` of the plaintext, authenticating the declared digest using the Poly1305 MAC.
 
 ~~~ cddl
-crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
+encrypted = #6.205([ ciphertext, nonce, auth, ? aad ])
 
 ciphertext = bytes       ; encrypted using ChaCha20
 aad = digest             ; Additional Authenticated Data
 nonce = bytes .size 12   ; Random, generated at encryption-time
 auth = bytes .size 16    ; Authentication tag created by Poly1305
 ~~~
+
+### Compressed Case Format
+
+A compressed CBOR-encoded envelope. Implemented using the raw DEFLATE {{-DEFLATE}} compression format. The following obtains the equivalent configuration of the encoder:
+
+~~~
+deflateInit2(zstream,5,Z_DEFLATED,-15,8,Z_DEFAULT_STRATEGY)
+~~~
+
+~~~
+compressed = #6.206([
+    checksum,           ; CRC-32 checksum of the uncompressed data
+    uncompressed-size,
+    compressed-data,    ; The CBOR-encoded envelope
+    digest              ; The envelope's digest. REQUIRED
+])
+
+checksum = crc32
+uncompressed-size = uint
+compressed-data = bytes
+
+crc32 = uint
+~~~
+
+If the payload is too small to compress using DEFLATE, the uncompressed payload is placed in the `compressedData` field and the length of that field MUST be the same as the `uncompressedSize` field.
+
+Due to fixed overhead, the compressed form of very small envelopes may be larger than their uncompressed form.
 
 ### Elided Case Format
 
@@ -241,7 +270,7 @@ elided = digest
 For `digest`, the SHA-256 cryptographic hash function {{-SHA-256}} is used to generate a 32 byte digest.
 
 ~~~ cddl
-digest = #6.203(sha256-digest)
+digest = #6.204(sha256-digest)
 
 sha256-digest = bytes .size 32
 ~~~
@@ -250,14 +279,22 @@ sha256-digest = bytes .size 32
 
 ### Node Case Format
 
-A `node` case is encoded as a CBOR array, and MUST be used when one or more assertions are present on the envelope. It MUST NOT be present when there is not at least one assertion. The first element of the array is the envelope's `subject`, Followed by one or more `assertion-element`s, each of which MUST be an `assertion`, or the `encrypted` or `elided` transformation of that assertion. The assertion elements MUST appear in ascending lexicographic order by their digest. The array MUST NOT contain any assertion elements with identical digests.
+A `node` case is encoded as a CBOR array: indeed, it is the only `envelope-content` case that uses a bare array, and is therefore recognizable by its form. A `node` case MUST be used when one or more assertions are present on the envelope. It MUST NOT be present when there is not at least one assertion. The first element of the array is the envelope's `subject`, Followed by one or more `assertion-element`s, each of which MUST either be an `assertion` or an `obscured-assertion`, which is one of the `encrypted`, `compressed`, or `elided` transformations of that assertion. The assertion elements MUST appear in ascending lexicographic order by their digest. The array MUST NOT contain any assertion elements with identical digests.
 
-Note that `assertion-elements` as defined here here explicitly include assertions that have been elided or encrypted, as specified in the CDDL below. The envelopes in the `node` case array MUST, when unelided/unencrypted be found to be actual `assertion` case envelopes, or it is a coding error.
+The `assertion-element` envelopes in the `node` case array MUST, when unelided/uncompressed/unencrypted be found to be actual `assertion` case envelopes, or it is a coding error.
 
 ~~~ cddl
 node = [envelope-content, + assertion-element]
 
-assertion-element = ( assertion / encrypted / elided )
+assertion-element = ( assertion / obscured-assertion )
+obscured-assertion = (
+    encrypted-assertion /
+    compressed-assertion /
+    elided-assertion
+)
+encrypted-assertion = encrypted     ; MUST be an assertion.
+compressed-assertion = compressed   ; MUST be an assertion.
+elided-assertion = elided           ; MUST be an assertion.
 ~~~
 
 ### Wrapped Envelope Case Format
@@ -265,7 +302,7 @@ assertion-element = ( assertion / encrypted / elided )
 A `wrapped-envelope` case is used where an envelope, including all its assertions, should be treated as a single element, e.g. for the purpose of signing.
 
 ~~~ cddl
-wrapped-envelope = #6.224(envelope-content)
+wrapped-envelope = #6.203(envelope-content)
 ~~~
 
 ### Assertion Case Format
@@ -276,7 +313,7 @@ An `assertion` case is used for each of the assertions in an envelope. It is enc
 2. the envelope representing the object of the assertion.
 
 ~~~ cddl
-assertion = #6.221([predicate-envelope, object-envelope])
+assertion = #6.201([predicate-envelope, object-envelope])
 predicate-envelope = envelope
 object-envelope = envelope
 ~~~
@@ -285,7 +322,7 @@ object-envelope = envelope
 
 This section specifies how the digests for each of the envelope cases are computed, and is normative. The examples in this section may be used as test vectors.
 
-Each of the seven enumerated envelope cases produces an image which is used as input to a cryptographic hash function to produce a digest of its contents.
+Each of the eight enumerated envelope cases produces an image which is used as input to a cryptographic hash function to produce a digest of its contents.
 
 The overall digest of an envelope is the digest of its specific case.
 
@@ -322,27 +359,27 @@ $ envelope subject "Hello" | envelope digest --hex
 
 ## Known Value Case Digest Calculation
 
-The envelope image of the `known-value` case is the CBOR serialization of the unsigned integer value of the value tagged with #6.223, as specified in the Known Value Case Format section above.
+The envelope image of the `known-value` case is the CBOR serialization of the unsigned integer value of the value tagged with #6.202, as specified in the Known Value Case Format section above.
 
 ~~~
-digest(#6.223(uint))
+digest(#6.202(uint))
 ~~~
 
 ### Example
 
-The known value `verifiedBy` in CBOR diagnostic notation is `223(3)`, which in hex is `D8DF03`. The SHA-256 sum of this sequence is:
+The known value `verifiedBy` in CBOR diagnostic notation is `202(3)`, which in hex is `D8CA03`. The SHA-256 sum of this sequence is:
 
 ~~~
-$ echo "D8DF03" | xxd -r -p | shasum --binary --algorithm 256 | \
+$ echo "D8CA03" | xxd -r -p | shasum --binary --algorithm 256 | \
     awk '{ print $1 }'
-d933fc069551eae6c34b663e1c64dc8e62bfc43c1d43b3d22dbe57a3c4b84359
+9d7ba9eb8986332bf3e6f3f96b36d937176d95b556441b18612b9c06edc9b7e1
 ~~~
 
 Using the envelope command line tool {{ENVELOPE-CLI}}, we create an envelope with this known value as the subject and display the envelope's digest. The digest below matches the one above.
 
 ~~~
 $ envelope subject --known verifiedBy | envelope digest --hex
-d933fc069551eae6c34b663e1c64dc8e62bfc43c1d43b3d22dbe57a3c4b84359
+9d7ba9eb8986332bf3e6f3f96b36d937176d95b556441b18612b9c06edc9b7e1
 ~~~
 
 ## Encrypted Case Digest Calculation
@@ -362,6 +399,28 @@ $ envelope subject "Hello" | \
 ~~~
 
 ...we see that its digest is the same as its plaintext form:
+
+~~~
+$ envelope subject "Hello" | envelope digest --hex
+4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
+~~~
+
+## Compressed Case Digest Calcultation
+
+The `compressed` case declares its digest to be the digest of the uncompressed envelope.
+
+### Example
+
+If we create the envelope from the leaf example above, compress it, and then request its digest:
+
+~~~
+$ envelope subject "Hello" | \
+    envelope compress | \
+    envelope digest --hex
+4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
+~~~
+
+...we see that its digest is the same as its uncompressed form:
 
 ~~~
 $ envelope subject "Hello" | envelope digest --hex
@@ -465,7 +524,7 @@ To replicate this, we make a list of digests, starting with the subject, and the
 78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2
 ~~~
 
-We then calculate the SHA-256 hash of the concatenation of these four digests. Note that this is the same digest as the composite envelope's digest:
+We then calculate the SHA-256 digest of the concatenation of these four digests. Note that this is the same digest as the composite envelope's digest:
 
 ~~~
 echo "13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f\
@@ -547,7 +606,7 @@ db7dd21c5169b4848d2a1bcb0a651c9617cdd90bae29156baaefbb2a8abef5ba
 13b741949c37b8e09cc3daa3194c58e4fd6b2f14d4b1d0f035a46d6d5a1d3f11
 ~~~
 
-We then calculate the SHA-256 hash of the concatenation of these two digests. Note that this is the same digest as the composite envelope's digest:
+We then calculate the SHA-256 digest of the concatenation of these two digests. Note that this is the same digest as the composite envelope's digest:
 
 ~~~
 echo "db7dd21c5169b4848d2a1bcb0a651c9617cdd90bae29156baaefbb2a8abef5ba\
@@ -584,7 +643,7 @@ A concrete example of this might be:
 ]
 ~~~
 
-The notional concept of envelope is useful but not technically accurate because envelope is structurally implemented as an enumerated type consisting of seven cases. This allows actual envelope instances to be more flexible, for example a "bare assertion" consisting of a predicate-object pair with no subject, which is useful in some situations:
+The notional concept of envelope is useful, but not technically accurate because envelope is implemented structurally as an enumerated type consisting of eight cases. This allows actual envelope instances to be more flexible, for example a "bare assertion" consisting of a predicate-object pair with no subject, which is useful in some situations:
 
 ~~~
 "knows": "Bob"
@@ -596,7 +655,7 @@ More common is the opposite case: a subject with no assertions:
 "Alice"
 ~~~
 
-In the diagrams above, there are five distinct "positions" of elements, each of which is itself an envelope and which therefore produces its own digest:
+In the examples above, there are five distinct "positions" of elements, each of which is itself an envelope and which therefore produces its own digest:
 
 1. envelope
 2. subject
@@ -908,7 +967,7 @@ From the above envelope and its tree, we make the following observations:
 * The predicate and object of each assertion each have their own digests.
 * The assertions appear in the structure in ascending lexicographic order by digest, which is distinct from envelope notation, where they appear sorted alphabeticaly.
 
-The following subsections present each of the seven enumerated envelope cases in five different output formats:
+The following subsections present each of the eight enumerated envelope cases in five different output formats:
 
 * Envelope Notation
 * Envelope Tree
@@ -992,47 +1051,47 @@ verifiedBy
 ### Tree
 
 ~~~
-d933fc06 verifiedBy
+9d7ba9eb verifiedBy
 ~~~
 
 ### Mermaid
 
-<artwork type="svg"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="158px" height="104px" viewBox="0 0 158 104" xml:space="preserve">
-<polygon fill="none" stroke="#000000" stroke-width="2.2532" points="31,73 105.9,73 127,31 52.1,31 "/>
-<rect x="25" y="25" fill-rule="evenodd" fill="none" width="108" height="54"/>
-<path d="M59.1,49v-0.8c-0.4,0.6-1,0.9-1.7,0.9c-0.5,0-1-0.1-1.4-0.4c-0.4-0.3-0.7-0.7-1-1.1c-0.2-0.5-0.3-1.1-0.3-1.7  c0-0.6,0.1-1.2,0.3-1.7s0.5-0.9,0.9-1.2c0.4-0.3,0.9-0.4,1.4-0.4c0.4,0,0.7,0.1,1,0.2s0.5,0.4,0.7,0.6v-3.1h1.1V49H59.1z M55.7,45.9  c0,0.8,0.2,1.4,0.5,1.8s0.7,0.6,1.2,0.6c0.5,0,0.9-0.2,1.2-0.6s0.5-1,0.5-1.7c0-0.9-0.2-1.5-0.5-1.9s-0.7-0.6-1.2-0.6  c-0.5,0-0.9,0.2-1.2,0.6C55.9,44.5,55.7,45.1,55.7,45.9z"/>
-<path d="M61.6,47l1-0.1c0.1,0.5,0.3,0.8,0.5,1c0.2,0.2,0.6,0.3,0.9,0.3c0.3,0,0.6-0.1,0.9-0.2c0.2-0.1,0.4-0.3,0.6-0.6  s0.3-0.6,0.4-1C66,46,66,45.6,66,45.2c0,0,0-0.1,0-0.2c-0.2,0.3-0.5,0.6-0.9,0.8s-0.8,0.3-1.2,0.3c-0.7,0-1.3-0.3-1.8-0.8  s-0.7-1.2-0.7-2c0-0.9,0.3-1.6,0.8-2.1c0.5-0.5,1.2-0.8,1.9-0.8c0.6,0,1.1,0.2,1.5,0.5s0.8,0.7,1.1,1.3c0.2,0.6,0.4,1.4,0.4,2.4  c0,1.1-0.1,2-0.4,2.6c-0.2,0.7-0.6,1.1-1.1,1.5s-1,0.5-1.7,0.5c-0.7,0-1.2-0.2-1.7-0.6C61.9,48.2,61.7,47.7,61.6,47z M65.9,43.2  c0-0.6-0.2-1.1-0.5-1.4s-0.7-0.5-1.2-0.5c-0.5,0-0.9,0.2-1.2,0.6c-0.3,0.4-0.5,0.9-0.5,1.5c0,0.5,0.2,1,0.5,1.3s0.7,0.5,1.2,0.5  c0.5,0,0.9-0.2,1.2-0.5S65.9,43.8,65.9,43.2z"/>
-<path d="M68.1,46.7l1.1-0.1c0.1,0.6,0.3,1,0.6,1.3s0.6,0.4,1.1,0.4c0.5,0,0.9-0.2,1.3-0.5s0.5-0.8,0.5-1.3c0-0.5-0.2-0.9-0.5-1.2  s-0.7-0.5-1.2-0.5c-0.2,0-0.4,0-0.7,0.1l0.1-0.9c0.1,0,0.1,0,0.2,0c0.5,0,0.9-0.1,1.2-0.4s0.5-0.6,0.5-1.1c0-0.4-0.1-0.7-0.4-1  c-0.3-0.3-0.6-0.4-1-0.4c-0.4,0-0.8,0.1-1,0.4s-0.5,0.6-0.5,1.2l-1.1-0.2c0.1-0.7,0.4-1.3,0.9-1.6s1-0.6,1.7-0.6  c0.5,0,0.9,0.1,1.3,0.3c0.4,0.2,0.7,0.5,0.9,0.8s0.3,0.7,0.3,1.1c0,0.4-0.1,0.7-0.3,1s-0.5,0.5-0.9,0.7c0.5,0.1,0.9,0.4,1.2,0.7  s0.4,0.8,0.4,1.4c0,0.8-0.3,1.4-0.8,1.9c-0.5,0.5-1.2,0.8-2.1,0.8c-0.8,0-1.4-0.2-1.9-0.7S68.2,47.4,68.1,46.7z"/>
-<path d="M74.8,46.7l1.1-0.1c0.1,0.6,0.3,1,0.6,1.3s0.6,0.4,1.1,0.4c0.5,0,0.9-0.2,1.3-0.5s0.5-0.8,0.5-1.3c0-0.5-0.2-0.9-0.5-1.2  s-0.7-0.5-1.2-0.5c-0.2,0-0.4,0-0.7,0.1L77,44c0.1,0,0.1,0,0.2,0c0.5,0,0.9-0.1,1.2-0.4s0.5-0.6,0.5-1.1c0-0.4-0.1-0.7-0.4-1  c-0.3-0.3-0.6-0.4-1-0.4c-0.4,0-0.8,0.1-1,0.4s-0.5,0.6-0.5,1.2l-1.1-0.2c0.1-0.7,0.4-1.3,0.9-1.6s1-0.6,1.7-0.6  c0.5,0,0.9,0.1,1.3,0.3c0.4,0.2,0.7,0.5,0.9,0.8s0.3,0.7,0.3,1.1c0,0.4-0.1,0.7-0.3,1s-0.5,0.5-0.9,0.7c0.5,0.1,0.9,0.4,1.2,0.7  s0.4,0.8,0.4,1.4c0,0.8-0.3,1.4-0.8,1.9c-0.5,0.5-1.2,0.8-2.1,0.8c-0.8,0-1.4-0.2-1.9-0.7S74.9,47.4,74.8,46.7z"/>
-<path d="M82.1,49v-5.4h-0.9v-0.8h0.9v-0.7c0-0.4,0-0.7,0.1-0.9c0.1-0.3,0.3-0.5,0.5-0.7c0.3-0.2,0.6-0.3,1.1-0.3c0.3,0,0.6,0,1,0.1  l-0.2,0.9c-0.2,0-0.4-0.1-0.6-0.1c-0.3,0-0.5,0.1-0.7,0.2c-0.1,0.1-0.2,0.4-0.2,0.8v0.6h1.2v0.8h-1.2V49H82.1z"/>
-<path d="M89.2,46.7l1,0.1c-0.1,0.7-0.4,1.3-0.9,1.7c-0.5,0.4-1,0.6-1.7,0.6c-0.9,0-1.5-0.3-2.1-0.8s-0.8-1.4-0.8-2.4  c0-0.7,0.1-1.3,0.3-1.8c0.2-0.5,0.6-0.9,1-1.1c0.5-0.3,1-0.4,1.5-0.4c0.7,0,1.2,0.2,1.7,0.5c0.4,0.3,0.7,0.8,0.8,1.5l-1,0.2  c-0.1-0.4-0.3-0.7-0.5-0.9c-0.2-0.2-0.5-0.3-0.9-0.3c-0.5,0-1,0.2-1.3,0.6s-0.5,1-0.5,1.8c0,0.8,0.2,1.4,0.5,1.8s0.7,0.6,1.3,0.6  c0.4,0,0.8-0.1,1-0.4C89,47.6,89.1,47.2,89.2,46.7z"/>
-<path d="M90.9,44.8c0-1,0.1-1.8,0.3-2.5c0.2-0.6,0.5-1.1,0.9-1.4c0.4-0.3,0.9-0.5,1.6-0.5c0.5,0,0.9,0.1,1.2,0.3s0.6,0.5,0.9,0.8  s0.4,0.8,0.5,1.3c0.1,0.5,0.2,1.2,0.2,2c0,1-0.1,1.8-0.3,2.4c-0.2,0.6-0.5,1.1-0.9,1.4c-0.4,0.3-0.9,0.5-1.6,0.5  c-0.8,0-1.5-0.3-2-0.9C91.2,47.5,90.9,46.4,90.9,44.8z M92,44.8c0,1.4,0.2,2.3,0.5,2.8s0.7,0.7,1.2,0.7c0.5,0,0.9-0.2,1.2-0.7  s0.5-1.4,0.5-2.8c0-1.4-0.2-2.4-0.5-2.8s-0.7-0.7-1.2-0.7c-0.5,0-0.9,0.2-1.2,0.6C92.1,42.4,92,43.4,92,44.8z"/>
-<path d="M103.1,42.5l-1.1,0.1c-0.1-0.4-0.2-0.7-0.4-0.9c-0.3-0.3-0.6-0.5-1.1-0.5c-0.3,0-0.6,0.1-0.9,0.3c-0.3,0.2-0.6,0.6-0.8,1.1  c-0.2,0.5-0.3,1.1-0.3,2c0.3-0.4,0.6-0.7,0.9-0.9c0.4-0.2,0.8-0.3,1.2-0.3c0.7,0,1.3,0.3,1.8,0.8s0.7,1.2,0.7,2c0,0.5-0.1,1-0.3,1.5  c-0.2,0.5-0.6,0.8-1,1.1c-0.4,0.2-0.9,0.4-1.4,0.4c-0.9,0-1.6-0.3-2.2-1c-0.6-0.6-0.8-1.7-0.8-3.2c0-1.7,0.3-2.9,0.9-3.6  c0.5-0.7,1.3-1,2.2-1c0.7,0,1.2,0.2,1.7,0.6C102.7,41.3,103,41.8,103.1,42.5z M98.7,46.2c0,0.4,0.1,0.7,0.2,1s0.4,0.6,0.6,0.8  s0.6,0.3,0.9,0.3c0.4,0,0.8-0.2,1.2-0.5s0.5-0.8,0.5-1.5c0-0.6-0.2-1.1-0.5-1.4s-0.7-0.5-1.2-0.5c-0.5,0-0.9,0.2-1.2,0.5  S98.7,45.7,98.7,46.2z"/>
-<path d="M55.1,62.5l-2.4-6.2h1.1l1.3,3.7c0.1,0.4,0.3,0.8,0.4,1.3c0.1-0.3,0.2-0.7,0.4-1.2l1.4-3.8h1.1l-2.4,6.2H55.1z"/>
-<path d="M63.7,60.5l1.1,0.1c-0.2,0.6-0.5,1.1-1,1.5s-1.1,0.5-1.8,0.5c-0.9,0-1.6-0.3-2.2-0.8c-0.5-0.6-0.8-1.3-0.8-2.4  c0-1,0.3-1.9,0.8-2.4c0.5-0.6,1.2-0.9,2.1-0.9c0.8,0,1.5,0.3,2,0.8c0.5,0.6,0.8,1.4,0.8,2.4c0,0.1,0,0.2,0,0.3h-4.7  c0,0.7,0.2,1.2,0.6,1.6c0.3,0.4,0.8,0.5,1.3,0.5c0.4,0,0.7-0.1,1-0.3S63.5,60.9,63.7,60.5z M60.2,58.8h3.5c0-0.5-0.2-0.9-0.4-1.2  C62.9,57.2,62.5,57,62,57c-0.5,0-0.9,0.2-1.2,0.5S60.2,58.2,60.2,58.8z"/>
-<path d="M66.1,62.5v-6.2h1v0.9c0.2-0.4,0.5-0.7,0.7-0.9s0.4-0.2,0.7-0.2c0.4,0,0.7,0.1,1.1,0.3l-0.4,1c-0.3-0.2-0.5-0.2-0.8-0.2  c-0.2,0-0.4,0.1-0.6,0.2c-0.2,0.1-0.3,0.3-0.4,0.6c-0.1,0.4-0.2,0.8-0.2,1.2v3.3H66.1z"/>
-<path d="M70.1,55.1v-1.2h1.1v1.2H70.1z M70.1,62.5v-6.2h1.1v6.2H70.1z"/>
-<path d="M73,62.5v-5.4h-0.9v-0.8H73v-0.7c0-0.4,0-0.7,0.1-0.9c0.1-0.3,0.3-0.5,0.5-0.7c0.3-0.2,0.6-0.3,1.1-0.3c0.3,0,0.6,0,1,0.1  l-0.2,0.9c-0.2,0-0.4-0.1-0.6-0.1c-0.3,0-0.5,0.1-0.7,0.2c-0.1,0.1-0.2,0.4-0.2,0.8v0.6h1.2v0.8h-1.2v5.4H73z"/>
-<path d="M76.1,55.1v-1.2h1.1v1.2H76.1z M76.1,62.5v-6.2h1.1v6.2H76.1z"/>
-<path d="M83.1,60.5l1.1,0.1c-0.2,0.6-0.5,1.1-1,1.5s-1.1,0.5-1.8,0.5c-0.9,0-1.6-0.3-2.2-0.8c-0.5-0.6-0.8-1.3-0.8-2.4  c0-1,0.3-1.9,0.8-2.4c0.5-0.6,1.2-0.9,2.1-0.9c0.8,0,1.5,0.3,2,0.8c0.5,0.6,0.8,1.4,0.8,2.4c0,0.1,0,0.2,0,0.3h-4.7  c0,0.7,0.2,1.2,0.6,1.6c0.3,0.4,0.8,0.5,1.3,0.5c0.4,0,0.7-0.1,1-0.3S82.9,60.9,83.1,60.5z M79.6,58.8h3.5c0-0.5-0.2-0.9-0.4-1.2  c-0.3-0.4-0.8-0.6-1.3-0.6c-0.5,0-0.9,0.2-1.2,0.5S79.6,58.2,79.6,58.8z"/>
-<path d="M89.5,62.5v-0.8c-0.4,0.6-1,0.9-1.7,0.9c-0.5,0-1-0.1-1.4-0.4c-0.4-0.3-0.7-0.7-1-1.1c-0.2-0.5-0.3-1.1-0.3-1.7  c0-0.6,0.1-1.2,0.3-1.7s0.5-0.9,0.9-1.2c0.4-0.3,0.9-0.4,1.4-0.4c0.4,0,0.7,0.1,1,0.2s0.5,0.4,0.7,0.6v-3.1h1.1v8.6H89.5z   M86.2,59.4c0,0.8,0.2,1.4,0.5,1.8s0.7,0.6,1.2,0.6c0.5,0,0.9-0.2,1.2-0.6s0.5-1,0.5-1.7c0-0.9-0.2-1.5-0.5-1.9S88.3,57,87.8,57  c-0.5,0-0.9,0.2-1.2,0.6C86.3,58,86.2,58.6,86.2,59.4z"/>
-<path d="M92.3,62.5v-8.6h3.2c0.7,0,1.2,0.1,1.6,0.3c0.4,0.2,0.7,0.4,0.9,0.8c0.2,0.4,0.3,0.7,0.3,1.1c0,0.4-0.1,0.7-0.3,1  c-0.2,0.3-0.5,0.6-0.9,0.8c0.5,0.2,0.9,0.4,1.2,0.8c0.3,0.4,0.4,0.8,0.4,1.3c0,0.4-0.1,0.8-0.3,1.1s-0.4,0.6-0.6,0.8  c-0.3,0.2-0.6,0.3-0.9,0.4s-0.8,0.1-1.4,0.1H92.3z M93.4,57.5h1.9c0.5,0,0.9,0,1.1-0.1c0.3-0.1,0.5-0.2,0.7-0.4s0.2-0.4,0.2-0.8  c0-0.3-0.1-0.5-0.2-0.8s-0.3-0.4-0.6-0.4c-0.3-0.1-0.7-0.1-1.3-0.1h-1.7V57.5z M93.4,61.5h2.1c0.4,0,0.6,0,0.8,0  c0.3,0,0.5-0.1,0.7-0.2s0.3-0.3,0.4-0.5c0.1-0.2,0.2-0.5,0.2-0.7c0-0.3-0.1-0.6-0.2-0.8s-0.4-0.4-0.7-0.5s-0.7-0.1-1.3-0.1h-2V61.5z  "/>
-<path d="M100.1,64.9l-0.1-1c0.2,0.1,0.4,0.1,0.6,0.1c0.2,0,0.4,0,0.6-0.1c0.1-0.1,0.3-0.2,0.3-0.3c0.1-0.1,0.2-0.4,0.3-0.8  c0-0.1,0.1-0.1,0.1-0.3l-2.4-6.2h1.1l1.3,3.6c0.2,0.5,0.3,0.9,0.5,1.4c0.1-0.5,0.3-1,0.4-1.4l1.3-3.6h1.1l-2.4,6.3  c-0.3,0.7-0.5,1.2-0.6,1.4c-0.2,0.3-0.4,0.6-0.6,0.8c-0.2,0.2-0.5,0.2-0.9,0.2C100.6,65,100.4,65,100.1,64.9z"/>
-<rect x="52.6" y="38.5" fill-rule="evenodd" fill="none" width="52.7" height="27"/>
-</svg></artwork>
+<artwork type="svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="150.4px" height="94.3px" viewBox="0 0 150.4 94.3" xml:space="preserve">
+<polygon fill="none" stroke="#000000" stroke-width="2.2537" points="26.8,68.1 102.5,68.1 123.5,26.1 47.9,26.1 "/>
+<path d="M49.1,42.1l1-0.1c0.1,0.5,0.3,0.8,0.5,1c0.2,0.2,0.6,0.3,0.9,0.3c0.3,0,0.6-0.1,0.9-0.2c0.2-0.1,0.4-0.3,0.6-0.6  s0.3-0.6,0.4-1c0.1-0.4,0.2-0.9,0.2-1.3c0,0,0-0.1,0-0.2c-0.2,0.3-0.5,0.6-0.9,0.8c-0.4,0.2-0.8,0.3-1.2,0.3c-0.7,0-1.3-0.3-1.8-0.8  c-0.5-0.5-0.7-1.2-0.7-2c0-0.9,0.3-1.6,0.8-2.1c0.5-0.5,1.2-0.8,1.9-0.8c0.6,0,1.1,0.2,1.5,0.5s0.8,0.7,1.1,1.3  c0.2,0.6,0.4,1.4,0.4,2.4c0,1.1-0.1,2-0.4,2.6c-0.2,0.7-0.6,1.1-1.1,1.5s-1,0.5-1.7,0.5c-0.7,0-1.2-0.2-1.7-0.6  C49.4,43.3,49.1,42.8,49.1,42.1z M53.4,38.3c0-0.6-0.2-1.1-0.5-1.4c-0.3-0.4-0.7-0.5-1.2-0.5c-0.5,0-0.9,0.2-1.2,0.6  c-0.3,0.4-0.5,0.9-0.5,1.5c0,0.5,0.2,1,0.5,1.3s0.7,0.5,1.2,0.5c0.5,0,0.9-0.2,1.2-0.5C53.2,39.4,53.4,39,53.4,38.3z"/>
+<path d="M59.9,44.1v-0.8c-0.4,0.6-1,0.9-1.7,0.9c-0.5,0-1-0.1-1.4-0.4s-0.7-0.7-1-1.1c-0.2-0.5-0.3-1.1-0.3-1.7  c0-0.6,0.1-1.2,0.3-1.7c0.2-0.5,0.5-0.9,0.9-1.2s0.9-0.4,1.4-0.4c0.4,0,0.7,0.1,1,0.2s0.5,0.4,0.7,0.6v-3.1h1.1v8.6H59.9z M56.6,41  c0,0.8,0.2,1.4,0.5,1.8c0.3,0.4,0.7,0.6,1.2,0.6c0.5,0,0.9-0.2,1.2-0.6c0.3-0.4,0.5-1,0.5-1.7c0-0.9-0.2-1.5-0.5-1.9  c-0.3-0.4-0.7-0.6-1.2-0.6c-0.5,0-0.9,0.2-1.2,0.6S56.6,40.2,56.6,41z"/>
+<path d="M62.4,36.7v-1h5.6v0.8c-0.5,0.6-1.1,1.4-1.6,2.3c-0.5,1-1,2-1.2,3c-0.2,0.7-0.3,1.5-0.4,2.4h-1.1c0-0.7,0.1-1.5,0.4-2.4  c0.3-1,0.6-1.9,1.1-2.8c0.5-0.9,1-1.6,1.5-2.2H62.4z"/>
+<path d="M70.3,44.1h-1v-8.6h1.1v3.1c0.4-0.6,1-0.8,1.7-0.8c0.4,0,0.7,0.1,1.1,0.2c0.3,0.2,0.6,0.4,0.8,0.7c0.2,0.3,0.4,0.6,0.5,1  c0.1,0.4,0.2,0.8,0.2,1.3c0,1.1-0.3,1.9-0.8,2.5c-0.5,0.6-1.2,0.9-1.9,0.9c-0.7,0-1.3-0.3-1.7-0.9V44.1z M70.2,41  c0,0.7,0.1,1.3,0.3,1.6c0.3,0.5,0.8,0.8,1.4,0.8c0.5,0,0.9-0.2,1.2-0.6s0.5-1,0.5-1.8c0-0.8-0.2-1.4-0.5-1.8  c-0.3-0.4-0.7-0.6-1.2-0.6c-0.5,0-0.9,0.2-1.2,0.6C70.4,39.6,70.2,40.2,70.2,41z"/>
+<path d="M80,43.4c-0.4,0.3-0.8,0.6-1.1,0.7c-0.4,0.1-0.8,0.2-1.2,0.2c-0.7,0-1.2-0.2-1.6-0.5c-0.4-0.3-0.6-0.8-0.6-1.3  c0-0.3,0.1-0.6,0.2-0.8s0.3-0.5,0.5-0.6s0.5-0.3,0.8-0.3c0.2-0.1,0.5-0.1,0.9-0.2c0.9-0.1,1.5-0.2,1.9-0.4c0-0.1,0-0.2,0-0.3  c0-0.4-0.1-0.7-0.3-0.9c-0.3-0.2-0.7-0.4-1.2-0.4c-0.5,0-0.9,0.1-1.1,0.3c-0.2,0.2-0.4,0.5-0.5,0.9l-1-0.1c0.1-0.4,0.2-0.8,0.5-1.1  c0.2-0.3,0.5-0.5,0.9-0.6c0.4-0.1,0.9-0.2,1.4-0.2c0.5,0,1,0.1,1.3,0.2c0.3,0.1,0.6,0.3,0.7,0.5c0.2,0.2,0.3,0.4,0.3,0.7  c0,0.2,0.1,0.5,0.1,1v1.4c0,1,0,1.6,0.1,1.9s0.1,0.5,0.3,0.7h-1.1C80.2,43.9,80.1,43.7,80,43.4z M80,41c-0.4,0.2-1,0.3-1.7,0.4  c-0.4,0.1-0.7,0.1-0.9,0.2S77,41.8,76.9,42c-0.1,0.2-0.1,0.3-0.1,0.5c0,0.3,0.1,0.5,0.3,0.7c0.2,0.2,0.5,0.3,0.9,0.3  c0.4,0,0.8-0.1,1.1-0.3c0.3-0.2,0.6-0.4,0.7-0.7c0.1-0.2,0.2-0.6,0.2-1.1V41z"/>
+<path d="M82.5,42.1l1-0.1c0.1,0.5,0.3,0.8,0.5,1c0.2,0.2,0.6,0.3,0.9,0.3c0.3,0,0.6-0.1,0.9-0.2c0.2-0.1,0.4-0.3,0.6-0.6  s0.3-0.6,0.4-1c0.1-0.4,0.2-0.9,0.2-1.3c0,0,0-0.1,0-0.2c-0.2,0.3-0.5,0.6-0.9,0.8c-0.4,0.2-0.8,0.3-1.2,0.3c-0.7,0-1.3-0.3-1.8-0.8  c-0.5-0.5-0.7-1.2-0.7-2c0-0.9,0.3-1.6,0.8-2.1c0.5-0.5,1.2-0.8,1.9-0.8c0.6,0,1.1,0.2,1.5,0.5s0.8,0.7,1.1,1.3  c0.2,0.6,0.4,1.4,0.4,2.4c0,1.1-0.1,2-0.4,2.6c-0.2,0.7-0.6,1.1-1.1,1.5s-1,0.5-1.7,0.5c-0.7,0-1.2-0.2-1.7-0.6  C82.9,43.3,82.6,42.8,82.5,42.1z M86.9,38.3c0-0.6-0.2-1.1-0.5-1.4c-0.3-0.4-0.7-0.5-1.2-0.5c-0.5,0-0.9,0.2-1.2,0.6  c-0.3,0.4-0.5,0.9-0.5,1.5c0,0.5,0.2,1,0.5,1.3s0.7,0.5,1.2,0.5c0.5,0,0.9-0.2,1.2-0.5C86.7,39.4,86.9,39,86.9,38.3z"/>
+<path d="M93.6,42.1l1.1,0.1c-0.2,0.6-0.5,1.1-1,1.5s-1.1,0.5-1.8,0.5c-0.9,0-1.6-0.3-2.2-0.8c-0.5-0.6-0.8-1.3-0.8-2.4  c0-1,0.3-1.9,0.8-2.4c0.5-0.6,1.2-0.9,2.1-0.9c0.8,0,1.5,0.3,2,0.8c0.5,0.6,0.8,1.4,0.8,2.4c0,0.1,0,0.2,0,0.3h-4.7  c0,0.7,0.2,1.2,0.6,1.6c0.3,0.4,0.8,0.5,1.3,0.5c0.4,0,0.7-0.1,1-0.3S93.5,42.6,93.6,42.1z M90.2,40.4h3.5c0-0.5-0.2-0.9-0.4-1.2  c-0.3-0.4-0.8-0.6-1.3-0.6c-0.5,0-0.9,0.2-1.2,0.5C90.4,39.4,90.2,39.9,90.2,40.4z"/>
+<path d="M97,44.1h-1v-8.6h1.1v3.1c0.4-0.6,1-0.8,1.7-0.8c0.4,0,0.7,0.1,1.1,0.2c0.3,0.2,0.6,0.4,0.8,0.7c0.2,0.3,0.4,0.6,0.5,1  c0.1,0.4,0.2,0.8,0.2,1.3c0,1.1-0.3,1.9-0.8,2.5c-0.5,0.6-1.2,0.9-1.9,0.9c-0.7,0-1.3-0.3-1.7-0.9V44.1z M97,41  c0,0.7,0.1,1.3,0.3,1.6c0.3,0.5,0.8,0.8,1.4,0.8c0.5,0,0.9-0.2,1.2-0.6s0.5-1,0.5-1.8c0-0.8-0.2-1.4-0.5-1.8  c-0.3-0.4-0.7-0.6-1.2-0.6c-0.5,0-0.9,0.2-1.2,0.6C97.2,39.6,97,40.2,97,41z"/>
+<path d="M51.3,57.6l-2.4-6.2H50l1.3,3.7c0.1,0.4,0.3,0.8,0.4,1.3c0.1-0.3,0.2-0.7,0.4-1.2l1.4-3.8h1.1l-2.4,6.2H51.3z"/>
+<path d="M59.8,55.6l1.1,0.1c-0.2,0.6-0.5,1.1-1,1.5s-1.1,0.5-1.8,0.5c-0.9,0-1.6-0.3-2.2-0.8c-0.5-0.6-0.8-1.3-0.8-2.4  c0-1,0.3-1.9,0.8-2.4c0.5-0.6,1.2-0.9,2.1-0.9c0.8,0,1.5,0.3,2,0.8c0.5,0.6,0.8,1.4,0.8,2.4c0,0.1,0,0.2,0,0.3h-4.7  c0,0.7,0.2,1.2,0.6,1.6c0.3,0.4,0.8,0.5,1.3,0.5c0.4,0,0.7-0.1,1-0.3S59.7,56.1,59.8,55.6z M56.4,53.9h3.5c0-0.5-0.2-0.9-0.4-1.2  c-0.3-0.4-0.8-0.6-1.3-0.6c-0.5,0-0.9,0.2-1.2,0.5C56.6,52.9,56.4,53.4,56.4,53.9z"/>
+<path d="M62.2,57.6v-6.2h1v0.9c0.2-0.4,0.5-0.7,0.7-0.9c0.2-0.1,0.4-0.2,0.7-0.2c0.4,0,0.7,0.1,1.1,0.3l-0.4,1  c-0.3-0.2-0.5-0.2-0.8-0.2c-0.2,0-0.4,0.1-0.6,0.2c-0.2,0.1-0.3,0.3-0.4,0.6c-0.1,0.4-0.2,0.8-0.2,1.2v3.3H62.2z"/>
+<path d="M66.3,50.2V49h1.1v1.2H66.3z M66.3,57.6v-6.2h1.1v6.2H66.3z"/>
+<path d="M69.2,57.6v-5.4h-0.9v-0.8h0.9v-0.7c0-0.4,0-0.7,0.1-0.9c0.1-0.3,0.3-0.5,0.5-0.7c0.3-0.2,0.6-0.3,1.1-0.3  c0.3,0,0.6,0,1,0.1l-0.2,0.9c-0.2,0-0.4-0.1-0.6-0.1c-0.3,0-0.5,0.1-0.7,0.2c-0.1,0.1-0.2,0.4-0.2,0.8v0.6h1.2v0.8h-1.2v5.4H69.2z"/>
+<path d="M72.3,50.2V49h1.1v1.2H72.3z M72.3,57.6v-6.2h1.1v6.2H72.3z"/>
+<path d="M79.2,55.6l1.1,0.1c-0.2,0.6-0.5,1.1-1,1.5s-1.1,0.5-1.8,0.5c-0.9,0-1.6-0.3-2.2-0.8c-0.5-0.6-0.8-1.3-0.8-2.4  c0-1,0.3-1.9,0.8-2.4c0.5-0.6,1.2-0.9,2.1-0.9c0.8,0,1.5,0.3,2,0.8c0.5,0.6,0.8,1.4,0.8,2.4c0,0.1,0,0.2,0,0.3h-4.7  c0,0.7,0.2,1.2,0.6,1.6c0.3,0.4,0.8,0.5,1.3,0.5c0.4,0,0.7-0.1,1-0.3S79.1,56.1,79.2,55.6z M75.8,53.9h3.5c0-0.5-0.2-0.9-0.4-1.2  c-0.3-0.4-0.8-0.6-1.3-0.6c-0.5,0-0.9,0.2-1.2,0.5C76,52.9,75.8,53.4,75.8,53.9z"/>
+<path d="M85.7,57.6v-0.8c-0.4,0.6-1,0.9-1.7,0.9c-0.5,0-1-0.1-1.4-0.4s-0.7-0.7-1-1.1c-0.2-0.5-0.3-1.1-0.3-1.7  c0-0.6,0.1-1.2,0.3-1.7c0.2-0.5,0.5-0.9,0.9-1.2s0.9-0.4,1.4-0.4c0.4,0,0.7,0.1,1,0.2s0.5,0.4,0.7,0.6V49h1.1v8.6H85.7z M82.4,54.5  c0,0.8,0.2,1.4,0.5,1.8c0.3,0.4,0.7,0.6,1.2,0.6c0.5,0,0.9-0.2,1.2-0.6c0.3-0.4,0.5-1,0.5-1.7c0-0.9-0.2-1.5-0.5-1.9  c-0.3-0.4-0.7-0.6-1.2-0.6c-0.5,0-0.9,0.2-1.2,0.6S82.4,53.7,82.4,54.5z"/>
+<path d="M88.4,57.6V49h3.2c0.7,0,1.2,0.1,1.6,0.3c0.4,0.2,0.7,0.4,0.9,0.8c0.2,0.4,0.3,0.7,0.3,1.1c0,0.4-0.1,0.7-0.3,1  c-0.2,0.3-0.5,0.6-0.9,0.8c0.5,0.2,0.9,0.4,1.2,0.8s0.4,0.8,0.4,1.3c0,0.4-0.1,0.8-0.3,1.1s-0.4,0.6-0.6,0.8s-0.6,0.3-0.9,0.4  c-0.4,0.1-0.8,0.1-1.4,0.1H88.4z M89.6,52.6h1.9c0.5,0,0.9,0,1.1-0.1c0.3-0.1,0.5-0.2,0.7-0.4s0.2-0.4,0.2-0.8  c0-0.3-0.1-0.5-0.2-0.8s-0.3-0.4-0.6-0.4s-0.7-0.1-1.3-0.1h-1.7V52.6z M89.6,56.6h2.1c0.4,0,0.6,0,0.8,0c0.3,0,0.5-0.1,0.7-0.2  s0.3-0.3,0.4-0.5s0.2-0.5,0.2-0.7c0-0.3-0.1-0.6-0.2-0.8s-0.4-0.4-0.7-0.5s-0.7-0.1-1.3-0.1h-2V56.6z"/>
+<path d="M96.3,60l-0.1-1c0.2,0.1,0.4,0.1,0.6,0.1c0.2,0,0.4,0,0.6-0.1s0.3-0.2,0.3-0.3c0.1-0.1,0.2-0.4,0.3-0.8  c0-0.1,0.1-0.1,0.1-0.3l-2.4-6.2h1.1l1.3,3.6c0.2,0.5,0.3,0.9,0.5,1.4c0.1-0.5,0.3-1,0.4-1.4l1.3-3.6h1.1l-2.4,6.3  c-0.3,0.7-0.5,1.2-0.6,1.4c-0.2,0.3-0.4,0.6-0.6,0.8c-0.2,0.2-0.5,0.2-0.9,0.2C96.8,60.2,96.6,60.1,96.3,60z"/>
+</svg>
+</artwork>
 
 ### CBOR Diagnostic Notation
 
 ~~~
 200(   ; envelope
-   223(3)   ; known-value
+   202(3)   ; known-value
 )
 ~~~
 
 ### CBOR Hex
 
 ~~~
-d8c8d8df03
+d8c8d8ca03
 ~~~
 
 ## Encrypted Case
@@ -1085,7 +1144,7 @@ ENCRYPTED
 
 ~~~
 200(   ; envelope
-   201(   ; crypto-msg
+   201(   ; encrypted
       [
          h'130b06fd0bfed08e',
          h'cbe81743cebf0e55dc77b55d',
@@ -1103,6 +1162,75 @@ ENCRYPTED
 d8c8d8c984486bfa027df241def04c5520ca6d9d798ffd32d075c450d4b4\
 3d97a37eb280fdd89cf152ccf57d5824d8cb5820278403504ad3a9a9c24c\
 1b35a3673eee165a5d523f8d2a5cf5ce6dd25a37f110
+~~~
+
+## Compressed Case
+
+### Envelope CLI Command Line
+
+~~~
+envelope subject "Alice" | envelope compress
+~~~
+
+### Envelope Notation
+
+~~~
+COMPRESSED
+~~~
+
+### Tree
+
+~~~
+13941b48 COMPRESSED
+~~~
+
+### Mermaid
+
+<artwork type="svg"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" width="164.7px" height="94.2px" viewBox="0 0 164.7 94.2" xml:space="preserve">
+<path d="M32.1,67h3.8v2.2h-3.8V67z M26.7,67h3.8v2.2h-3.8V67z M27.3,61.2V65H25v-3.8H27.3z M27.3,53.7v3.8H25v-3.8H27.3z M27.3,46.2  V50H25v-3.8H27.3z M27.3,38.7v3.8H25v-3.8H27.3z M27.3,31.2V35H25v-3.8H27.3z M28.5,27.2h-2.4v-1.1h1.1v1.4H25V25h3.5V27.2z   M36,27.2h-3.8V25H36V27.2z M43.5,27.2h-3.8V25h3.8V27.2z M51,27.2h-3.8V25H51V27.2z M58.6,27.2h-3.8V25h3.8V27.2z M66.1,27.2h-3.8  V25h3.8V27.2z M73.6,27.2h-3.8V25h3.8V27.2z M81.1,27.2h-3.8V25h3.8V27.2z M88.6,27.2h-3.8V25h3.8V27.2z M96.1,27.2h-3.8V25h3.8  V27.2z M103.6,27.2h-3.8V25h3.8V27.2z M111.1,27.2h-3.8V25h3.8V27.2z M118.6,27.2h-3.8V25h3.8V27.2z M126.1,27.2h-3.8V25h3.8V27.2z   M133.6,27.2h-3.8V25h3.8V27.2z M137.5,28.7v-2.5h1.1v1.1h-1.2V25h2.3v3.7H137.5z M137.5,36.2v-3.8h2.3v3.8H137.5z M137.5,43.7v-3.8  h2.3v3.8H137.5z M137.5,51.2v-3.8h2.3v3.8H137.5z M137.5,58.7v-3.8h2.3v3.8H137.5z M137.5,66.2v-3.8h2.3v3.8H137.5z M133.1,67h3.8  v2.2h-3.8V67z M125.6,67h3.8v2.2h-3.8V67z M118,67h3.8v2.2H118V67z M110.5,67h3.8v2.2h-3.8V67z M103,67h3.8v2.2H103V67z M95.5,67  h3.8v2.2h-3.8V67z M88,67h3.8v2.2H88V67z M80.5,67h3.8v2.2h-3.8V67z M73,67h3.8v2.2H73V67z M65.5,67h3.8v2.2h-3.8V67z M58,67h3.8  v2.2H58V67z M50.5,67h3.8v2.2h-3.8V67z M43,67h3.8v2.2H43V67z M35.4,67h3.8v2.2h-3.8V67z M27.9,67h3.8v2.2h-3.8V67z M31.8,69.2h-3.8  V67h3.8V69.2z M33.3,60.9v3.8H31v-3.8H33.3z M33.3,53.4v3.8H31v-3.8H33.3z M33.3,45.9v3.8H31v-3.8H33.3z M33.3,38.4v3.8H31v-3.8  H33.3z M33.3,30.9v3.8H31v-3.8H33.3z M34.8,27.2h-2.7v-1.1h1.1v1.1H31V25h3.8V27.2z M42.3,27.2h-3.8V25h3.8V27.2z M49.9,27.2h-3.8  V25h3.8V27.2z M57.4,27.2h-3.8V25h3.8V27.2z M64.9,27.2h-3.8V25h3.8V27.2z M72.4,27.2h-3.8V25h3.8V27.2z M79.9,27.2h-3.8V25h3.8  V27.2z M87.4,27.2h-3.8V25h3.8V27.2z M94.9,27.2h-3.8V25h3.8V27.2z M102.4,27.2h-3.8V25h3.8V27.2z M109.9,27.2h-3.8V25h3.8V27.2z   M117.4,27.2h-3.8V25h3.8V27.2z M124.9,27.2h-3.8V25h3.8V27.2z M132.5,27.2h-3.8V25h3.8V27.2z M131.5,33.5v-3.8h2.3v3.8H131.5z   M131.5,41v-3.8h2.3V41H131.5z M131.5,48.5v-3.8h2.3v3.8H131.5z M131.5,56v-3.8h2.3V56H131.5z M131.5,63.5v-3.8h2.3v3.8H131.5z   M129.8,67h2.9v1.1h-1.1v-0.9h2.3v2h-4V67z M122.2,67h3.8v2.2h-3.8V67z M114.7,67h3.8v2.2h-3.8V67z M107.2,67h3.8v2.2h-3.8V67z   M99.7,67h3.8v2.2h-3.8V67z M92.2,67H96v2.2h-3.8V67z M84.7,67h3.8v2.2h-3.8V67z M77.2,67h3.8v2.2h-3.8V67z M69.7,67h3.8v2.2h-3.8  V67z M62.2,67h3.8v2.2h-3.8V67z M54.7,67h3.8v2.2h-3.8V67z M47.2,67h3.8v2.2h-3.8V67z M39.6,67h3.8v2.2h-3.8V67z"/>
+<path d="M60.1,44.1h-1.1v-6.7c-0.3,0.2-0.6,0.5-1,0.7s-0.8,0.4-1.1,0.5v-1c0.6-0.3,1.1-0.6,1.5-1s0.8-0.8,0.9-1.1h0.7V44.1z"/>
+<path d="M62.8,41.9l1.1-0.1c0.1,0.6,0.3,1,0.6,1.3c0.3,0.3,0.6,0.4,1.1,0.4c0.5,0,0.9-0.2,1.3-0.5s0.5-0.8,0.5-1.3  c0-0.5-0.2-0.9-0.5-1.2c-0.3-0.3-0.7-0.5-1.2-0.5c-0.2,0-0.4,0-0.7,0.1l0.1-0.9c0.1,0,0.1,0,0.2,0c0.4,0,0.9-0.1,1.2-0.4  s0.5-0.6,0.5-1.1c0-0.4-0.1-0.7-0.4-1c-0.3-0.3-0.6-0.4-1-0.4c-0.4,0-0.8,0.1-1,0.4c-0.3,0.3-0.4,0.6-0.5,1.2l-1.1-0.2  c0.1-0.7,0.4-1.3,0.9-1.6s1-0.6,1.7-0.6c0.5,0,0.9,0.1,1.3,0.3s0.7,0.5,0.9,0.8c0.2,0.3,0.3,0.7,0.3,1.1c0,0.4-0.1,0.7-0.3,1  c-0.2,0.3-0.5,0.5-0.9,0.7c0.5,0.1,0.9,0.4,1.2,0.7c0.3,0.4,0.4,0.8,0.4,1.4c0,0.8-0.3,1.4-0.8,1.9c-0.5,0.5-1.2,0.8-2.1,0.8  c-0.8,0-1.4-0.2-1.9-0.7C63.2,43.2,62.9,42.6,62.8,41.9z"/>
+<path d="M69.7,42.1l1-0.1c0.1,0.5,0.3,0.8,0.5,1c0.2,0.2,0.6,0.3,0.9,0.3c0.3,0,0.6-0.1,0.9-0.2c0.2-0.1,0.4-0.3,0.6-0.6  c0.2-0.2,0.3-0.6,0.4-1c0.1-0.4,0.2-0.9,0.2-1.3c0,0,0-0.1,0-0.2c-0.2,0.3-0.5,0.6-0.9,0.8c-0.4,0.2-0.8,0.3-1.2,0.3  c-0.7,0-1.3-0.3-1.8-0.8s-0.7-1.2-0.7-2c0-0.9,0.3-1.6,0.8-2.1s1.2-0.8,1.9-0.8c0.6,0,1.1,0.2,1.5,0.5s0.8,0.7,1.1,1.3  c0.2,0.6,0.4,1.4,0.4,2.4c0,1.1-0.1,2-0.4,2.6c-0.2,0.7-0.6,1.1-1.1,1.5s-1,0.5-1.7,0.5c-0.7,0-1.2-0.2-1.6-0.6  C70,43.3,69.7,42.8,69.7,42.1z M74,38.3c0-0.6-0.2-1.1-0.5-1.4s-0.7-0.5-1.2-0.5c-0.5,0-0.9,0.2-1.2,0.6s-0.5,0.9-0.5,1.5  c0,0.5,0.2,1,0.5,1.3s0.7,0.5,1.2,0.5c0.5,0,0.9-0.2,1.2-0.5S74,39,74,38.3z"/>
+<path d="M79.6,44.1v-2.1h-3.7v-1l3.9-5.6h0.9v5.6h1.2v1h-1.2v2.1H79.6z M79.6,41.1v-3.9l-2.7,3.9H79.6z"/>
+<path d="M86.8,44.1h-1.1v-6.7c-0.3,0.2-0.6,0.5-1,0.7s-0.8,0.4-1.1,0.5v-1c0.6-0.3,1.1-0.6,1.5-1s0.8-0.8,0.9-1.1h0.7V44.1z"/>
+<path d="M90.8,44.1h-1v-8.6h1.1v3.1c0.4-0.6,1-0.8,1.7-0.8c0.4,0,0.7,0.1,1.1,0.2c0.3,0.2,0.6,0.4,0.8,0.7c0.2,0.3,0.4,0.6,0.5,1  s0.2,0.8,0.2,1.3c0,1.1-0.3,1.9-0.8,2.5c-0.5,0.6-1.2,0.9-1.9,0.9c-0.7,0-1.3-0.3-1.7-0.9V44.1z M90.8,41c0,0.7,0.1,1.3,0.3,1.6  c0.3,0.5,0.8,0.8,1.3,0.8c0.5,0,0.9-0.2,1.2-0.6c0.3-0.4,0.5-1,0.5-1.8c0-0.8-0.2-1.4-0.5-1.8c-0.3-0.4-0.7-0.6-1.2-0.6  c-0.5,0-0.9,0.2-1.2,0.6C91,39.6,90.8,40.2,90.8,41z"/>
+<path d="M99.6,44.1v-2.1h-3.7v-1l3.9-5.6h0.9v5.6h1.2v1h-1.2v2.1H99.6z M99.6,41.1v-3.9l-2.7,3.9H99.6z"/>
+<path d="M104.5,39.5c-0.4-0.2-0.8-0.4-1-0.7c-0.2-0.3-0.3-0.7-0.3-1.1c0-0.6,0.2-1.2,0.7-1.6s1-0.6,1.8-0.6c0.8,0,1.4,0.2,1.8,0.7  s0.7,1,0.7,1.6c0,0.4-0.1,0.7-0.3,1c-0.2,0.3-0.5,0.5-1,0.7c0.5,0.2,0.9,0.4,1.2,0.8c0.3,0.4,0.4,0.8,0.4,1.4c0,0.7-0.3,1.4-0.8,1.9  c-0.5,0.5-1.2,0.8-2.1,0.8s-1.5-0.3-2.1-0.8s-0.8-1.1-0.8-1.9c0-0.6,0.1-1,0.4-1.4S104,39.6,104.5,39.5z M104,41.6  c0,0.3,0.1,0.6,0.2,0.9c0.1,0.3,0.4,0.5,0.6,0.7s0.6,0.2,0.9,0.2c0.5,0,0.9-0.2,1.2-0.5c0.3-0.3,0.5-0.7,0.5-1.2  c0-0.5-0.2-0.9-0.5-1.3c-0.3-0.3-0.8-0.5-1.3-0.5c-0.5,0-0.9,0.2-1.2,0.5S104,41.2,104,41.6z M104.3,37.7c0,0.4,0.1,0.7,0.4,1  c0.3,0.3,0.6,0.4,1,0.4c0.4,0,0.7-0.1,1-0.4c0.3-0.3,0.4-0.6,0.4-0.9c0-0.4-0.1-0.7-0.4-1c-0.3-0.3-0.6-0.4-1-0.4  c-0.4,0-0.7,0.1-1,0.4C104.5,37,104.3,37.3,104.3,37.7z"/>
+<path d="M46.7,54.6l1.1,0.3c-0.2,0.9-0.7,1.6-1.3,2.1c-0.6,0.5-1.4,0.7-2.3,0.7c-0.9,0-1.7-0.2-2.3-0.6s-1-0.9-1.3-1.6  c-0.3-0.7-0.5-1.5-0.5-2.3c0-0.9,0.2-1.7,0.5-2.3s0.8-1.2,1.5-1.5c0.6-0.3,1.3-0.5,2.1-0.5c0.9,0,1.6,0.2,2.2,0.7  c0.6,0.4,1,1.1,1.2,1.8l-1.1,0.3c-0.2-0.6-0.5-1.1-0.9-1.4s-0.9-0.4-1.4-0.4c-0.7,0-1.2,0.2-1.7,0.5s-0.8,0.7-0.9,1.3  s-0.3,1.1-0.3,1.6c0,0.7,0.1,1.4,0.3,1.9c0.2,0.5,0.5,1,1,1.2s0.9,0.4,1.5,0.4c0.6,0,1.2-0.2,1.6-0.6S46.5,55.3,46.7,54.6z"/>
+<path d="M48.9,53.4c0-1.4,0.4-2.5,1.1-3.3s1.8-1.2,3-1.2c0.8,0,1.5,0.2,2.1,0.6s1.1,0.9,1.5,1.6s0.5,1.4,0.5,2.3  c0,0.9-0.2,1.7-0.5,2.3s-0.9,1.2-1.5,1.6s-1.3,0.5-2.1,0.5c-0.8,0-1.5-0.2-2.2-0.6c-0.6-0.4-1.1-0.9-1.4-1.6S48.9,54.2,48.9,53.4z   M50.1,53.5c0,1,0.3,1.9,0.8,2.4c0.6,0.6,1.3,0.9,2.1,0.9c0.9,0,1.6-0.3,2.1-0.9s0.8-1.5,0.8-2.6c0-0.7-0.1-1.3-0.4-1.8  c-0.2-0.5-0.6-0.9-1-1.2c-0.5-0.3-1-0.4-1.5-0.4c-0.8,0-1.5,0.3-2.1,0.8C50.4,51.2,50.1,52.2,50.1,53.5z"/>
+<path d="M58.6,57.6V49h1.7l2,6.1c0.2,0.6,0.3,1,0.4,1.3c0.1-0.3,0.2-0.8,0.5-1.4l2.1-6h1.5v8.6h-1.1v-7.2l-2.5,7.2h-1l-2.5-7.3v7.3  H58.6z"/>
+<path d="M68.6,57.6V49h3.2c0.6,0,1,0,1.3,0.1c0.4,0.1,0.8,0.2,1.1,0.4c0.3,0.2,0.5,0.5,0.7,0.8s0.3,0.7,0.3,1.2  c0,0.7-0.2,1.3-0.7,1.9s-1.3,0.8-2.5,0.8h-2.2v3.5H68.6z M69.7,53.1H72c0.7,0,1.3-0.1,1.6-0.4c0.3-0.3,0.5-0.7,0.5-1.2  c0-0.4-0.1-0.7-0.3-0.9c-0.2-0.3-0.4-0.4-0.7-0.5c-0.2-0.1-0.5-0.1-1.1-0.1h-2.2V53.1z"/>
+<path d="M76.6,57.6V49h3.8c0.8,0,1.3,0.1,1.7,0.2s0.7,0.4,1,0.8c0.2,0.4,0.4,0.8,0.4,1.3c0,0.6-0.2,1.1-0.6,1.5s-1,0.7-1.8,0.8  c0.3,0.1,0.5,0.3,0.7,0.4c0.3,0.3,0.6,0.7,0.9,1.1l1.5,2.3h-1.4l-1.1-1.8c-0.3-0.5-0.6-0.9-0.8-1.2c-0.2-0.3-0.4-0.5-0.6-0.6  c-0.2-0.1-0.3-0.2-0.5-0.2c-0.1,0-0.3,0-0.6,0h-1.3v3.8H76.6z M77.8,52.8h2.4c0.5,0,0.9-0.1,1.2-0.2c0.3-0.1,0.5-0.3,0.7-0.5  s0.2-0.5,0.2-0.8c0-0.4-0.1-0.7-0.4-1c-0.3-0.3-0.8-0.4-1.4-0.4h-2.7V52.8z"/>
+<path d="M85.3,57.6V49h6.2v1h-5.1v2.6h4.8v1h-4.8v2.9h5.3v1H85.3z"/>
+<path d="M92.9,54.9l1.1-0.1c0.1,0.4,0.2,0.8,0.4,1.1c0.2,0.3,0.5,0.5,0.9,0.7s0.8,0.3,1.3,0.3c0.4,0,0.8-0.1,1.1-0.2  s0.6-0.3,0.7-0.5s0.2-0.5,0.2-0.7c0-0.3-0.1-0.5-0.2-0.7s-0.4-0.4-0.8-0.5c-0.2-0.1-0.7-0.2-1.5-0.4s-1.3-0.4-1.7-0.5  c-0.4-0.2-0.7-0.5-0.9-0.8c-0.2-0.3-0.3-0.7-0.3-1.1c0-0.4,0.1-0.8,0.4-1.2s0.6-0.7,1.1-0.9s1-0.3,1.6-0.3c0.6,0,1.2,0.1,1.7,0.3  s0.9,0.5,1.1,0.9c0.3,0.4,0.4,0.8,0.4,1.4l-1.1,0.1c-0.1-0.5-0.3-1-0.6-1.2c-0.3-0.3-0.8-0.4-1.5-0.4c-0.7,0-1.2,0.1-1.5,0.4  s-0.5,0.6-0.5,0.9c0,0.3,0.1,0.6,0.3,0.8c0.2,0.2,0.8,0.4,1.7,0.6s1.6,0.4,1.9,0.5c0.5,0.2,0.9,0.5,1.1,0.9c0.2,0.4,0.4,0.8,0.4,1.2  c0,0.5-0.1,0.9-0.4,1.3c-0.3,0.4-0.6,0.7-1.1,0.9c-0.5,0.2-1,0.3-1.7,0.3c-0.8,0-1.4-0.1-2-0.3c-0.5-0.2-0.9-0.6-1.2-1  C93.1,56,92.9,55.4,92.9,54.9z"/>
+<path d="M100.9,54.9l1.1-0.1c0.1,0.4,0.2,0.8,0.4,1.1c0.2,0.3,0.5,0.5,0.9,0.7s0.8,0.3,1.3,0.3c0.4,0,0.8-0.1,1.1-0.2  s0.6-0.3,0.7-0.5s0.2-0.5,0.2-0.7c0-0.3-0.1-0.5-0.2-0.7s-0.4-0.4-0.8-0.5c-0.2-0.1-0.7-0.2-1.5-0.4s-1.3-0.4-1.7-0.5  c-0.4-0.2-0.7-0.5-0.9-0.8c-0.2-0.3-0.3-0.7-0.3-1.1c0-0.4,0.1-0.8,0.4-1.2s0.6-0.7,1.1-0.9s1-0.3,1.6-0.3c0.6,0,1.2,0.1,1.7,0.3  s0.9,0.5,1.1,0.9c0.3,0.4,0.4,0.8,0.4,1.4l-1.1,0.1c-0.1-0.5-0.3-1-0.6-1.2c-0.3-0.3-0.8-0.4-1.5-0.4c-0.7,0-1.2,0.1-1.5,0.4  s-0.5,0.6-0.5,0.9c0,0.3,0.1,0.6,0.3,0.8c0.2,0.2,0.8,0.4,1.7,0.6s1.6,0.4,1.9,0.5c0.5,0.2,0.9,0.5,1.1,0.9c0.2,0.4,0.4,0.8,0.4,1.2  c0,0.5-0.1,0.9-0.4,1.3c-0.3,0.4-0.6,0.7-1.1,0.9c-0.5,0.2-1,0.3-1.7,0.3c-0.8,0-1.4-0.1-2-0.3c-0.5-0.2-0.9-0.6-1.2-1  C101.1,56,100.9,55.4,100.9,54.9z"/>
+<path d="M109.4,57.6V49h6.2v1h-5.1v2.6h4.8v1h-4.8v2.9h5.3v1H109.4z"/>
+<path d="M117.3,57.6V49h3c0.7,0,1.2,0,1.5,0.1c0.5,0.1,0.9,0.3,1.3,0.6c0.5,0.4,0.8,0.9,1,1.5c0.2,0.6,0.3,1.3,0.3,2  c0,0.7-0.1,1.2-0.2,1.7c-0.2,0.5-0.3,0.9-0.6,1.3s-0.5,0.6-0.8,0.8s-0.6,0.3-1,0.4c-0.4,0.1-0.9,0.1-1.4,0.1H117.3z M118.5,56.6h1.8  c0.6,0,1-0.1,1.3-0.2s0.6-0.3,0.8-0.4c0.3-0.3,0.5-0.6,0.6-1.1c0.2-0.5,0.2-1,0.2-1.7c0-0.9-0.1-1.6-0.4-2.1s-0.7-0.8-1.1-1  c-0.3-0.1-0.8-0.2-1.5-0.2h-1.8V56.6z"/>
+</svg></artwork>
+
+### CBOR Diagnostic Notation
+
+~~~
+200(   ; envelope
+   206(   ; compressed
+      [
+         1439580972,
+         10,
+         h'd8c8d81865416c696365',
+         204(   ; digest
+            h'13941b487c1ddebce827b6ec3f46d982/
+            938acdc7e3b6a140db36062d9519dd2f'
+         )
+      ]
+   )
+)
+~~~
+
+### CBOR Hex
+
+~~~
+d8c8d8ce841a55ce432c0a4ad8c8d81865416c696365d8cc582013941b/
+487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
 ~~~
 
 ## Elided Case
@@ -1606,7 +1734,7 @@ In a Merkle Tree, all semantically significant information is carried by the tre
 
 In an envelope, every digest references some semantically significant content: it could reference the subject of the envelope, or one of the assertions in the envelope, or at the predicate or object of a given assertion. Of course, those elements are all envelopes themselves, and thus potentially the root of their own subtree.
 
-In a Merkle tree, the minimum subset of hashes necessary to confirm that a specific leaf node (the "target") must be present is called a "Merkle proof." For envelopes, an analogous proof would be a transformation of the envelope that is entirely elided but preserves the structure necessary to reveal the target.
+In a Merkle tree, the minimum subset of digests necessary to confirm that a specific leaf node (the "target") must be present is called a "Merkle proof." For envelopes, an analogous proof would be a transformation of the envelope that is entirely elided but preserves the structure necessary to reveal the target.
 
 As an example, we produce an envelope representing a simple FOAF {{FOAF}} style graph:
 
@@ -1692,10 +1820,10 @@ The authors considered adding a version number to every envelope, but deemed thi
 
 The general migration strategy is that the specific structure of envelopes defined in the first general release of this specification is the baseline, and later specifications may incrementally add structural features such as envelope cases, new tags, or support for new structures or algorithms, but are generally expected to maintain backward compatibility.
 
-An example of addition would be to add an additional supported method of encryption. The `crypto-msg` specification CDDL is a CBOR array with either three or four elements:
+An example of addition would be to add an additional supported method of encryption. The `encrypted` specification CDDL is a CBOR array with either three or four elements:
 
 ~~~ cddl
-crypto-msg = #6.201([ ciphertext, nonce, auth, ? aad ])
+encrypted = #6.205([ ciphertext, nonce, auth, ? aad ])
 ciphertext = bytes       ; encrypted using ChaCha20
 aad = digest             ; Additional Authenticated Data
 nonce = bytes .size 12   ; Random, generated at encryption-time
@@ -1705,7 +1833,7 @@ auth = bytes .size 16    ; Authentication tag created by Poly1305
 For the sake of this example, we assume the new method to be supported has all the same fields but needs to be processed differently. In this case, the first element of the array could become an optional integer:
 
 ~~~ cddl
-crypto-msg = #6.201([ ? version, ciphertext, nonce, auth, ? aad ])
+encrypted = #6.205([ ? version, ciphertext, nonce, auth, ? aad ])
 version = uint           ; absent for old method, 1 for new method
 ~~~
 
@@ -1713,7 +1841,7 @@ If present, the first field specifies the later encryption method. If absent, th
 
 ## Commitment to the Hash Algorithm
 
-For changes that are more sweeping, like supporting a different hash algorithm to produce the merkle tree digests, it would be necessary to use a different top-level CBOR tag to represent the envelope itself. Currently the envelope tag is #6.200, and the choice of digest algorithm in our reference implementation is SHA-256. If this version were officially released and a future version of Gordian Envelope was also released that supported BLAKE3, it will need to have a different tag. However, a problem for interoperability of these two distinct formats then arises in the choice of whether a particular envelope is encoded assuming SHA-256 or BLAKE3. Whenever there is a choice about two or more ways to encode particular data, this violates the determinism requirement that Gordian Envelopes are designed to uphold. In other words, an envelope encoding certain information using SHA-256 will not, in general, be structurally identical to the same information encoded in an envelope using BLAKE3. For instance, they will both have different root hashes, and simply knowing which algorithm produced each one will not help you know whether they have equivalent content. Only two envelope cases actually encode their digest in the binary stream: ELIDED and ENCRYPTED. If an envelope doesn't use either of these cases, then you could choose to decode the envelope with either algorithm, but if it does use either of these cases then the envelope will still decode, but attempting to decrypt or unelide its contents will result in mismatched digests. This is why the envelope itself needs to declare the hashing algorithm used using its top-level CBOR tag, and why the choice of which hash algorithm to commit to should be carefully considered.
+For changes that are more sweeping, like supporting a different hash algorithm to produce the merkle tree digests, it would be necessary to use a different top-level CBOR tag to represent the envelope itself. Currently the envelope tag is #6.200, and the choice of digest algorithm in our reference implementation is SHA-256. If this version were officially released and a future version of Gordian Envelope was also released that supported (for example) BLAKE3, it will need to have a different tag. However, a problem for interoperability of these two distinct formats then arises in the choice of whether a particular envelope is encoded assuming SHA-256 or BLAKE3. Whenever there is a choice about two or more ways to encode particular data, this violates the determinism requirement that Gordian Envelopes are designed to uphold. In other words, an envelope encoding certain information using SHA-256 will not, in general, be structurally identical to the same information encoded in an envelope using BLAKE3. For instance, they will both have different root digests, and simply knowing which algorithm produced each one will not help you know whether they have equivalent content. Three envelope cases actually encode their digest in the binary stream: ELIDED, COMPRESSED, and ENCRYPTED. If an envelope doesn't any of these cases, then you could choose to decode the envelope with either algorithm, but if it does use either of these cases then the envelope will still decode, but attempting to decrypt or unelide its contents will result in mismatched digests. This is why the envelope itself needs to declare the hashing algorithm used using its top-level CBOR tag, and why the choice of which hash algorithm to commit to should be carefully considered.
 
 # Security Considerations
 
@@ -1749,7 +1877,7 @@ This specification allows the signing of envelopes that are partially (or even e
 
 Envelope uses the SHA-256 digest algorithm {{-SHA-256}}, which is regarded as reliable and widely supported by many implementations in both software and hardware.
 
-### Well-Known Hashes
+### Well-Known Digests
 
 Because they are short unsigned integers, well-known values produce well-known digests. Elided envelopes may, in some cases, inadvertently reveal information by transmitting digests that may be correlated to known information. Envelopes can be salted by adding assertions that contain random data to perturb the digest tree, hence decorrelating it from any known values.
 
@@ -1759,9 +1887,9 @@ Existence proofs include the minimal set of digests that are necessary to calcul
 
 ### A Tree, Not a List
 
-Envelope makes use of a hash tree instead of a hash list to allow this sort of minimal revelation. This decision may also have advantages in scaling. However, there should be further investigation of the limitations of hash trees regarding scaling, particularly for the scaling of large, elided structures.
+Envelope makes use of a digest tree instead of a digest list to allow this sort of minimal revelation. This decision may also have advantages in scaling. However, there should be further investigation of the limitations of digest trees regarding scaling, particularly for the scaling of large, elided structures.
 
-There should also be careful consideration of the best practices needed for the creation of deeply nested envelopes, for the usage of sub-envelopes created at different times, and for other technical details related to the use of a potentially broad hash tree, as such best practices do not currently exist.
+There should also be careful consideration of the best practices needed for the creation of deeply nested envelopes, for the usage of sub-envelopes created at different times, and for other technical details related to the use of a potentially broad digest tree, as such best practices do not currently exist.
 
 ### Salts
 
@@ -1769,11 +1897,11 @@ Specifics for the size and usage of salt are not included in this specifications
 
 ### Collisions
 
-Hash trees tend to make it harder to create collisions than the use of a raw hash function. If attackers manage to find a collision for a hash, they can only replace one node (and its children), so the impact is limited, especially since finding collisions higher in a hash tree grows increasingly difficult because the collision must be a concatenation of multiple hashes. This should generally reduce issues with collisions: finding collisions that fit a hash tree tends to be harder than finding regular collisions. But, the issue should always be considered.
+Digest trees tend to make it harder to create collisions than the use of a raw hash function. If attackers manage to find a collision for a digest, they can only replace one node (and its children), so the impact is limited, especially since finding collisions higher in a digest tree grows increasingly difficult because the collision must be a concatenation of multiple digests. This should generally reduce issues with collisions: finding collisions that fit a digest tree tends to be harder than finding regular collisions. But, the issue should always be considered.
 
 ### Leaf-Node Attacks
 
-Envelope's hash tree is proof against the leaf-node weakness of Bitcoin that can affect SPVs because its predicates are an unordered set, serialized in increasing lexicographic order by digest, with no possibility for duplication and thus fully deterministic ordering of the tree.
+Envelope's digest tree is proof against the leaf-node weakness of Bitcoin that can affect SPVs because its predicates are an unordered set, serialized in increasing lexicographic order by digest, with no possibility for duplication and thus fully deterministic ordering of the tree.
 
 See the leaf-node attack at {{LEAF-MERKLE}}.
 
@@ -1799,33 +1927,24 @@ Creators of specifications for envelope-based documents should give due consider
 
 This section proposes a number of IANA allocated specific CBOR tags {{IANA-CBOR-TAGS}}.
 
-In the table below, tags directly referenced in this specification have "yes" in the "spec" field.
+This document requests that IANA reserve the assigned tags listed below for use by envelope and associated specifications.
 
-The reference implementation {{ENVELOPE-REFIMPL}} uses tags not used in this specification, and these are marked "no" in the "spec" field.
+| code point | semantics |
+|:----|:-----|
+| #6.200 | envelope |
+| #6.201 | assertion |
+| #6.202 | known-value |
+| #6.203 | wrapped-envelope |
+| #6.204 | digest |
+| #6.205 | encrypted |
+| #6.206 | compressed |
 
-This document requests that IANA reserve the assigned tags listed below in the range 200-230 for use by envelope and associated specifications.
-
-| data item | spec | semantics |
-|:----|:-----|:-----|
-| 200 | yes  | envelope |
-| 201 | yes  | crypto-message |
-| 202 | no   | common-identifier |
-| 203 | yes  | digest |
-| 204 | no   | symmetric-key |
-| 205 | no   | private-key-base |
-| 206 | no   | public-key-base |
-| 207 | no   | sealed-message |
-| 208-221 | no | unassigned
-| 221 | yes  | assertion |
-| 222 | no   | signature |
-| 223 | yes  | known-value |
-| 224 | yes  | wrapped-envelope |
-| 225-229 | no | unassigned
-| 230 | no   | agreement-public-key |
+In addition, at this time work in progress is also using tags 207-212, 300-323, and 400-410. We may apply for some of these code points in the future.
 
 Points of contact:
-    * Christopher Allen <christophera@blockchaincommons.com>
-    * Wolf McNally <wolf@wolfmcnally.com>
+
+* Christopher Allen <christophera@blockchaincommons.com>
+* Wolf McNally <wolf@wolfmcnally.com>
 
 ## Media Type
 

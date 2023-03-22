@@ -52,6 +52,7 @@ print_variants "Example" 'envelope subject "Alice" | envelope assertion "knows" 
 print_variants "Leaf Case" 'envelope subject "Alice"'
 print_variants "Known Value Case" 'envelope subject --known verifiedBy'
 print_variants "Encrypted Case" 'envelope subject "Alice" | envelope encrypt --key `envelope generate key`'
+print_variants "Compressed Case" 'envelope subject "Alice" | envelope compress'
 print_variants "Elided Case" 'envelope subject "Alice" | envelope elide'
 print_variants "Node Case" 'envelope subject "Alice" | envelope assertion "knows" "Bob"'
 print_variants "Wrapped Envelope Case" 'envelope subject "Alice" | envelope subject --wrapped'
