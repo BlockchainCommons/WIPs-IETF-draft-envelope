@@ -1,0 +1,311 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2023-02-02T00:00:49.273493+00:00",
+  "repo": "BlockchainCommons/WIPs-IETF-draft-envelope",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 4,
+      "id": "I_kwDOIRf-ms5XokGB",
+      "title": "Poly1305 is referred to as a HMAC, which it isn't",
+      "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/issues/4",
+      "state": "CLOSED",
+      "author": "simonratner",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Several places in https://blockchaincommons.github.io/WIPs-IETF-draft-envelope/draft-mcnally-envelope.html refer to HMAC:\r\nSections 1.5, 2.2.3, and 3.3.\r\n\r\nFor example:\r\n> When used with envelopes, the `crypto-msg` construct `aad` (additional authenticated data) field contains the digest of the plaintext, authenticating the declared digest using the Poly1305 HMAC.\r\n\r\nI believe Poly1305 isn't technically an HMAC (which refers to a specific MD-hash-based construction).\r\nReplacing with `MAC` without narrowing it further is probably fine.",
+      "createdAt": "2022-11-30T21:42:00Z",
+      "updatedAt": "2022-12-02T01:10:26Z",
+      "closedAt": "2022-12-02T01:10:26Z",
+      "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOIRf-ms5c0Qx1",
+      "title": "Progressive Trust",
+      "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/issues/6",
+      "state": "OPEN",
+      "author": "shannona",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "If it seems appropriate for the IETF format:\r\n* I would suggest the phrase \"progressive trust\" in the privacy-ready section of the intro link to https://www.blockchaincommons.com/musings/musings-progressive-trust/. \r\n* We can also optionally add a brief definition. Here's what we have in the IETF Lexicon: **Progressive Trust.** The concept of gradually building trust over time.\r\n\r\nIt feels somewhat important because this is more our term of art than something in super-common usage.",
+      "createdAt": "2023-01-25T20:04:31Z",
+      "updatedAt": "2023-01-26T01:24:45Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "ChristopherA",
+          "authorAssociation": "NONE",
+          "body": "I\u2019d love to have a slightly longer short definition, which includes the concept that there is no absolute trust, and that progress toward reasonable trust to mitigate risks for all parties is the goal. ",
+          "createdAt": "2023-01-25T20:20:23Z",
+          "updatedAt": "2023-01-25T20:20:23Z"
+        },
+        {
+          "author": "shannona",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Here's a longer alternative:\r\n\r\n**Progressive Trust.** The concept of gradually building trust over time. This model of trust presumes that there is no absolute trust: no trust registry or trust framework. Instead, trust is developed more as in real life, where gradually expanding trust mitigates risk among parties.",
+          "createdAt": "2023-01-26T01:24:45Z",
+          "updatedAt": "2023-01-26T01:24:45Z"
+        }
+      ]
+    }
+  ],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOIRf-ms5Ceh7N",
+      "title": "Proposed Security Considerations",
+      "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/pull/1",
+      "state": "MERGED",
+      "author": "shannona",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-11-09T01:36:48Z",
+      "updatedAt": "2022-11-09T22:46:21Z",
+      "baseRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "baseRefName": "master",
+      "baseRefOid": "b185c3a5545ce1c927aa04754f6eaf5beccecf7f",
+      "headRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "headRefName": "shannona-security-considerations",
+      "headRefOid": "120369a8204ffe3752c066ec14ddaecf11b3caa2",
+      "closedAt": "2022-11-09T22:46:21Z",
+      "mergedAt": "2022-11-09T22:46:21Z",
+      "mergedBy": "wolfmcnally",
+      "mergeCommit": {
+        "oid": "5296f7b0b307e25e078b7014e9ac098865a59ed7"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOIRf-ms5GBr8Q",
+          "commit": {
+            "abbreviatedOid": "5115635"
+          },
+          "author": "wolfmcnally",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-11-09T22:38:05Z",
+          "updatedAt": "2022-11-09T22:38:05Z",
+          "comments": [
+            {
+              "originalPosition": 58,
+              "body": "Should say \"support for elision...\". Use \"elision\" unless specifically referring to the motive for elision being redaction.",
+              "createdAt": "2022-11-09T22:38:05Z",
+              "updatedAt": "2022-11-09T22:38:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOIRf-ms5GBs0R",
+          "commit": {
+            "abbreviatedOid": "5115635"
+          },
+          "author": "shannona",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-11-09T22:42:22Z",
+          "updatedAt": "2022-11-09T22:42:22Z",
+          "comments": [
+            {
+              "originalPosition": 58,
+              "body": "Change made.",
+              "createdAt": "2022-11-09T22:42:22Z",
+              "updatedAt": "2022-11-09T22:42:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOIRf-ms5GBtmv",
+          "commit": {
+            "abbreviatedOid": "120369a"
+          },
+          "author": "wolfmcnally",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2022-11-09T22:46:15Z",
+          "updatedAt": "2022-11-09T22:46:15Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOIRf-ms5DElIk",
+      "title": "Edits & Expansions to IETF Draft",
+      "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/pull/2",
+      "state": "MERGED",
+      "author": "shannona",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "My two goals here were to:\r\n(1) Improve selling points in early section / description of why we're doing this (2) Add some additional security considerations per discussions with Christopher",
+      "createdAt": "2022-11-17T00:37:55Z",
+      "updatedAt": "2022-11-17T03:53:46Z",
+      "baseRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "baseRefName": "master",
+      "baseRefOid": "dcf0d13b4061cd61957498e27f428b3926fc39e0",
+      "headRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "headRefName": "shannona-ietf-suggestions",
+      "headRefOid": "a548a167d597982fa8ae068be8daf9e21159f40f",
+      "closedAt": "2022-11-17T03:53:38Z",
+      "mergedAt": "2022-11-17T03:53:38Z",
+      "mergedBy": "wolfmcnally",
+      "mergeCommit": {
+        "oid": "5df73a3d1823bae19f76054598eeaf0a38b76176"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOIRf-ms5GjN9r",
+          "commit": {
+            "abbreviatedOid": "a548a16"
+          },
+          "author": "wolfmcnally",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM. I'll make a few minor edits for style, particularly reference links to RFCs.",
+          "createdAt": "2022-11-17T03:53:04Z",
+          "updatedAt": "2022-11-17T03:53:04Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOIRf-ms5D7clw",
+      "title": "Revised Abstract",
+      "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/pull/3",
+      "state": "MERGED",
+      "author": "shannona",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-11-29T23:30:15Z",
+      "updatedAt": "2022-12-01T03:29:45Z",
+      "baseRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "baseRefName": "master",
+      "baseRefOid": "1961f7ab3b4bcb09c1ae65a340285d3cb7322863",
+      "headRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "headRefName": "shannona-updated-abstract",
+      "headRefOid": "c23bda8b3a91ab6119c6fae1a6f67c4bb1b41390",
+      "closedAt": "2022-12-01T03:29:45Z",
+      "mergedAt": "2022-12-01T03:29:45Z",
+      "mergedBy": "wolfmcnally",
+      "mergeCommit": {
+        "oid": "a85b9e36e442a5ec152471c1070654f339b88596"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOIRf-ms5Hi1_1",
+          "commit": {
+            "abbreviatedOid": "c23bda8"
+          },
+          "author": "wolfmcnally",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2022-12-01T03:29:37Z",
+          "updatedAt": "2022-12-01T03:29:37Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOIRf-ms5Iib_0",
+      "title": "Non-technical text changes #1",
+      "url": "https://github.com/BlockchainCommons/WIPs-IETF-draft-envelope/pull/5",
+      "state": "MERGED",
+      "author": "ChristopherA",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "A few misspelled words and punctuation were corrected\u2014no substantive change. \r\n\r\n(Also, a reminder to use a spell-checker on the next version.)",
+      "createdAt": "2023-01-25T18:51:01Z",
+      "updatedAt": "2023-01-31T01:12:41Z",
+      "baseRepository": "BlockchainCommons/WIPs-IETF-draft-envelope",
+      "baseRefName": "master",
+      "baseRefOid": "7dfaaab1438883d339432748354e97249437b9de",
+      "headRepository": "ChristopherA/WIPs-IETF-draft-envelope",
+      "headRefName": "non-technical-text-changes",
+      "headRefOid": "df96d2580d8fd5c6bfed10dc1e17d02a4bcbeadb",
+      "closedAt": "2023-01-31T01:12:40Z",
+      "mergedAt": "2023-01-31T01:12:40Z",
+      "mergedBy": "wolfmcnally",
+      "mergeCommit": {
+        "oid": "cbc4e79976585235dfe4ea9a690f437c7078a226"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOIRf-ms5MEh2q",
+          "commit": {
+            "abbreviatedOid": "df96d25"
+          },
+          "author": "wolfmcnally",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "The abstract was accidentally removed. Accepting the PR as-is then adding it back.",
+          "createdAt": "2023-01-31T01:12:16Z",
+          "updatedAt": "2023-01-31T01:12:16Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
+}
