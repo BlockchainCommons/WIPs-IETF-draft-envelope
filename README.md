@@ -7,6 +7,22 @@ This is the working area for the individual Internet-Draft, "draft-mcnally-envel
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-mcnally-envelope)
 * [Compare Editor's Copy to Individual Draft](https://BlockchainCommons.github.io/WIPs-IETF-draft-envelope/#go.draft-mcnally-envelope.diff)
 
+## Change History
+
+### May 4, 2023 - 02
+
+* Renumbered CBOR tags in preparation for IANA registration.
+* Added `compressed` case.
+* Various clarifications and corrections.
+
+### Mar 6, 2023 - 01
+
+* Switched to SHA-256 as native digest algorithm, removed BLAKE3.
+* Various clarifications and corrections.
+
+### Dec 1, 2022 - 00
+
+* Initial version
 
 ## Contributing
 
