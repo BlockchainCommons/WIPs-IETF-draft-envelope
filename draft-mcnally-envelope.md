@@ -706,7 +706,7 @@ envelope subject "Alice" | envelope subject --wrapped
 d8c8d8c8d81865416c696365
 ~~~
 
-# Reference Implementation
+# Reference Implementations
 
 This section is informative.
 
