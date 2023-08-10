@@ -86,7 +86,7 @@ Table of Contents
      5.3.  Node Case
      5.4.  Assertion Case
      5.5.  Wrapped Case
-   6.  Reference Implementation
+   6.  Reference Implementations
    7.  Security Considerations
      7.1.  CBOR Considerations
      7.2.  Validation Requirements
@@ -805,7 +805,7 @@ d8c8582013941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
 
    d8c8d8c8d81865416c696365
 
-6.  Reference Implementation
+6.  Reference Implementations
 
    This section is informative.
 
