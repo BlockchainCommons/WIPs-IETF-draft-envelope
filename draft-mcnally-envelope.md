@@ -117,7 +117,8 @@ leaf = #6.24(bytes)  ; MUST be dCBOR
 elided = sha256-digest
 sha256-digest = bytes .size 32
 
-node = [envelope, + assertion-element]
+node = [subject, + assertion-element]
+subject = envelope
 assertion-element = ( assertion / elided-assertion )
 elided-assertion = elided           ; MUST represent an assertion.
 
@@ -162,7 +163,8 @@ The array MUST NOT contain any `assertion-element`s with identical digests.
 For an Envelope to be valid, any `elided-assertion` Envelopes in the `node` assertions MUST, if and when unelided, be found to be actual `assertion` case Envelopes having the same digest.
 
 ~~~ cddl
-node = [envelope, + assertion-element]
+node = [subject, + assertion-element]
+subject = envelope
 assertion-element = ( assertion / elided-assertion )
 elided-assertion = elided           ; MUST represent an assertion.
 ~~~
