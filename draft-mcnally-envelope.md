@@ -151,12 +151,12 @@ An `elided` case is used as a placeholder for an element that has been elided. I
 elided = sha256-digest
 sha256-digest = bytes .size 32
 
-tagged-elided = #6.40001(elided)
+tagged-digest = #6.40001(sha256-digest)
 ~~~
 
 The `elided` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR byte string and always has a length of 32 bytes.
 
-The `tagged-elided` type is not used in the Envelope format itself, but is defined here for use in Envelope extensions specifications.
+The `tagged-digest` type is not used in the Envelope format itself, but is defined here for use in Envelope extensions specifications.
 
 ## Node Case Format
 
