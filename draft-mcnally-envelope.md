@@ -150,9 +150,13 @@ An `elided` case is used as a placeholder for an element that has been elided. I
 ~~~ cddl
 elided = sha256-digest
 sha256-digest = bytes .size 32
+
+tagged-elided = #6.40001(elided)
 ~~~
 
 The `elided` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR byte string and always has a length of 32 bytes.
+
+The `tagged-elided` type is not used in the Envelope format itself, but is defined here for use in Envelope extensions specifications.
 
 ## Node Case Format
 
@@ -753,6 +757,7 @@ This document requests that IANA {{IANA-CBOR-TAGS}} reserve the tag #6.200 for u
 | Tag | Data Item | Semantics |
 |:----|:-----|:-----|
 | 200 | multiple | Gordian Envelope |
+| 40001 | bstr | 32-byte SHA-256 digest |
 
 Points of contact:
 
