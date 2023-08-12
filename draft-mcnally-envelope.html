@@ -8,7 +8,7 @@
 <meta content="Wolf McNally" name="author">
 <meta content="Christopher Allen" name="author">
 <meta content='
-       Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible.
+       Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible. 
     ' name="description">
 <meta content="xml2rfc 3.17.5" name="generator">
 <meta content="Internet-Draft" name="keyword">
@@ -1403,9 +1403,12 @@ leaf = #6.24(bytes)  ; MUST be dCBOR
 <pre>
 elided = sha256-digest
 sha256-digest = bytes .size 32
+
+tagged-elided = #6.40001(elided)
 </pre><a href="#section-3.2-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.2-3">The <code>elided</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR byte string and always has a length of 32 bytes.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">The <code>tagged-elided</code> type is not used in the Envelope format itself, but is defined here for use in Envelope extensions specifications.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="node-case-format">
@@ -2122,6 +2125,11 @@ d8c8d8c8d81865416c696365
               <td class="text-left" rowspan="1" colspan="1">200</td>
               <td class="text-left" rowspan="1" colspan="1">multiple</td>
               <td class="text-left" rowspan="1" colspan="1">Gordian Envelope</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">40001</td>
+              <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              <td class="text-left" rowspan="1" colspan="1">32-byte SHA-256 digest</td>
             </tr>
           </tbody>
         </table>
