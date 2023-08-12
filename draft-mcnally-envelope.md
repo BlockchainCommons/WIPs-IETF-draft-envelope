@@ -139,6 +139,8 @@ A `leaf` case is used when the Envelope contains only user-defined CBOR content.
 leaf = #6.24(bytes)  ; MUST be dCBOR
 ~~~
 
+The `leaf` case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using #6.24.
+
 To preserve deterministic encoding, authors of application-level data formats based on Envelope MUST only encode CBOR in the `leaf` case that conforms to dCBOR {{DCBOR}}. Care must be taken to ensure that leaf CBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures MUST or MUST NOT be used.
 
 ## Elided Case Format
@@ -149,6 +151,8 @@ An `elided` case is used as a placeholder for an element that has been elided. I
 elided = sha256-digest
 sha256-digest = bytes .size 32
 ~~~
+
+The `elided` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR byte string and always has a length of 32 bytes.
 
 ## Node Case Format
 
@@ -169,6 +173,8 @@ assertion-element = ( assertion / elided-assertion )
 elided-assertion = elided           ; MUST represent an assertion.
 ~~~
 
+The `node` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR array.
+
 ## Assertion Case Format
 
 An `assertion` case is used for each of the assertions on the subject of an Envelope. It is encoded as a CBOR map with exactly one map element:
@@ -182,6 +188,8 @@ predicate-envelope = envelope
 object-envelope = envelope
 ~~~
 
+The `assertion` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR map.
+
 ## Wrapped Case Format
 
 Assertions make semantic statements about an Envelope's subject. A `wrapped` case is used where an Envelope, including all its assertions, should be treated as a single element, e.g. for the purpose of adding assertions to an Envelope as a whole, including its assertions.
@@ -189,6 +197,8 @@ Assertions make semantic statements about an Envelope's subject. A `wrapped` cas
 ~~~ cddl
 wrapped = envelope
 ~~~
+
+The `wrapped` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR envelope, and is always tagged with #6.200.
 
 # Computing the Digest Tree
 
