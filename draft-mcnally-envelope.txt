@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 11 February 2024                                 10 August 2023
+Expires: 13 February 2024                                 12 August 2023
 
 
               The Gordian Envelope Structured Data Format
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 February 2024.
+   This Internet-Draft will expire on 13 February 2024.
 
 Copyright Notice
 
@@ -247,6 +247,9 @@ Table of Contents
 
    leaf = #6.24(bytes)  ; MUST be dCBOR
 
+   The leaf case can be discriminated from other Envelope case arms by
+   the fact that it is the only one that is tagged using #6.24.
+
    To preserve deterministic encoding, authors of application-level data
    formats based on Envelope MUST only encode CBOR in the leaf case that
    conforms to dCBOR [DCBOR].  Care must be taken to ensure that leaf
@@ -261,6 +264,10 @@ Table of Contents
 
    elided = sha256-digest
    sha256-digest = bytes .size 32
+
+   The elided case can be discriminated from other Envelope case arms by
+   the fact that it is the only one that is a CBOR byte string and
+   always has a length of 32 bytes.
 
 3.3.  Node Case Format
 
@@ -287,6 +294,9 @@ Table of Contents
    assertion-element = ( assertion / elided-assertion )
    elided-assertion = elided           ; MUST represent an assertion.
 
+   The node case can be discriminated from other Envelope case arms by
+   the fact that it is the only one that is a CBOR array.
+
 3.4.  Assertion Case Format
 
    An assertion case is used for each of the assertions on the subject
@@ -303,6 +313,9 @@ Table of Contents
    predicate-envelope = envelope
    object-envelope = envelope
 
+   The assertion case can be discriminated from other Envelope case arms
+   by the fact that it is the only one that is a CBOR map.
+
 3.5.  Wrapped Case Format
 
    Assertions make semantic statements about an Envelope's subject.  A
@@ -311,6 +324,10 @@ Table of Contents
    assertions to an Envelope as a whole, including its assertions.
 
    wrapped = envelope
+
+   The wrapped case can be discriminated from other Envelope case arms
+   by the fact that it is the only one that is a CBOR envelope, and is
+   always tagged with #6.200.
 
 4.  Computing the Digest Tree
 
