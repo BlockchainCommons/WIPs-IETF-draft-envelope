@@ -874,7 +874,7 @@ d8c8582013941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
 8.1.  CBOR Tags
 
    This document requests that IANA [IANA-CBOR-TAGS] reserve the
-   following tags:
+   following tag:
 
                   +=====+===========+==================+
                   | Tag | Data Item | Semantics        |
