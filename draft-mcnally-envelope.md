@@ -748,7 +748,7 @@ Elided Envelopes may in some cases inadvertently reveal information by transmitt
 
 ## CBOR Tags
 
-This document requests that IANA {{IANA-CBOR-TAGS}} reserve the following tags:
+This document requests that IANA {{IANA-CBOR-TAGS}} reserve the following tag:
 
 | Tag | Data Item | Semantics |
 |:----|:-----|:-----|
