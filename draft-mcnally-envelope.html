@@ -1038,7 +1038,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">McNally &amp; Allen</td>
-<td class="center">Expires 13 February 2024</td>
+<td class="center">Expires 14 February 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1051,12 +1051,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-mcnally-envelope-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-08-12" class="published">12 August 2023</time>
+<time datetime="2023-08-13" class="published">13 August 2023</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-02-13">13 February 2024</time></dd>
+<dd class="expires"><time datetime="2024-02-14">14 February 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1102,7 +1102,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 13 February 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 14 February 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1383,13 +1383,13 @@ wrapped = envelope
         <h3 id="name-leaf-case-format">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-leaf-case-format" class="section-name selfRef">Leaf Case Format</a>
         </h3>
-<p id="section-3.1-1">A <code>leaf</code> case is used when the Envelope contains only user-defined CBOR content. It is tagged using #6.24, per <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> §3.4.5.1, "Encoded CBOR Data Item".<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">A <code>leaf</code> case is used when the Envelope contains only user-defined CBOR content. It is tagged using <code>#6.24</code>, per <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> §3.4.5.1, "Encoded CBOR Data Item".<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-3.1-2">
 <pre>
 leaf = #6.24(bytes)  ; MUST be dCBOR
 </pre><a href="#section-3.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-3">The <code>leaf</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using #6.24.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">The <code>leaf</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using <code>#6.24</code>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <p id="section-3.1-4">To preserve deterministic encoding, authors of application-level data formats based on Envelope <span class="bcp14">MUST</span> only encode CBOR in the <code>leaf</code> case that conforms to dCBOR <span>[<a href="#DCBOR" class="cite xref">DCBOR</a>]</span>. Care must be taken to ensure that leaf CBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures <span class="bcp14">MUST</span> or <span class="bcp14">MUST NOT</span> be used.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1403,12 +1403,9 @@ leaf = #6.24(bytes)  ; MUST be dCBOR
 <pre>
 elided = sha256-digest
 sha256-digest = bytes .size 32
-
-tagged-digest = #6.40001(sha256-digest)
 </pre><a href="#section-3.2-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.2-3">The <code>elided</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR byte string and always has a length of 32 bytes.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
-<p id="section-3.2-4">The <code>tagged-digest</code> type is not used in the Envelope format itself, but is defined here for use in Envelope extensions specifications.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="node-case-format">
@@ -1465,7 +1462,7 @@ object-envelope = envelope
 wrapped = envelope
 </pre><a href="#section-3.5-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.5-3">The <code>wrapped</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR envelope, and is always tagged with #6.200.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
+<p id="section-3.5-3">The <code>wrapped</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR envelope, and is always tagged with <code>#6.200</code>.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2110,7 +2107,7 @@ d8c8d8c8d81865416c696365
         <h3 id="name-cbor-tags">
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-cbor-tags" class="section-name selfRef">CBOR Tags</a>
         </h3>
-<p id="section-8.1-1">This document requests that IANA <span>[<a href="#IANA-CBOR-TAGS" class="cite xref">IANA-CBOR-TAGS</a>]</span> reserve the tag #6.200 for use by Envelope.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-1">This document requests that IANA <span>[<a href="#IANA-CBOR-TAGS" class="cite xref">IANA-CBOR-TAGS</a>]</span> reserve the following tags:<a href="#section-8.1-1" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
           <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
 <thead>
@@ -2125,11 +2122,6 @@ d8c8d8c8d81865416c696365
               <td class="text-left" rowspan="1" colspan="1">200</td>
               <td class="text-left" rowspan="1" colspan="1">multiple</td>
               <td class="text-left" rowspan="1" colspan="1">Gordian Envelope</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">40001</td>
-              <td class="text-left" rowspan="1" colspan="1">bstr</td>
-              <td class="text-left" rowspan="1" colspan="1">32-byte SHA-256 digest</td>
             </tr>
           </tbody>
         </table>

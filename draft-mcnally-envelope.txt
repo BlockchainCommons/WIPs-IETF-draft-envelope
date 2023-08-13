@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 13 February 2024                                 12 August 2023
+Expires: 14 February 2024                                 13 August 2023
 
 
               The Gordian Envelope Structured Data Format
@@ -46,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 February 2024.
+   This Internet-Draft will expire on 14 February 2024.
 
 Copyright Notice
 
@@ -265,14 +265,9 @@ Table of Contents
    elided = sha256-digest
    sha256-digest = bytes .size 32
 
-   tagged-digest = #6.40001(sha256-digest)
-
    The elided case can be discriminated from other Envelope case arms by
    the fact that it is the only one that is a CBOR byte string and
    always has a length of 32 bytes.
-
-   The tagged-digest type is not used in the Envelope format itself, but
-   is defined here for use in Envelope extensions specifications.
 
 3.3.  Node Case Format
 
@@ -878,16 +873,14 @@ d8c8582013941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
 
 8.1.  CBOR Tags
 
-   This document requests that IANA [IANA-CBOR-TAGS] reserve the tag
-   #6.200 for use by Envelope.
+   This document requests that IANA [IANA-CBOR-TAGS] reserve the
+   following tags:
 
-              +=======+===========+========================+
-              | Tag   | Data Item | Semantics              |
-              +=======+===========+========================+
-              | 200   | multiple  | Gordian Envelope       |
-              +-------+-----------+------------------------+
-              | 40001 | bstr      | 32-byte SHA-256 digest |
-              +-------+-----------+------------------------+
+                  +=====+===========+==================+
+                  | Tag | Data Item | Semantics        |
+                  +=====+===========+==================+
+                  | 200 | multiple  | Gordian Envelope |
+                  +-----+-----------+------------------+
 
                                  Table 1
 
