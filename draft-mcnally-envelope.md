@@ -133,13 +133,13 @@ Some of these cases create a hierarchical, recursive structure by including chil
 
 ## Leaf Case Format
 
-A `leaf` case is used when the Envelope contains only user-defined CBOR content. It is tagged using #6.24, per {{-CBOR}} §3.4.5.1, "Encoded CBOR Data Item".
+A `leaf` case is used when the Envelope contains only user-defined CBOR content. It is tagged using `#6.24`, per {{-CBOR}} §3.4.5.1, "Encoded CBOR Data Item".
 
 ~~~ cddl
 leaf = #6.24(bytes)  ; MUST be dCBOR
 ~~~
 
-The `leaf` case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using #6.24.
+The `leaf` case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using `#6.24`.
 
 To preserve deterministic encoding, authors of application-level data formats based on Envelope MUST only encode CBOR in the `leaf` case that conforms to dCBOR {{DCBOR}}. Care must be taken to ensure that leaf CBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures MUST or MUST NOT be used.
 
@@ -150,13 +150,9 @@ An `elided` case is used as a placeholder for an element that has been elided. I
 ~~~ cddl
 elided = sha256-digest
 sha256-digest = bytes .size 32
-
-tagged-digest = #6.40001(sha256-digest)
 ~~~
 
 The `elided` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR byte string and always has a length of 32 bytes.
-
-The `tagged-digest` type is not used in the Envelope format itself, but is defined here for use in Envelope extensions specifications.
 
 ## Node Case Format
 
@@ -202,7 +198,7 @@ Assertions make semantic statements about an Envelope's subject. A `wrapped` cas
 wrapped = envelope
 ~~~
 
-The `wrapped` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR envelope, and is always tagged with #6.200.
+The `wrapped` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR envelope, and is always tagged with `#6.200`.
 
 # Computing the Digest Tree
 
@@ -752,12 +748,11 @@ Elided Envelopes may in some cases inadvertently reveal information by transmitt
 
 ## CBOR Tags
 
-This document requests that IANA {{IANA-CBOR-TAGS}} reserve the tag #6.200 for use by Envelope.
+This document requests that IANA {{IANA-CBOR-TAGS}} reserve the following tags:
 
 | Tag | Data Item | Semantics |
 |:----|:-----|:-----|
 | 200 | multiple | Gordian Envelope |
-| 40001 | bstr | 32-byte SHA-256 digest |
 
 Points of contact:
 
