@@ -51,7 +51,12 @@ informative:
     MERKLE:
         title: "Merkle Tree"
         target: https://en.wikipedia.org/wiki/Merkle_tree
-
+    RFC6973:
+        title: "Privacy Considerations for Internet Protocols"
+        target: https://www.rfc-editor.org/rfc/rfc6973
+    RFC8280
+        title: "Research into Human Rights Protocol Considerations"
+        target: https://www.rfc-editor.org/rfc/rfc8280
 --- abstract
 
 Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible.
