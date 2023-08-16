@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 14 February 2024                                 13 August 2023
+Expires: 17 February 2024                                 16 August 2023
 
 
               The Gordian Envelope Structured Data Format
@@ -15,14 +15,15 @@ Abstract
 
    Gordian Envelope specifies a structured format for hierarchical
    binary data focused on the ability to transmit it in a privacy-
-   focused way.  Envelopes are designed to facilitate "smart documents"
-   and have a number of unique features including: easy representation
-   of a variety of semantic structures, a built-in Merkle-like digest
-   tree, deterministic representation using CBOR, and the ability for
-   the holder of a document to selectively elide specific parts of a
-   document without invalidating the digest tree structure.  This
-   document specifies the base Envelope format, which is designed to be
-   extensible.
+   focused way, offering support for privacy as described in RFC-6973
+   and human rights as described in RFC-8280.  Envelopes are designed to
+   facilitate "smart documents" and have a number of unique features
+   including: easy representation of a variety of semantic structures, a
+   built-in Merkle-like digest tree, deterministic representation using
+   CBOR, and the ability for the holder of a document to selectively
+   elide specific parts of a document without invalidating the digest
+   tree structure.  This document specifies the base Envelope format,
+   which is designed to be extensible.
 
 Discussion Venues
 
@@ -46,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 February 2024.
+   This Internet-Draft will expire on 17 February 2024.
 
 Copyright Notice
 
@@ -92,6 +93,8 @@ Table of Contents
      7.2.  Validation Requirements
      7.3.  Choice of SHA-256 Hash Primitive
      7.4.  Correlated Digests
+     7.5.  RFC-6973 Considerations
+     7.6.  RFC-8280 Considerations
    8.  IANA Considerations
      8.1.  CBOR Tags
      8.2.  Media Type
@@ -120,13 +123,17 @@ Table of Contents
       Envelopes.
 
    *  *Privacy-Ready.* Gordian Envelope protects privacy by affording
-      progressive trust, allowing for holders to minimally disclose
-      information by using elision, and then to optionally increase that
-      disclosure over time.  The fact that a holder can control data
-      revelation, not just an issuer, creates a new level of privacy for
-      all stakeholders.  The progressive trust in Gordian Envelopes is
-      accomplished through hashing of all elements, which also creates
-      foundational support for signing and encryption.
+      progressive trust, allowing for holders (not just issuers) to
+      minimally disclose information by using elision, and then to
+      optionally increase that disclosure over time.  Progressive trust
+      in Gordian Envelopes is accomplished through the hashing of all
+      elements, which also creates foundational support for signing and
+      encryption.  This directly addresses the data minimization
+      suggested by "Privacy Considerations for Internet Protocols"
+      [RFC6973] and also addresses topics such as Privacy,
+      Accessibility, Censorship Resistance, Reliability, and Integrity,
+      which are listed as guidelines in "Research into Human Rights
+      Protocol Considerations" [RFC8280].
 
    The following architectural decisions support these goals:
 
@@ -869,6 +876,24 @@ d8c8582013941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
    decorrelating it (after elision) from digests whose unelided contents
    are known.
 
+7.5.  RFC-6973 Considerations
+
+   "Privacy Considerations for Internet Protocols" [RFC6973] lists
+   threats and guidelines related to privacy in internet protocols.
+   Envelope is intended to help internet protocols easily adopt these
+   considerations.  It explicitly addresses the privacy-specific threats
+   of correlation, secondary use, and disclosure by supporting the
+   suggested guideline of Data Minimization.
+
+7.6.  RFC-8280 Considerations
+
+   "Research into Human Rights Protocol Considerations" [RFC8280] lists
+   guidelines for human rights considerations in internet protocols.
+   Envelope similarly adopts many of the guidelines there, improving
+   privacy and censorship resistance through its hashed elision; and
+   accessibility, heterogeneity support, reliability, and integrity
+   through its fundamental data structures.
+
 8.  IANA Considerations
 
 8.1.  CBOR Tags
@@ -1003,6 +1028,16 @@ d8c8582013941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
 
    [MERKLE]   "Merkle Tree", n.d.,
               <https://en.wikipedia.org/wiki/Merkle_tree>.
+
+   [RFC6973]  Cooper, A., Tschofenig, H., Aboba, B., Peterson, J.,
+              Morris, J., Hansen, M., and R. Smith, "Privacy
+              Considerations for Internet Protocols", RFC 6973,
+              DOI 10.17487/RFC6973, July 2013,
+              <https://www.rfc-editor.org/rfc/rfc6973>.
+
+   [RFC8280]  ten Oever, N. and C. Cath, "Research into Human Rights
+              Protocol Considerations", RFC 8280, DOI 10.17487/RFC8280,
+              October 2017, <https://www.rfc-editor.org/rfc/rfc8280>.
 
 Acknowledgments
 
