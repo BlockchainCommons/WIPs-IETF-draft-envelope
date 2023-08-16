@@ -51,10 +51,15 @@ informative:
     MERKLE:
         title: "Merkle Tree"
         target: https://en.wikipedia.org/wiki/Merkle_tree
-
+    RFC6973:
+        title: "Privacy Considerations for Internet Protocols"
+        target: https://www.rfc-editor.org/rfc/rfc6973
+    RFC8280
+        title: "Research into Human Rights Protocol Considerations"
+        target: https://www.rfc-editor.org/rfc/rfc8280
 --- abstract
 
-Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible.
+Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way, offering support for RFC6973 {{RC6973}} and RFC8280 {{RFC8280}}. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible.
 
 --- middle
 
@@ -63,7 +68,7 @@ Gordian Envelope specifies a structured format for hierarchical binary data focu
 Gordian Envelope was designed with two key goals in mind: to be *Structure-Ready*, allowing for the reliable and interoperable encoding and storage of information; and to be *Privacy-Ready*, ensuring that transmission of that data can occur in a privacy-protecting manner.
 
 - **Structure-Ready.** Gordian Envelope is designed as a "smart document": a set of information about a subject. More than that, it's a meta-document that can contain or refer to other documents. It can support multiple data structures, from single data items, to simple hierarchies, to labeled property graphs, semantic triples, and other forms of structured graphs. Though its fundamental structure is a tree, it can be used to create Directed Acyclic Graphs (DAGs) through references within or between Envelopes.
-- **Privacy-Ready.** Gordian Envelope protects privacy by affording progressive trust, allowing for holders to minimally disclose information by using elision, and then to optionally increase that disclosure over time. The fact that a holder can control data revelation, not just an issuer, creates a new level of privacy for all stakeholders. The progressive trust in Gordian Envelopes is accomplished through hashing of all elements, which also creates foundational support for signing and encryption.
+- **Privacy-Ready.** Gordian Envelope protects privacy by affording progressive trust, allowing for holders (not just issuers) to minimally disclose information by using elision, and then to optionally increase that disclosure over time. The progressive trust in Gordian Envelopes is accomplished through hashing of all elements, which also creates foundational support for signing and encryption. This directly addresses the data minimization suggested by RFC6973 on "Privacy Considerations for Internet Protocols" and also addresses topics such as Privacy, Accessibility, Censorship Resistance, Reliability, and Integrity, which are listed as guidelines in RFC8280, "Research into Human Rights Protocol Considerations".
 
 The following architectural decisions support these goals:
 
@@ -743,6 +748,14 @@ Envelope uses the SHA-256 digest algorithm {{-SHA-256}}, which is regarded as re
 ## Correlated Digests
 
 Elided Envelopes may in some cases inadvertently reveal information by transmitting digests that may be correlated to known information. In many cases this is of no consequence, but when necessary Envelopes can (when constructed) be "salted" by adding assertions that contain random data. This results in perturbing the digest tree, hence decorrelating it (after elision) from digests whose unelided contents are known.
+
+## RFC6973 Considerations
+
+RFC6973 {{RFC6973}} lists threats and guidelines related to privacy in internet protocols. Envelope is intended to help internet protocols to easily adopt these considerations. It explicitly addresses the privacy-specific threats of correlation, secondary use, and disclosure by supporting the suggested guideline of Data Minimization.
+
+## RFC8280 Considerations
+
+RFC8280 {{RFC8280}} lists guidelines for human rights considerations in internet protocols. Envelope similarly adopts many of the guidelines there, improving privacy and censorship resistance through its hashed elision; and accessibility, heterogeneity support, reliability, and integrity through its fundamental data structures.
 
 # IANA Considerations
 
