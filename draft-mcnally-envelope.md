@@ -101,7 +101,7 @@ image
 
 # Envelope Format Specification
 
-This section is normative, and specifies the Gordian Envelope binary format in terms of its CBOR components and their sequencing. The formal language used is the Concise Data Definition Language (CDDL) {{-CDDL}}. To be considered a well-formed Envelope, a sequence of bytes MUST conform to the Gordian dCBOR deterministic CBOR profile {{DCBOR}} and MUST conform to the specifications in this section.
+This section is normative and specifies the Gordian Envelope binary format in terms of its CBOR components and their sequencing. The formal language used is the Concise Data Definition Language (CDDL) {{-CDDL}}. To be considered a well-formed Envelope, a sequence of bytes MUST conform to the Gordian dCBOR deterministic CBOR profile {{DCBOR}} and MUST conform to the specifications in this section.
 
 An Envelope is a tagged enumerated type with five cases. Here is the entire CDDL specification for the base Envelope format. Each case is discussed in detail below:
 
@@ -131,7 +131,7 @@ object-envelope = envelope
 wrapped = envelope
 ~~~
 
-Some of these cases create a hierarchical, recursive structure by including children that are themselves Envelopes. Two of these cases (`leaf` and `elided`) have no children. The `node` case adds one or more assertions to the envelope, each of which is a child. The `assertion` case is a predicate/object pair, both of which are children. The `wrapped` case is used to wrap an entire Envelope including its assertions (its child) so assertions can be made about the wrapped Envelope as a whole.
+Some of these cases create a hierarchical, recursive structure by including children that are themselves Envelopes. Two of these cases (`leaf` and `elided`) have no children. The `node` case adds one or more assertions to the envelope, each of which is a child. The `assertion` case is a predicate/object pair, both of which are children. The `wrapped` case is used to wrap an entire Envelope including its assertions (its child), so that assertions can be made about the wrapped Envelope as a whole.
 
 ## Leaf Case Format
 
@@ -143,7 +143,7 @@ leaf = #6.24(bytes)  ; MUST be dCBOR
 
 The `leaf` case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using `#6.24`.
 
-To preserve deterministic encoding, authors of application-level data formats based on Envelope MUST only encode CBOR in the `leaf` case that conforms to dCBOR {{DCBOR}}. Care must be taken to ensure that leaf CBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures MUST or MUST NOT be used.
+To preserve deterministic encoding, authors of application-level data formats based on Envelope MUST only encode CBOR that conforms to dCBOR {{DCBOR}} in the `leaf` case. Care must be taken to ensure that leaf CBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures MUST or MUST NOT be used.
 
 ## Elided Case Format
 
@@ -204,7 +204,7 @@ The `wrapped` case can be discriminated from other Envelope case arms by the fac
 
 # Computing the Digest Tree
 
-This section specifies how the digests for each of the Envelope cases are computed, and is normative. The examples in this section may be used as test vectors.
+This section specifies how the digests for each of the Envelope cases are computed and is normative. The examples in this section may be used as test vectors.
 
 Each of the five enumerated Envelope cases produces an image which is used as input to a cryptographic hash function to produce the digest of its contents.
 
@@ -329,7 +329,7 @@ $ envelope --tree $ENVELOPE
         13b74194 obj "Bob"
 ~~~
 
-To replicate this, we make a list of digests, starting with the subject, and then each assertion's digest in ascending lexicographic order:
+To replicate this, we make a list of digests, starting with the subject, and then sort each assertion's digest in ascending lexicographic order:
 
 ~~~
 13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
