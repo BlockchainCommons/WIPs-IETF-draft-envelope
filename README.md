@@ -9,6 +9,12 @@ This is the working area for the individual Internet-Draft, "draft-mcnally-envel
 
 ## Change History
 
+### Aug 17, 2023 - 03
+
+* Heavily edited for feedback from IETF 117.
+* Removed cases for `compressed`, `encrypted`, and `known-value`. These will be documented in extension specifications.
+* Reduced IANA tag requests to a single tag for `envelope`: `#6.200`.
+
 ### May 4, 2023 - 02
 
 * Renumbered CBOR tags in preparation for IANA registration.
