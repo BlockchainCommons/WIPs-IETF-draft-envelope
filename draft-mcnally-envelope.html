@@ -8,24 +8,24 @@
 <meta content="Wolf McNally" name="author">
 <meta content="Christopher Allen" name="author">
 <meta content='
-       Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way, offering support for privacy as described in RFC-6973 and human rights as described in RFC-8280. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible. 
+       Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way, offering support for privacy as described in RFC 6973 and human rights as described in RFC 8280. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible. 
     ' name="description">
 <meta content="xml2rfc 3.18.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-mcnally-envelope-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.18.0
-    Python 3.10.11
-    ConfigArgParse 1.7
+    Python 3.11.4
+    ConfigArgParse 1.5.3
     google-i18n-address 3.1.0
     intervaltree 3.1.0
     Jinja2 3.1.2
     lxml 4.9.3
     platformdirs 3.10.0
     pycountry 22.3.5
-    PyYAML 6.0.1
+    PyYAML 6.0
     requests 2.31.0
-    setuptools 68.0.0
+    setuptools 67.7.2
     six 1.16.0
     wcwidth 0.2.6
 -->
@@ -1038,7 +1038,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">McNally &amp; Allen</td>
-<td class="center">Expires 18 February 2024</td>
+<td class="center">Expires 20 February 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1051,12 +1051,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-mcnally-envelope-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-08-17" class="published">17 August 2023</time>
+<time datetime="2023-08-19" class="published">19 August 2023</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-02-18">18 February 2024</time></dd>
+<dd class="expires"><time datetime="2024-02-20">20 February 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1073,7 +1073,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <h1 id="title">The Gordian Envelope Structured Data Format</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way, offering support for privacy as described in RFC-6973 and human rights as described in RFC-8280. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way, offering support for privacy as described in RFC 6973 and human rights as described in RFC 8280. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1102,7 +1102,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 18 February 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 February 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1224,10 +1224,10 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-correlated-digests" class="internal xref">Correlated Digests</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.5">
-                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-rfc-6973-considerations" class="internal xref">RFC-6973 Considerations</a></p>
+                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-rfc-6973-considerations" class="internal xref">RFC 6973 Considerations</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.6">
-                <p id="section-toc.1-1.7.2.6.1"><a href="#section-7.6" class="auto internal xref">7.6</a>.  <a href="#name-rfc-8280-considerations" class="internal xref">RFC-8280 Considerations</a></p>
+                <p id="section-toc.1-1.7.2.6.1"><a href="#section-7.6" class="auto internal xref">7.6</a>.  <a href="#name-rfc-8280-considerations" class="internal xref">RFC 8280 Considerations</a></p>
 </li>
             </ul>
 </li>
@@ -1296,7 +1296,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
             <strong>Holder-initiated Elision.</strong> Elision can be performed by the Holder of a Gordian Envelope, not just the Issuer.<a href="#section-1.1-1.1" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-1.1-1.2">
-            <strong>Granular Elision.</strong> Elision can be performed on any data within an Envelope including subjects, predicates and objects of assertions, assertions as a whole, and envelopes as a whole. This allows each entity to elide data as is appropriate for the management of their personal (or business) risk.<a href="#section-1.1-1.2" class="pilcrow">¶</a>
+            <strong>Granular Elision.</strong> Elision can be performed on any data within an Envelope including subjects, predicates and objects of assertions, assertions as a whole, and envelopes as a whole. This allows each entity to elide data as is appropriate for the management of their personal or business risk.<a href="#section-1.1-1.2" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-1.1-1.3">
             <strong>Progressive Trust.</strong> The elision mechanics in Gordian Envelopes allow for progressive trust, where increasing amounts of data may be revealed over time.<a href="#section-1.1-1.3" class="pilcrow">¶</a>
@@ -1315,7 +1315,10 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
         <h3 id="name-extensions">
 <a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-extensions" class="section-name selfRef">Extensions</a>
         </h3>
-<p id="section-1.2-1">This document is the base specification for Gordian Envelope, which is designed to support extension specifications to support constructs like encryption, compression, decorrelation, and inclusion proofs. These extensions will be specified in separate documents.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-1">This document is the base specification for Gordian Envelope, which is stable and useful by itself. However it is also designed to support optional extensions, to be specified in separate documents.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-2">A few such extensions may require adding new Envelope cases: these will extend the Envelope format itself, and will therefore need to be supported by Envelope encoders. Examples include symmetric encryption and compression which (like elision) allow for the transformation of Envelope elements without changing the digest tree.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">However, most extensions will be specified by defining the semantics of new subjects, predicates, and objects. Such extensions do not require extending the Envelope format but may be supported by tools. Examples include signatures, public-key encryption, digest decorrelation, intra- and inter-Envelope references using digests, expression evaluation and distributed function calls, diffing and merging envelopes, and inclusion proofs.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-4">Building on this base specification, we expect a robust ecosystem of extensions to emerge, facilitating a wide variety of applications.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1338,7 +1341,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <dd class="break"></dd>
 <dt id="section-2-3.3">element</dt>
         <dd style="margin-left: 1.5em" id="section-2-3.4">
-          <p id="section-2-3.4.1">An envelope is a tree of elements, each of which is itself an envelope.<a href="#section-2-3.4.1" class="pilcrow">¶</a></p>
+          <p id="section-2-3.4.1">Synonymous with "sub-Envelope". An Envelope is a tree of elements, each of which is itself an Envelope.<a href="#section-2-3.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-3.5">image</dt>
@@ -1358,7 +1361,8 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-3-2">An Envelope is a tagged enumerated type with five cases. Here is the entire CDDL specification for the base Envelope format. Each case is discussed in detail below:<a href="#section-3-2" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-3-3">
 <pre>
-envelope = #6.200(
+envelope = #6.200(envelope-content)
+envelope-content = (
     leaf /
     elided /
     node /
@@ -1366,37 +1370,37 @@ envelope = #6.200(
     wrapped
 )
 
-leaf = #6.24(bytes)  ; MUST be dCBOR
+leaf = #6.24(bytes .dcbor any)
 
 elided = sha256-digest
 sha256-digest = bytes .size 32
 
 node = [subject, + assertion-element]
-subject = envelope
+subject = envelope-content
 assertion-element = ( assertion / elided-assertion )
 elided-assertion = elided           ; MUST represent an assertion.
 
-assertion = { predicate-envelope: object-envelope }
-predicate-envelope = envelope
-object-envelope = envelope
+assertion = { predicate: object }
+predicate = envelope-content
+object = envelope-content
 
 wrapped = envelope
 </pre><a href="#section-3-3" class="pilcrow">¶</a>
 </div>
-<p id="section-3-4">Some of these cases create a hierarchical, recursive structure by including children that are themselves Envelopes. Two of these cases (<code>leaf</code> and <code>elided</code>) have no children. The <code>node</code> case adds one or more assertions to the envelope, each of which is a child. The <code>assertion</code> case is a predicate/object pair, both of which are children. The <code>wrapped</code> case is used to wrap an entire Envelope including its assertions (its child), so that assertions can be made about the wrapped Envelope as a whole.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-4">Some of these cases create a hierarchical, recursive structure by including children that are themselves Envelopes. Two of these cases (<code>leaf</code> and <code>elided</code>) have no children. The <code>node</code> case adds one or more assertions to the Envelope, each of which is a child. The <code>assertion</code> case is a predicate/object pair, both of which are children. The <code>wrapped</code> case is used to wrap an entire Envelope including its assertions (its child), so that assertions can be made about the wrapped Envelope as a whole.<a href="#section-3-4" class="pilcrow">¶</a></p>
 <div id="leaf-case-format">
 <section id="section-3.1">
         <h3 id="name-leaf-case-format">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-leaf-case-format" class="section-name selfRef">Leaf Case Format</a>
         </h3>
-<p id="section-3.1-1">A <code>leaf</code> case is used when the Envelope contains only user-defined CBOR content. It is tagged using <code>#6.24</code>, per <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> §3.4.5.1, "Encoded CBOR Data Item".<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">A <code>leaf</code> case is used when the Envelope contains only user-defined CBOR content. It is tagged using <code>#6.24</code>, per <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> §3.4.5.1, "Encoded CBOR Data Item". See §4 of <span>[<a href="#CCDE" class="cite xref">CCDE</a>]</span> for CDDL support for dCBOR.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-3.1-2">
 <pre>
-leaf = #6.24(bytes)  ; MUST be dCBOR
+leaf = #6.24(bytes .dcbor any)
 </pre><a href="#section-3.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.1-3">The <code>leaf</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using <code>#6.24</code>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">To preserve deterministic encoding, authors of application-level data formats based on Envelope <span class="bcp14">MUST</span> only encode CBOR that conforms to dCBOR <span>[<a href="#DCBOR" class="cite xref">DCBOR</a>]</span> in the <code>leaf</code> case. Care must be taken to ensure that leaf CBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures <span class="bcp14">MUST</span> or <span class="bcp14">MUST NOT</span> be used.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">To preserve deterministic encoding, authors of application-level data formats based on Envelope <span class="bcp14">MUST</span> only encode CBOR that conforms to dCBOR <span>[<a href="#DCBOR" class="cite xref">DCBOR</a>]</span> in the <code>leaf</code> case. Care must be taken to ensure that leaf dCBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures <span class="bcp14">MUST</span> or <span class="bcp14">MUST NOT</span> be used.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="elided-case-format">
@@ -1404,7 +1408,7 @@ leaf = #6.24(bytes)  ; MUST be dCBOR
         <h3 id="name-elided-case-format">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-elided-case-format" class="section-name selfRef">Elided Case Format</a>
         </h3>
-<p id="section-3.2-1">An <code>elided</code> case is used as a placeholder for an element that has been elided. It consists solely of the elided envelope's digest.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">An <code>elided</code> case is used as a placeholder for an element that has been elided. It consists solely of the elided Envelope's digest.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <div class="lang-cddl sourcecode" id="section-3.2-2">
 <pre>
 elided = sha256-digest
@@ -1412,6 +1416,7 @@ sha256-digest = bytes .size 32
 </pre><a href="#section-3.2-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.2-3">The <code>elided</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR byte string and always has a length of 32 bytes.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">If the method of producing the digest ever changes, the top-level Envelope tag <code>#6.200</code> <span class="bcp14">MUST</span> be changed to a new value, and the new method <span class="bcp14">MUST</span> be specified in a new document. This is to ensure that the digest tree remains consistent.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="node-case-format">
@@ -1427,7 +1432,7 @@ sha256-digest = bytes .size 32
 <div class="lang-cddl sourcecode" id="section-3.3-6">
 <pre>
 node = [subject, + assertion-element]
-subject = envelope
+subject = envelope-content
 assertion-element = ( assertion / elided-assertion )
 elided-assertion = elided           ; MUST represent an assertion.
 </pre><a href="#section-3.3-6" class="pilcrow">¶</a>
@@ -1440,18 +1445,18 @@ elided-assertion = elided           ; MUST represent an assertion.
         <h3 id="name-assertion-case-format">
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-assertion-case-format" class="section-name selfRef">Assertion Case Format</a>
         </h3>
-<p id="section-3.4-1">An <code>assertion</code> case is used for each of the assertions on the subject of an Envelope. It is encoded as a CBOR map with exactly one map element:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-1">An <code>assertion</code> case is used for each of the assertions on the subject of an Envelope. It is encoded as a CBOR map with exactly one map entry:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.4-2.1">The key of the map element is the Envelope representing the predicate of the assertion.<a href="#section-3.4-2.1" class="pilcrow">¶</a>
+<li class="normal" id="section-3.4-2.1">The key of the map entry is the Envelope representing the predicate of the assertion.<a href="#section-3.4-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-3.4-2.2">The value of the map element is the Envelope representing the object of the assertion.<a href="#section-3.4-2.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-3.4-2.2">The value of the map entry is the Envelope representing the object of the assertion.<a href="#section-3.4-2.2" class="pilcrow">¶</a>
 </li>
         </ul>
 <div class="lang-cddl sourcecode" id="section-3.4-3">
 <pre>
-assertion = { predicate-envelope: object-envelope }
-predicate-envelope = envelope
-object-envelope = envelope
+assertion = { predicate: object }
+predicate = envelope-content
+object = envelope-content
 </pre><a href="#section-3.4-3" class="pilcrow">¶</a>
 </div>
 <p id="section-3.4-4">The <code>assertion</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR map.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
@@ -1468,7 +1473,7 @@ object-envelope = envelope
 wrapped = envelope
 </pre><a href="#section-3.5-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.5-3">The <code>wrapped</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR envelope, and is always tagged with <code>#6.200</code>.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
+<p id="section-3.5-3">The <code>wrapped</code> case can be discriminated from other Envelope case arms by the fact that it is the only one that is top-level CBOR Envelope, always tagged with <code>#6.200</code>.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1503,20 +1508,27 @@ digest(cbor)
 </pre><a href="#section-4.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-4.1-3"><strong>Example</strong><a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.1-4">The CBOR serialization of the plaintext string <code>"Hello"</code> (not including the quotes) is <code>6548656C6C6F</code>. The following command line calculates the SHA-256 sum of this sequence:<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">The CBOR serialization of the plaintext string <code>"Hello"</code> (not including the quotes) is:<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.1-5">
+<pre>
+65            # text(5)
+   48656C6C6F # "Hello"
+</pre><a href="#section-4.1-5" class="pilcrow">¶</a>
+</div>
+<p id="section-4.1-6">The following command line calculates the SHA-256 sum of this sequence:<a href="#section-4.1-6" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.1-7">
 <pre>
 $ echo "6548656C6C6F" | xxd -r -p | shasum --binary --algorithm 256 | \
     awk '{ print $1 }'
 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
-</pre><a href="#section-4.1-5" class="pilcrow">¶</a>
+</pre><a href="#section-4.1-7" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1-6">Using the <code>envelope</code> command line tool <span>[<a href="#ENVELOPE-CLI" class="cite xref">ENVELOPE-CLI</a>]</span>, we create an Envelope with this string as the subject and display the Envelope's digest. The digest below matches the one above.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.1-7">
+<p id="section-4.1-8">Using the <code>envelope</code> command line tool <span>[<a href="#ENVELOPE-CLI" class="cite xref">ENVELOPE-CLI</a>]</span>, we create an Envelope with this string as the subject and display the Envelope's digest. The digest below matches the one above.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.1-9">
 <pre>
 $ envelope subject "Hello" | envelope digest --hex
 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
-</pre><a href="#section-4.1-7" class="pilcrow">¶</a>
+</pre><a href="#section-4.1-9" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -1769,15 +1781,15 @@ subject [
 </div>
 <p id="section-5-11">In Envelopes, there are five distinct "positions" of elements, each of which is itself an Envelope and which therefore produces its own digest:<a href="#section-5-11" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5-12">
-<li id="section-5-12.1">envelope<a href="#section-5-12.1" class="pilcrow">¶</a>
+<li id="section-5-12.1">Envelope<a href="#section-5-12.1" class="pilcrow">¶</a>
 </li>
-        <li id="section-5-12.2">subject<a href="#section-5-12.2" class="pilcrow">¶</a>
+        <li id="section-5-12.2">Subject<a href="#section-5-12.2" class="pilcrow">¶</a>
 </li>
-        <li id="section-5-12.3">assertion<a href="#section-5-12.3" class="pilcrow">¶</a>
+        <li id="section-5-12.3">Assertion<a href="#section-5-12.3" class="pilcrow">¶</a>
 </li>
-        <li id="section-5-12.4">predicate<a href="#section-5-12.4" class="pilcrow">¶</a>
+        <li id="section-5-12.4">Predicate<a href="#section-5-12.4" class="pilcrow">¶</a>
 </li>
-        <li id="section-5-12.5">object<a href="#section-5-12.5" class="pilcrow">¶</a>
+        <li id="section-5-12.5">Object<a href="#section-5-12.5" class="pilcrow">¶</a>
 </li>
       </ol>
 <p id="section-5-13">The examples above are printed in Envelope notation, which is designed to make the semantic content of Envelopes human-readable, but it doesn't show the actual digests associated with each of the positions. To see the structure more completely, we can display every element of the Envelope in "Tree Format":<a href="#section-5-13" class="pilcrow">¶</a></p>
@@ -1848,15 +1860,18 @@ envelope subject "Alice"
 <p id="section-5.1-7"><strong>CBOR Diagnostic Notation</strong><a href="#section-5.1-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-8">
 <pre>
-200(   ; envelope
-   24("Alice")   ; leaf
+200(   / envelope /
+   24("Alice")   / leaf /
 )
 </pre><a href="#section-5.1-8" class="pilcrow">¶</a>
 </div>
 <p id="section-5.1-9"><strong>CBOR Hex</strong><a href="#section-5.1-9" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-10">
 <pre>
-d8c8d81865416c696365
+D8 C8               # tag(200) envelope
+   D8 18            # tag(24) leaf
+      65            # text(5)
+         416C696365 # "Alice"
 </pre><a href="#section-5.1-10" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1887,7 +1902,7 @@ ELIDED
 <p id="section-5.2-7"><strong>CBOR Diagnostic Notation</strong><a href="#section-5.2-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.2-8">
 <pre>
-200(   ; envelope
+200(   / envelope /
    h'13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f'
 )
 </pre><a href="#section-5.2-8" class="pilcrow">¶</a>
@@ -1895,7 +1910,9 @@ ELIDED
 <p id="section-5.2-9"><strong>CBOR Hex</strong><a href="#section-5.2-9" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.2-10">
 <pre>
-d8c8582013941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
+D8 C8                                   # tag(200) envelope
+   58 20                                # bytes(32)
+      13941B487C1DDEBCE827B6EC3F46D982938ACDC7E3B6A140DB36062D9519DD2F
 </pre><a href="#section-5.2-10" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1932,21 +1949,13 @@ envelope subject "Alice" | envelope assertion "knows" "Bob"
 <p id="section-5.3-7"><strong>CBOR Diagnostic Notation</strong><a href="#section-5.3-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.3-8">
 <pre>
-200(   ; envelope
+200(   / envelope /
    [
-      200(   ; envelope
-         24("Alice")   ; leaf
-      ),
-      200(   ; envelope
-         {
-            200(   ; envelope
-               24("knows")   ; leaf
-            ):
-            200(   ; envelope
-               24("Bob")   ; leaf
-            )
-         }
-      )
+      24("Alice"),   / leaf /
+      {
+         24("knows"):   / leaf /
+         24("Bob")   / leaf /
+      }
    ]
 )
 </pre><a href="#section-5.3-8" class="pilcrow">¶</a>
@@ -1954,7 +1963,18 @@ envelope subject "Alice" | envelope assertion "knows" "Bob"
 <p id="section-5.3-9"><strong>CBOR Hex</strong><a href="#section-5.3-9" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.3-10">
 <pre>
-d8c882d8c8d81865416c696365d8c8a1d8c8d818656b6e6f7773d8c8d81863426f62
+D8 C8                     # tag(200) envelope
+   82                     # array(2)
+      D8 18               # tag(24) leaf
+         65               # text(5)
+            416C696365    # "Alice"
+      A1                  # map(1)
+         D8 18            # tag(24) leaf
+            65            # text(5)
+               6B6E6F7773 # "knows"
+         D8 18            # tag(24) leaf
+            63            # text(3)
+               426F62     # "Bob"
 </pre><a href="#section-5.3-10" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1987,14 +2007,10 @@ envelope subject assertion "knows" "Bob"
 <p id="section-5.4-7"><strong>CBOR Diagnostic Notation</strong><a href="#section-5.4-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.4-8">
 <pre>
-200(   ; envelope
+200(   / envelope /
    {
-      200(   ; envelope
-         24("knows")   ; leaf
-      ):
-      200(   ; envelope
-         24("Bob")   ; leaf
-      )
+      24("knows"):   / leaf /
+      24("Bob")   / leaf /
    }
 )
 </pre><a href="#section-5.4-8" class="pilcrow">¶</a>
@@ -2002,7 +2018,14 @@ envelope subject assertion "knows" "Bob"
 <p id="section-5.4-9"><strong>CBOR Hex</strong><a href="#section-5.4-9" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.4-10">
 <pre>
-d8c8a1d8c8d818656b6e6f7773d8c8d81863426f62
+D8 C8                  # tag(200) envelope
+   A1                  # map(1)
+      D8 18            # tag(24) leaf
+         65            # text(5)
+            6B6E6F7773 # "knows"
+      D8 18            # tag(24) leaf
+         63            # text(3)
+            426F62     # "Bob"
 </pre><a href="#section-5.4-10" class="pilcrow">¶</a>
 </div>
 </section>
@@ -2036,9 +2059,9 @@ envelope subject "Alice" | envelope subject --wrapped
 <p id="section-5.5-7"><strong>CBOR Diagnostic Notation</strong><a href="#section-5.5-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.5-8">
 <pre>
-200(   ; envelope
-   200(   ; envelope
-      24("Alice")   ; leaf
+200(   / envelope /
+   200(   / envelope /
+      24("Alice")   / leaf /
    )
 )
 </pre><a href="#section-5.5-8" class="pilcrow">¶</a>
@@ -2046,7 +2069,11 @@ envelope subject "Alice" | envelope subject --wrapped
 <p id="section-5.5-9"><strong>CBOR Hex</strong><a href="#section-5.5-9" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.5-10">
 <pre>
-d8c8d8c8d81865416c696365
+D8 C8                  # tag(200) envelope
+   D8 C8               # tag(200) envelope
+      D8 18            # tag(24) leaf
+         65            # text(5)
+            416C696365 # "Alice"
 </pre><a href="#section-5.5-10" class="pilcrow">¶</a>
 </div>
 </section>
@@ -2104,7 +2131,7 @@ d8c8d8c8d81865416c696365
 <div id="rfc-6973-considerations">
 <section id="section-7.5">
         <h3 id="name-rfc-6973-considerations">
-<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-rfc-6973-considerations" class="section-name selfRef">RFC-6973 Considerations</a>
+<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-rfc-6973-considerations" class="section-name selfRef">RFC 6973 Considerations</a>
         </h3>
 <p id="section-7.5-1">"Privacy Considerations for Internet Protocols" <span>[<a href="#RFC6973" class="cite xref">RFC6973</a>]</span> lists threats and guidelines related to privacy in internet protocols. Envelope is intended to help internet protocols easily adopt these considerations. It explicitly addresses the privacy-specific threats of correlation, secondary use, and disclosure by supporting the suggested guideline of Data Minimization.<a href="#section-7.5-1" class="pilcrow">¶</a></p>
 </section>
@@ -2112,7 +2139,7 @@ d8c8d8c8d81865416c696365
 <div id="rfc-8280-considerations">
 <section id="section-7.6">
         <h3 id="name-rfc-8280-considerations">
-<a href="#section-7.6" class="section-number selfRef">7.6. </a><a href="#name-rfc-8280-considerations" class="section-name selfRef">RFC-8280 Considerations</a>
+<a href="#section-7.6" class="section-number selfRef">7.6. </a><a href="#name-rfc-8280-considerations" class="section-name selfRef">RFC 8280 Considerations</a>
         </h3>
 <p id="section-7.6-1">"Research into Human Rights Protocol Considerations" <span>[<a href="#RFC8280" class="cite xref">RFC8280</a>]</span> lists guidelines for human rights considerations in internet protocols. Envelope similarly adopts many of the guidelines there, improving privacy and censorship resistance through its hashed elision; and accessibility, heterogeneity support, reliability, and integrity through its fundamental data structures.<a href="#section-7.6-1" class="pilcrow">¶</a></p>
 </section>
@@ -2233,6 +2260,10 @@ d8c8d8c8d81865416c696365
 <a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
+<dt id="CCDE">[CCDE]</dt>
+        <dd>
+<span class="refTitle">"Common CBOR Deterministic Encoding and Application Profiles"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-bormann-cbor-dcbor-02.html">https://www.ietf.org/archive/id/draft-bormann-cbor-dcbor-02.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="DCBOR">[DCBOR]</dt>
         <dd>
 <span class="refTitle">"Gordian dCBOR: A Deterministic CBOR Application Profile"</span>, <span>n.d.</span>, <span>&lt;<a href="https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor/">https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor/</a>&gt;</span>. </dd>
@@ -2304,7 +2335,7 @@ d8c8d8c8d81865416c696365
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-A-1">TODO acknowledge.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">The authors are grateful to Carsten Bormann for his review and helpful feedback.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
