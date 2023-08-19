@@ -46,6 +46,9 @@ normative:
     ENVELOPE-CLI:
         title: Envelope Command Line Tool
         target: https://github.com/BlockchainCommons/envelope-cli-swift
+    CCDE:
+        title: Common CBOR Deterministic Encoding and Application Profiles
+        target: https://www.ietf.org/archive/id/draft-bormann-cbor-dcbor-02.html
 
 informative:
     MERKLE:
@@ -56,7 +59,7 @@ informative:
 
 --- abstract
 
-Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way, offering support for privacy as described in RFC-6973 and human rights as described in RFC-8280. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible.
+Gordian Envelope specifies a structured format for hierarchical binary data focused on the ability to transmit it in a privacy-focused way, offering support for privacy as described in RFC 6973 and human rights as described in RFC 8280. Envelopes are designed to facilitate "smart documents" and have a number of unique features including: easy representation of a variety of semantic structures, a built-in Merkle-like digest tree, deterministic representation using CBOR, and the ability for the holder of a document to selectively elide specific parts of a document without invalidating the digest tree structure. This document specifies the base Envelope format, which is designed to be extensible.
 
 --- middle
 
@@ -75,14 +78,20 @@ The following architectural decisions support these goals:
 ## Elision Support
 
 - **Holder-initiated Elision.** Elision can be performed by the Holder of a Gordian Envelope, not just the Issuer.
-- **Granular Elision.** Elision can be performed on any data within an Envelope including subjects, predicates and objects of assertions, assertions as a whole, and envelopes as a whole. This allows each entity to elide data as is appropriate for the management of their personal (or business) risk.
+- **Granular Elision.** Elision can be performed on any data within an Envelope including subjects, predicates and objects of assertions, assertions as a whole, and envelopes as a whole. This allows each entity to elide data as is appropriate for the management of their personal or business risk.
 - **Progressive Trust.** The elision mechanics in Gordian Envelopes allow for progressive trust, where increasing amounts of data may be revealed over time.
 - **Consistent Hashing.** Even when elided, digests for those parts of the Gordian Envelope remain the same. So constructs such as signatures remain verifiable even for elided documents.
 - **Reversible Elision.** Elision can be reversed by the Holder of a Gordian Envelope, which means removed information can be selectively replaced without changing the digest tree.
 
 ## Extensions
 
-This document is the base specification for Gordian Envelope, which is designed to support extension specifications to support constructs like encryption, compression, decorrelation, and inclusion proofs. These extensions will be specified in separate documents.
+This document is the base specification for Gordian Envelope, which is stable and useful by itself. However it is also designed to support optional extensions, to be specified in separate documents.
+
+A few such extensions may require adding new Envelope cases: these will extend the Envelope format itself, and will therefore need to be supported by Envelope encoders. Examples include symmetric encryption and compression which (like elision) allow for the transformation of Envelope elements without changing the digest tree.
+
+However, most extensions will be specified by defining the semantics of new subjects, predicates, and objects. Such extensions do not require extending the Envelope format but may be supported by tools. Examples include signatures, public-key encryption, digest decorrelation, intra- and inter-Envelope references using digests, expression evaluation and distributed function calls, diffing and merging envelopes, and inclusion proofs.
+
+Building on this base specification, we expect a robust ecosystem of extensions to emerge, facilitating a wide variety of applications.
 
 # Terminology
 
@@ -94,7 +103,7 @@ byte
 : Used in its now-customary sense as a synonym for "octet".
 
 element
-: An envelope is a tree of elements, each of which is itself an envelope.
+: Synonymous with "sub-Envelope". An Envelope is a tree of elements, each of which is itself an Envelope.
 
 image
 : The source data from which a cryptographic digest is calculated.
@@ -106,7 +115,8 @@ This section is normative and specifies the Gordian Envelope binary format in te
 An Envelope is a tagged enumerated type with five cases. Here is the entire CDDL specification for the base Envelope format. Each case is discussed in detail below:
 
 ~~~ cddl
-envelope = #6.200(
+envelope = #6.200(envelope-content)
+envelope-content = (
     leaf /
     elided /
     node /
@@ -114,40 +124,40 @@ envelope = #6.200(
     wrapped
 )
 
-leaf = #6.24(bytes)  ; MUST be dCBOR
+leaf = #6.24(bytes .dcbor any)
 
 elided = sha256-digest
 sha256-digest = bytes .size 32
 
 node = [subject, + assertion-element]
-subject = envelope
+subject = envelope-content
 assertion-element = ( assertion / elided-assertion )
 elided-assertion = elided           ; MUST represent an assertion.
 
-assertion = { predicate-envelope: object-envelope }
-predicate-envelope = envelope
-object-envelope = envelope
+assertion = { predicate: object }
+predicate = envelope-content
+object = envelope-content
 
 wrapped = envelope
 ~~~
 
-Some of these cases create a hierarchical, recursive structure by including children that are themselves Envelopes. Two of these cases (`leaf` and `elided`) have no children. The `node` case adds one or more assertions to the envelope, each of which is a child. The `assertion` case is a predicate/object pair, both of which are children. The `wrapped` case is used to wrap an entire Envelope including its assertions (its child), so that assertions can be made about the wrapped Envelope as a whole.
+Some of these cases create a hierarchical, recursive structure by including children that are themselves Envelopes. Two of these cases (`leaf` and `elided`) have no children. The `node` case adds one or more assertions to the Envelope, each of which is a child. The `assertion` case is a predicate/object pair, both of which are children. The `wrapped` case is used to wrap an entire Envelope including its assertions (its child), so that assertions can be made about the wrapped Envelope as a whole.
 
 ## Leaf Case Format
 
-A `leaf` case is used when the Envelope contains only user-defined CBOR content. It is tagged using `#6.24`, per {{-CBOR}} §3.4.5.1, "Encoded CBOR Data Item".
+A `leaf` case is used when the Envelope contains only user-defined CBOR content. It is tagged using `#6.24`, per {{-CBOR}} §3.4.5.1, "Encoded CBOR Data Item". See §4 of {{CCDE}} for CDDL support for dCBOR.
 
 ~~~ cddl
-leaf = #6.24(bytes)  ; MUST be dCBOR
+leaf = #6.24(bytes .dcbor any)
 ~~~
 
 The `leaf` case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using `#6.24`.
 
-To preserve deterministic encoding, authors of application-level data formats based on Envelope MUST only encode CBOR that conforms to dCBOR {{DCBOR}} in the `leaf` case. Care must be taken to ensure that leaf CBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures MUST or MUST NOT be used.
+To preserve deterministic encoding, authors of application-level data formats based on Envelope MUST only encode CBOR that conforms to dCBOR {{DCBOR}} in the `leaf` case. Care must be taken to ensure that leaf dCBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures MUST or MUST NOT be used.
 
 ## Elided Case Format
 
-An `elided` case is used as a placeholder for an element that has been elided. It consists solely of the elided envelope's digest.
+An `elided` case is used as a placeholder for an element that has been elided. It consists solely of the elided Envelope's digest.
 
 ~~~ cddl
 elided = sha256-digest
@@ -155,6 +165,8 @@ sha256-digest = bytes .size 32
 ~~~
 
 The `elided` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR byte string and always has a length of 32 bytes.
+
+If the method of producing the digest ever changes, the top-level Envelope tag `#6.200` MUST be changed to a new value, and the new method MUST be specified in a new document. This is to ensure that the digest tree remains consistent.
 
 ## Node Case Format
 
@@ -170,7 +182,7 @@ For an Envelope to be valid, any `elided-assertion` Envelopes in the `node` asse
 
 ~~~ cddl
 node = [subject, + assertion-element]
-subject = envelope
+subject = envelope-content
 assertion-element = ( assertion / elided-assertion )
 elided-assertion = elided           ; MUST represent an assertion.
 ~~~
@@ -179,15 +191,15 @@ The `node` case can be discriminated from other Envelope case arms by the fact t
 
 ## Assertion Case Format
 
-An `assertion` case is used for each of the assertions on the subject of an Envelope. It is encoded as a CBOR map with exactly one map element:
+An `assertion` case is used for each of the assertions on the subject of an Envelope. It is encoded as a CBOR map with exactly one map entry:
 
-* The key of the map element is the Envelope representing the predicate of the assertion.
-* The value of the map element is the Envelope representing the object of the assertion.
+* The key of the map entry is the Envelope representing the predicate of the assertion.
+* The value of the map entry is the Envelope representing the object of the assertion.
 
 ~~~ cddl
-assertion = { predicate-envelope: object-envelope }
-predicate-envelope = envelope
-object-envelope = envelope
+assertion = { predicate: object }
+predicate = envelope-content
+object = envelope-content
 ~~~
 
 The `assertion` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR map.
@@ -200,7 +212,7 @@ Assertions make semantic statements about an Envelope's subject. A `wrapped` cas
 wrapped = envelope
 ~~~
 
-The `wrapped` case can be discriminated from other Envelope case arms by the fact that it is the only one that is a CBOR envelope, and is always tagged with `#6.200`.
+The `wrapped` case can be discriminated from other Envelope case arms by the fact that it is the only one that is top-level CBOR Envelope, always tagged with `#6.200`.
 
 # Computing the Digest Tree
 
@@ -226,7 +238,14 @@ digest(cbor)
 
 **Example**
 
-The CBOR serialization of the plaintext string `"Hello"` (not including the quotes) is `6548656C6C6F`. The following command line calculates the SHA-256 sum of this sequence:
+The CBOR serialization of the plaintext string `"Hello"` (not including the quotes) is:
+
+~~~
+65            # text(5)
+   48656C6C6F # "Hello"
+~~~
+
+The following command line calculates the SHA-256 sum of this sequence:
 
 ~~~
 $ echo "6548656C6C6F" | xxd -r -p | shasum --binary --algorithm 256 | \
@@ -473,11 +492,11 @@ More common is the opposite case: a subject with no assertions:
 
 In Envelopes, there are five distinct "positions" of elements, each of which is itself an Envelope and which therefore produces its own digest:
 
-1. envelope
-2. subject
-3. assertion
-4. predicate
-5. object
+1. Envelope
+2. Subject
+3. Assertion
+4. Predicate
+5. Object
 
 The examples above are printed in Envelope notation, which is designed to make the semantic content of Envelopes human-readable, but it doesn't show the actual digests associated with each of the positions. To see the structure more completely, we can display every element of the Envelope in "Tree Format":
 
@@ -537,15 +556,18 @@ envelope subject "Alice"
 **CBOR Diagnostic Notation**
 
 ~~~
-200(   ; envelope
-   24("Alice")   ; leaf
+200(   / envelope /
+   24("Alice")   / leaf /
 )
 ~~~
 
 **CBOR Hex**
 
 ~~~
-d8c8d81865416c696365
+D8 C8               # tag(200) envelope
+   D8 18            # tag(24) leaf
+      65            # text(5)
+         416C696365 # "Alice"
 ~~~
 
 ## Elided Case
@@ -571,7 +593,7 @@ ELIDED
 **CBOR Diagnostic Notation**
 
 ~~~
-200(   ; envelope
+200(   / envelope /
    h'13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f'
 )
 ~~~
@@ -579,7 +601,9 @@ ELIDED
 **CBOR Hex**
 
 ~~~
-d8c8582013941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
+D8 C8                                   # tag(200) envelope
+   58 20                                # bytes(32)
+      13941B487C1DDEBCE827B6EC3F46D982938ACDC7E3B6A140DB36062D9519DD2F
 ~~~
 
 ## Node Case
@@ -611,21 +635,13 @@ envelope subject "Alice" | envelope assertion "knows" "Bob"
 **CBOR Diagnostic Notation**
 
 ~~~
-200(   ; envelope
+200(   / envelope /
    [
-      200(   ; envelope
-         24("Alice")   ; leaf
-      ),
-      200(   ; envelope
-         {
-            200(   ; envelope
-               24("knows")   ; leaf
-            ):
-            200(   ; envelope
-               24("Bob")   ; leaf
-            )
-         }
-      )
+      24("Alice"),   / leaf /
+      {
+         24("knows"):   / leaf /
+         24("Bob")   / leaf /
+      }
    ]
 )
 ~~~
@@ -633,7 +649,18 @@ envelope subject "Alice" | envelope assertion "knows" "Bob"
 **CBOR Hex**
 
 ~~~
-d8c882d8c8d81865416c696365d8c8a1d8c8d818656b6e6f7773d8c8d81863426f62
+D8 C8                     # tag(200) envelope
+   82                     # array(2)
+      D8 18               # tag(24) leaf
+         65               # text(5)
+            416C696365    # "Alice"
+      A1                  # map(1)
+         D8 18            # tag(24) leaf
+            65            # text(5)
+               6B6E6F7773 # "knows"
+         D8 18            # tag(24) leaf
+            63            # text(3)
+               426F62     # "Bob"
 ~~~
 
 ## Assertion Case
@@ -661,14 +688,10 @@ envelope subject assertion "knows" "Bob"
 **CBOR Diagnostic Notation**
 
 ~~~
-200(   ; envelope
+200(   / envelope /
    {
-      200(   ; envelope
-         24("knows")   ; leaf
-      ):
-      200(   ; envelope
-         24("Bob")   ; leaf
-      )
+      24("knows"):   / leaf /
+      24("Bob")   / leaf /
    }
 )
 ~~~
@@ -676,7 +699,14 @@ envelope subject assertion "knows" "Bob"
 **CBOR Hex**
 
 ~~~
-d8c8a1d8c8d818656b6e6f7773d8c8d81863426f62
+D8 C8                  # tag(200) envelope
+   A1                  # map(1)
+      D8 18            # tag(24) leaf
+         65            # text(5)
+            6B6E6F7773 # "knows"
+      D8 18            # tag(24) leaf
+         63            # text(3)
+            426F62     # "Bob"
 ~~~
 
 ## Wrapped Case
@@ -705,9 +735,9 @@ envelope subject "Alice" | envelope subject --wrapped
 **CBOR Diagnostic Notation**
 
 ~~~
-200(   ; envelope
-   200(   ; envelope
-      24("Alice")   ; leaf
+200(   / envelope /
+   200(   / envelope /
+      24("Alice")   / leaf /
    )
 )
 ~~~
@@ -715,7 +745,11 @@ envelope subject "Alice" | envelope subject --wrapped
 **CBOR Hex**
 
 ~~~
-d8c8d8c8d81865416c696365
+D8 C8                  # tag(200) envelope
+   D8 C8               # tag(200) envelope
+      D8 18            # tag(24) leaf
+         65            # text(5)
+            416C696365 # "Alice"
 ~~~
 
 # Reference Implementations
@@ -746,11 +780,11 @@ Envelope uses the SHA-256 digest algorithm {{-SHA-256}}, which is regarded as re
 
 Elided Envelopes may in some cases inadvertently reveal information by transmitting digests that may be correlated to known information. In many cases this is of no consequence, but when necessary Envelopes can (when constructed) be "salted" by adding assertions that contain random data. This results in perturbing the digest tree, hence decorrelating it (after elision) from digests whose unelided contents are known.
 
-## RFC-6973 Considerations
+## RFC 6973 Considerations
 
 "Privacy Considerations for Internet Protocols" {{-PRIVACY}} lists threats and guidelines related to privacy in internet protocols. Envelope is intended to help internet protocols easily adopt these considerations. It explicitly addresses the privacy-specific threats of correlation, secondary use, and disclosure by supporting the suggested guideline of Data Minimization.
 
-## RFC-8280 Considerations
+## RFC 8280 Considerations
 
 "Research into Human Rights Protocol Considerations" {{-HUMAN-RIGHTS}} lists guidelines for human rights considerations in internet protocols. Envelope similarly adopts many of the guidelines there, improving privacy and censorship resistance through its hashed elision; and accessibility, heterogeneity support, reliability, and integrity through its fundamental data structures.
 
@@ -801,4 +835,4 @@ The proposed media type {{-MIME}} for Envelope is `application/envelope+cbor`. T
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+The authors are grateful to Carsten Bormann for his review and helpful feedback.
