@@ -795,9 +795,9 @@ Elided Envelopes may in some cases inadvertently reveal information by transmitt
 
 This document requests that IANA {{IANA-CBOR-TAGS}} assign the following tag:
 
-| Tag | Data Item | Semantics |
-|:----|:-----|:-----|
-| 200 | multiple | Gordian Envelope |
+| Tag | Data Item | Semantics | Specification |
+|:----|:-----|:-----|:-----|
+| 200 | multiple | Gordian Envelope | This document |
 
 Points of contact:
 
