@@ -227,6 +227,8 @@ In this section:
 *  The `.digest` attribute is the digest of the named element computed as specified herein.
 *  The `||` operator represents the concatenation of byte sequences.
 
+Note that in the examples below, all the hexadecimal you see is converted to binary before being hashed. This is to make the examples easier to read. In practice, the hash function is applied directly to the binary data.
+
 ## Leaf Digest Calculation
 
 The `leaf` case consists of any CBOR object conforming to dCBOR {{DCBOR}}. The Envelope image is the CBOR serialization of that object:
