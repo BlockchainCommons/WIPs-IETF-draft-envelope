@@ -103,7 +103,7 @@ byte
 : Used in its now-customary sense as a synonym for "octet".
 
 element
-: Synonymous with "sub-Envelope". An Envelope is a tree of elements, each of which is itself an Envelope.
+: Synonymous with "sub-Envelope". An Envelope is a tree of elements.
 
 image
 : The source data from which a cryptographic digest is calculated.
