@@ -943,7 +943,7 @@ Table of Contents
 
 8.1.  CBOR Tags
 
-   This document requests that IANA [IANA-CBOR-TAGS] reserve the
+   This document requests that IANA [IANA-CBOR-TAGS] assign the
    following tag:
 
                   +=====+===========+==================+
