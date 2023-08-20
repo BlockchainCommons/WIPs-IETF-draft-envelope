@@ -116,13 +116,12 @@ An Envelope is a tagged enumerated type with five cases. Here is the entire CDDL
 
 ~~~ cddl
 envelope = #6.200(envelope-content)
-envelope-content = (
+envelope-content =
     leaf /
     elided /
     node /
     assertion /
     wrapped
-)
 
 leaf = #6.24(bytes .dcbor any)
 
@@ -131,10 +130,10 @@ sha256-digest = bytes .size 32
 
 node = [subject, + assertion-element]
 subject = envelope-content
-assertion-element = ( assertion / elided-assertion )
+assertion-element = assertion / elided-assertion
 elided-assertion = elided           ; MUST represent an assertion.
 
-assertion = { predicate: object }
+assertion = { predicate => object }
 predicate = envelope-content
 object = envelope-content
 
@@ -183,7 +182,7 @@ For an Envelope to be valid, any `elided-assertion` Envelopes in the `node` asse
 ~~~ cddl
 node = [subject, + assertion-element]
 subject = envelope-content
-assertion-element = ( assertion / elided-assertion )
+assertion-element = assertion / elided-assertion
 elided-assertion = elided           ; MUST represent an assertion.
 ~~~
 
@@ -197,7 +196,7 @@ An `assertion` case is used for each of the assertions on the subject of an Enve
 * The value of the map entry is the Envelope representing the object of the assertion.
 
 ~~~ cddl
-assertion = { predicate: object }
+assertion = { predicate => object }
 predicate = envelope-content
 object = envelope-content
 ~~~
