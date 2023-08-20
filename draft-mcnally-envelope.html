@@ -1038,7 +1038,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">McNally &amp; Allen</td>
-<td class="center">Expires 20 February 2024</td>
+<td class="center">Expires 21 February 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1051,12 +1051,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-mcnally-envelope-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-08-19" class="published">19 August 2023</time>
+<time datetime="2023-08-20" class="published">20 August 2023</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-02-20">20 February 2024</time></dd>
+<dd class="expires"><time datetime="2024-02-21">21 February 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1102,7 +1102,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 20 February 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 21 February 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1362,13 +1362,12 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <div class="lang-cddl sourcecode" id="section-3-3">
 <pre>
 envelope = #6.200(envelope-content)
-envelope-content = (
+envelope-content =
     leaf /
     elided /
     node /
     assertion /
     wrapped
-)
 
 leaf = #6.24(bytes .dcbor any)
 
@@ -1377,10 +1376,10 @@ sha256-digest = bytes .size 32
 
 node = [subject, + assertion-element]
 subject = envelope-content
-assertion-element = ( assertion / elided-assertion )
+assertion-element = assertion / elided-assertion
 elided-assertion = elided           ; MUST represent an assertion.
 
-assertion = { predicate: object }
+assertion = { predicate =&gt; object }
 predicate = envelope-content
 object = envelope-content
 
@@ -1433,7 +1432,7 @@ sha256-digest = bytes .size 32
 <pre>
 node = [subject, + assertion-element]
 subject = envelope-content
-assertion-element = ( assertion / elided-assertion )
+assertion-element = assertion / elided-assertion
 elided-assertion = elided           ; MUST represent an assertion.
 </pre><a href="#section-3.3-6" class="pilcrow">¶</a>
 </div>
@@ -1454,7 +1453,7 @@ elided-assertion = elided           ; MUST represent an assertion.
         </ul>
 <div class="lang-cddl sourcecode" id="section-3.4-3">
 <pre>
-assertion = { predicate: object }
+assertion = { predicate =&gt; object }
 predicate = envelope-content
 object = envelope-content
 </pre><a href="#section-3.4-3" class="pilcrow">¶</a>
