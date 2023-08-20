@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 20 February 2024                                 19 August 2023
+Expires: 21 February 2024                                 20 August 2023
 
 
               The Gordian Envelope Structured Data Format
@@ -47,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 February 2024.
+   This Internet-Draft will expire on 21 February 2024.
 
 Copyright Notice
 
@@ -230,13 +230,12 @@ Table of Contents
    discussed in detail below:
 
    envelope = #6.200(envelope-content)
-   envelope-content = (
+   envelope-content =
        leaf /
        elided /
        node /
        assertion /
        wrapped
-   )
 
    leaf = #6.24(bytes .dcbor any)
 
@@ -245,10 +244,10 @@ Table of Contents
 
    node = [subject, + assertion-element]
    subject = envelope-content
-   assertion-element = ( assertion / elided-assertion )
+   assertion-element = assertion / elided-assertion
    elided-assertion = elided           ; MUST represent an assertion.
 
-   assertion = { predicate: object }
+   assertion = { predicate => object }
    predicate = envelope-content
    object = envelope-content
 
@@ -320,7 +319,7 @@ Table of Contents
 
    node = [subject, + assertion-element]
    subject = envelope-content
-   assertion-element = ( assertion / elided-assertion )
+   assertion-element = assertion / elided-assertion
    elided-assertion = elided           ; MUST represent an assertion.
 
    The node case can be discriminated from other Envelope case arms by
@@ -338,7 +337,7 @@ Table of Contents
    *  The value of the map entry is the Envelope representing the object
       of the assertion.
 
-   assertion = { predicate: object }
+   assertion = { predicate => object }
    predicate = envelope-content
    object = envelope-content
 
