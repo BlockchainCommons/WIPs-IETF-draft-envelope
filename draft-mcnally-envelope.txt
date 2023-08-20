@@ -379,10 +379,9 @@ Table of Contents
 
    *  The || operator represents the concatenation of byte sequences.
 
-   Note that in the examples below, all the hexadecimal you see is
-   converted to binary before being hashed.  This is to make the
-   examples easier to read.  In practice, the hash function is applied
-   directly to the binary data.
+   Note that in the examples below, hexadecimal is shown for
+   readability.  All the hexadecimal you see is converted to binary
+   before being hashed.
 
 4.1.  Leaf Digest Calculation
 
