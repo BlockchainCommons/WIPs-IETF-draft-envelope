@@ -5,7 +5,7 @@
 Network Working Group                                         W. McNally
 Internet-Draft                                                  C. Allen
 Intended status: Experimental                         Blockchain Commons
-Expires: 21 February 2024                                 20 August 2023
+Expires: 22 August 2024                                 19 February 2024
 
 
               The Gordian Envelope Structured Data Format
@@ -47,11 +47,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 February 2024.
+   This Internet-Draft will expire on 22 August 2024.
 
 Copyright Notice
 
-   Copyright (c) 2023 IETF Trust and the persons identified as the
+   Copyright (c) 2024 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -211,7 +211,7 @@ Table of Contents
    byte  Used in its now-customary sense as a synonym for "octet".
 
    element  Synonymous with "sub-Envelope".  An Envelope is a tree of
-      elements, each of which is itself an Envelope.
+      elements.
 
    image  The source data from which a cryptographic digest is
       calculated.
@@ -230,13 +230,12 @@ Table of Contents
    discussed in detail below:
 
    envelope = #6.200(envelope-content)
-   envelope-content = (
+   envelope-content =
        leaf /
        elided /
        node /
        assertion /
        wrapped
-   )
 
    leaf = #6.24(bytes .dcbor any)
 
@@ -245,10 +244,10 @@ Table of Contents
 
    node = [subject, + assertion-element]
    subject = envelope-content
-   assertion-element = ( assertion / elided-assertion )
+   assertion-element = assertion / elided-assertion
    elided-assertion = elided           ; MUST represent an assertion.
 
-   assertion = { predicate: object }
+   assertion = { predicate => object }
    predicate = envelope-content
    object = envelope-content
 
@@ -320,7 +319,7 @@ Table of Contents
 
    node = [subject, + assertion-element]
    subject = envelope-content
-   assertion-element = ( assertion / elided-assertion )
+   assertion-element = assertion / elided-assertion
    elided-assertion = elided           ; MUST represent an assertion.
 
    The node case can be discriminated from other Envelope case arms by
@@ -338,7 +337,7 @@ Table of Contents
    *  The value of the map entry is the Envelope representing the object
       of the assertion.
 
-   assertion = { predicate: object }
+   assertion = { predicate => object }
    predicate = envelope-content
    object = envelope-content
 
@@ -379,6 +378,10 @@ Table of Contents
       as specified herein.
 
    *  The || operator represents the concatenation of byte sequences.
+
+   Note that in the examples below, hexadecimal is shown for
+   readability.  All the hexadecimal you see is converted to binary
+   before being hashed.
 
 4.1.  Leaf Digest Calculation
 
@@ -940,14 +943,14 @@ Table of Contents
 
 8.1.  CBOR Tags
 
-   This document requests that IANA [IANA-CBOR-TAGS] reserve the
+   This document requests that IANA [IANA-CBOR-TAGS] assign the
    following tag:
 
-                  +=====+===========+==================+
-                  | Tag | Data Item | Semantics        |
-                  +=====+===========+==================+
-                  | 200 | multiple  | Gordian Envelope |
-                  +-----+-----------+------------------+
+          +=====+===========+==================+===============+
+          | Tag | Data Item | Semantics        | Specification |
+          +=====+===========+==================+===============+
+          | 200 | multiple  | Gordian Envelope | This document |
+          +-----+-----------+------------------+---------------+
 
                                  Table 1
 
