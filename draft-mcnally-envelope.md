@@ -32,7 +32,7 @@ normative:
     RFC6838: MIME
     DCBOR:
         title: "Gordian dCBOR: A Deterministic CBOR Application Profile"
-        target: https://datatracker.ietf.org/doc/draft-mcnally-deterministic-cbor/
+        target: https://www.ietf.org/archive/id/draft-mcnally-deterministic-cbor-08.html
     IANA-CBOR-TAGS:
         title: IANA, Concise Binary Object Representation (CBOR) Tags
         target: https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
@@ -42,13 +42,10 @@ normative:
         target: https://github.com/blockchaincommons/BCSwiftEnvelope
     ENVELOPE-RUST:
         title: Blockchain Commons Gordian Envelope for Rust
-        target: https://github.com/blockchaincommons/bc-envelope-rust
+        target: https://crates.io/crates/bc-envelope
     ENVELOPE-CLI:
-        title: Envelope Command Line Tool
-        target: https://github.com/BlockchainCommons/envelope-cli-swift
-    CCDE:
-        title: Common CBOR Deterministic Encoding and Application Profiles
-        target: https://www.ietf.org/archive/id/draft-bormann-cbor-dcbor-02.html
+        title: Envelope Command Line Tool (Rust)
+        target: https://crates.io/crates/bc-envelope-cli
 
 informative:
     MERKLE:
@@ -123,7 +120,7 @@ envelope-content =
     assertion /
     wrapped
 
-leaf = #6.24(bytes .dcbor any)
+leaf = #6.201(any)
 
 elided = sha256-digest
 sha256-digest = bytes .size 32
@@ -144,13 +141,13 @@ Some of these cases create a hierarchical, recursive structure by including chil
 
 ## Leaf Case Format
 
-A `leaf` case is used when the Envelope contains only user-defined CBOR content. It is tagged using `#6.24`, per {{-CBOR}} §3.4.5.1, "Encoded CBOR Data Item". See §4 of {{CCDE}} for CDDL support for dCBOR.
+A `leaf` case is used when the Envelope contains only user-defined CBOR content. It is tagged using `#6.201`, "encapsulated dCBOR", per {{DCBOR}}.
 
 ~~~ cddl
-leaf = #6.24(bytes .dcbor any)
+leaf = #6.201(any)
 ~~~
 
-The `leaf` case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using `#6.24`.
+The `leaf` case can be discriminated from other Envelope case arms by the fact that it is the only one that is tagged using `#6.201`.
 
 To preserve deterministic encoding, authors of application-level data formats based on Envelope MUST only encode CBOR that conforms to dCBOR {{DCBOR}} in the `leaf` case. Care must be taken to ensure that leaf dCBOR follows best practices for deterministic encoding, such as clearly specifying when tags for nested structures MUST or MUST NOT be used.
 
@@ -257,7 +254,7 @@ $ echo "6548656C6C6F" | xxd -r -p | shasum --binary --algorithm 256 | \
 Using the `envelope` command line tool {{ENVELOPE-CLI}}, we create an Envelope with this string as the subject and display the Envelope's digest. The digest below matches the one above.
 
 ~~~
-$ envelope subject "Hello" | envelope digest --hex
+$ envelope subject type string "Hello" | envelope digest --hex
 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 ~~~
 
@@ -270,14 +267,14 @@ The `elided` case declares its digest to be the digest of the Envelope for which
 If we create the Envelope from the leaf example above, elide it, and then request its digest:
 
 ~~~
-$ envelope subject "Hello" | envelope elide | envelope digest --hex
+$ envelope subject type string "Hello" | envelope elide revealing "" | envelope digest --hex
 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 ~~~
 
 ...we see that its digest is the same as its unelided form:
 
 ~~~
-$ envelope subject "Hello" | envelope digest --hex
+$ envelope subject type string "Hello" | envelope digest --hex
 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 ~~~
 
@@ -297,19 +294,19 @@ digest(subject.digest || assertion-0.digest ||
 We create four separate Envelopes and display their digests:
 
 ~~~
-$ SUBJECT=`envelope subject "Alice"`
+$ SUBJECT=`envelope subject type string "Alice"`
 $ envelope digest --hex $SUBJECT
 13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
 
-$ ASSERTION_0=`envelope subject assertion "knows" "Bob"`
+$ ASSERTION_0=`envelope subject assertion string "knows" string "Bob"`
 $ envelope digest --hex $ASSERTION_0
 78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2
 
-$ ASSERTION_1=`envelope subject assertion "knows" "Carol"`
+$ ASSERTION_1=`envelope subject assertion string "knows" string "Carol"`
 $ envelope digest --hex $ASSERTION_1
 4012caf2d96bf3962514bcfdcf8dd70c351735dec72c856ec5cdcf2ee35d6a91
 
-$ ASSERTION_2=`envelope subject assertion "knows" "Edward"`
+$ ASSERTION_2=`envelope subject assertion string "knows" string "Edward"`
 $ envelope digest --hex $ASSERTION_2
 65c3ebc3f056151a6091e738563dab4af8da1778da5a02afcd104560b612ca17
 ~~~
@@ -321,7 +318,7 @@ $ ENVELOPE=`envelope assertion add envelope $ASSERTION_0 $SUBJECT | \
     envelope assertion add envelope $ASSERTION_1 | \
     envelope assertion add envelope $ASSERTION_2`
 
-$ envelope $ENVELOPE
+$ envelope format $ENVELOPE
 "Alice" [
     "knows": "Bob"
     "knows": "Carol"
@@ -335,7 +332,7 @@ $ envelope digest --hex $ENVELOPE
 Note that in the Envelope notation representation above, the assertions are sorted alphabetically, with `"knows": "Edward"` coming last. But internally, the three assertions are ordered by digest in ascending lexicographic order, with "Carol" coming first because its digest starting with `4012caf2` is the lowest, as in the tree formatted display below:
 
 ~~~
-$ envelope --tree $ENVELOPE
+$ envelope format --type tree $ENVELOPE
 6255e3b6 NODE
     13941b48 subj "Alice"
     4012caf2 ASSERTION
@@ -385,15 +382,15 @@ digest(predicate.digest || object.digest)
 We create an assertion from two separate Envelopes and display their digests:
 
 ~~~
-$ PREDICATE=`envelope subject "knows"`
+$ PREDICATE=`envelope subject type string "knows"`
 $ envelope digest --hex $PREDICATE
 db7dd21c5169b4848d2a1bcb0a651c9617cdd90bae29156baaefbb2a8abef5ba
 
-$ OBJECT=`envelope subject "Bob"`
+$ OBJECT=`envelope subject type string "Bob"`
 $ envelope digest --hex $OBJECT
 13b741949c37b8e09cc3daa3194c58e4fd6b2f14d4b1d0f035a46d6d5a1d3f11
 
-$ ASSERTION=`envelope subject assertion "knows" "Bob"`
+$ ASSERTION=`envelope subject assertion string "knows" string "Bob"`
 $ envelope digest --hex $ASSERTION
 78d666eb8f4c0977a0425ab6aa21ea16934a6bc97c6f0c3abaefac951c1714a2
 ~~~
@@ -430,7 +427,7 @@ digest(envelope.digest)
 As above, we note the digest of a leaf Envelope is the digest of its CBOR:
 
 ~~~
-$ envelope subject "Hello" | envelope digest --hex
+$ envelope subject type string "Hello" | envelope digest --hex
 4d303dac9eed63573f6190e9c4191be619e03a7b3c21e9bb3d27ac1a55971e6b
 
 $ echo "6548656C6C6F" | xxd -r -p | shasum --binary --algorithm 256 | \
@@ -441,8 +438,8 @@ $ echo "6548656C6C6F" | xxd -r -p | shasum --binary --algorithm 256 | \
 Now we note that the digest of a wrapped Envelope is the digest of the wrapped Envelope's digest:
 
 ~~~
-$ envelope subject "Hello" | \
-    envelope subject --wrapped | \
+$ envelope subject type string "Hello" | \
+    envelope subject type wrapped | \
     envelope digest --hex
 743a86a9f411b1441215fbbd3ece3de5206810e8a3dd8239182e123802677bd7
 
@@ -485,7 +482,7 @@ The notional concept of Envelope is helpful, but not technically accurate becaus
 "knows": "Bob"
 ~~~
 
-More common is the opposite case: a subject with no assertions:
+More common is the opposite case, a subject with no assertions:
 
 ~~~
 "Alice"
@@ -539,7 +536,7 @@ These examples may be used as test vectors. In addition, each subsection starts 
 **Envelope CLI Command Line**
 
 ~~~
-envelope subject "Alice"
+envelope subject type string "Alice"
 ~~~
 
 **Envelope Notation**
@@ -558,17 +555,17 @@ envelope subject "Alice"
 
 ~~~
 200(   / envelope /
-   24("Alice")   / leaf /
+   201("Alice")   / leaf /
 )
 ~~~
 
 **CBOR Hex**
 
 ~~~
-D8 C8               # tag(200) envelope
-   D8 18            # tag(24) leaf
+d8 c8               # tag(200) envelope
+   d8 c9            # tag(201) leaf
       65            # text(5)
-         416C696365 # "Alice"
+         416c696365 # "Alice"
 ~~~
 
 ## Elided Case
@@ -576,7 +573,7 @@ D8 C8               # tag(200) envelope
 **Envelope CLI Command Line**
 
 ~~~
-envelope subject "Alice" | envelope elide
+envelope subject type string "Alice" | envelope elide revealing ""
 ~~~
 
 **Envelope Notation**
@@ -602,9 +599,9 @@ ELIDED
 **CBOR Hex**
 
 ~~~
-D8 C8                                   # tag(200) envelope
+d8 c8                                   # tag(200) envelope
    58 20                                # bytes(32)
-      13941B487C1DDEBCE827B6EC3F46D982938ACDC7E3B6A140DB36062D9519DD2F
+      13941b487c1ddebce827b6ec3f46d982938acdc7e3b6a140db36062d9519dd2f
 ~~~
 
 ## Node Case
@@ -612,7 +609,7 @@ D8 C8                                   # tag(200) envelope
 **Envelope CLI Command Line**
 
 ~~~
-envelope subject "Alice" | envelope assertion "knows" "Bob"
+envelope subject type string "Alice" | envelope assertion add pred-obj string "knows" string "Bob"
 ~~~
 
 **Envelope Notation**
@@ -638,10 +635,10 @@ envelope subject "Alice" | envelope assertion "knows" "Bob"
 ~~~
 200(   / envelope /
    [
-      24("Alice"),   / leaf /
+      201("Alice"),   / leaf /
       {
-         24("knows"):   / leaf /
-         24("Bob")   / leaf /
+         201("knows"):   / leaf /
+         201("Bob")   / leaf /
       }
    ]
 )
@@ -650,18 +647,18 @@ envelope subject "Alice" | envelope assertion "knows" "Bob"
 **CBOR Hex**
 
 ~~~
-D8 C8                     # tag(200) envelope
+d8 c8                     # tag(200) envelope
    82                     # array(2)
-      D8 18               # tag(24) leaf
+      d8 c9               # tag(201) leaf
          65               # text(5)
-            416C696365    # "Alice"
-      A1                  # map(1)
-         D8 18            # tag(24) leaf
+            416c696365    # "Alice"
+      a1                  # map(1)
+         d8 c9            # tag(201) leaf
             65            # text(5)
-               6B6E6F7773 # "knows"
-         D8 18            # tag(24) leaf
+               6b6e6f7773 # "knows"
+         d8 c9            # tag(201) leaf
             63            # text(3)
-               426F62     # "Bob"
+               426f62     # "Bob"
 ~~~
 
 ## Assertion Case
@@ -669,7 +666,7 @@ D8 C8                     # tag(200) envelope
 **Envelope CLI Command Line**
 
 ~~~
-envelope subject assertion "knows" "Bob"
+envelope subject assertion string "knows" string "Bob"
 ~~~
 
 **Envelope Notation**
@@ -691,8 +688,8 @@ envelope subject assertion "knows" "Bob"
 ~~~
 200(   / envelope /
    {
-      24("knows"):   / leaf /
-      24("Bob")   / leaf /
+      201("knows"):   / leaf /
+      201("Bob")   / leaf /
    }
 )
 ~~~
@@ -700,14 +697,14 @@ envelope subject assertion "knows" "Bob"
 **CBOR Hex**
 
 ~~~
-D8 C8                  # tag(200) envelope
-   A1                  # map(1)
-      D8 18            # tag(24) leaf
+d8 c8                  # tag(200) envelope
+   a1                  # map(1)
+      d8 c9            # tag(201) leaf
          65            # text(5)
-            6B6E6F7773 # "knows"
-      D8 18            # tag(24) leaf
+            6b6e6f7773 # "knows"
+      d8 c9            # tag(201) leaf
          63            # text(3)
-            426F62     # "Bob"
+            426f62     # "Bob"
 ~~~
 
 ## Wrapped Case
@@ -715,7 +712,7 @@ D8 C8                  # tag(200) envelope
 **Envelope CLI Command Line**
 
 ~~~
-envelope subject "Alice" | envelope subject --wrapped
+envelope subject type string "Alice" | envelope subject type wrapped
 ~~~
 
 **Envelope Notation**
@@ -738,7 +735,7 @@ envelope subject "Alice" | envelope subject --wrapped
 ~~~
 200(   / envelope /
    200(   / envelope /
-      24("Alice")   / leaf /
+      201("Alice")   / leaf /
    )
 )
 ~~~
@@ -746,11 +743,11 @@ envelope subject "Alice" | envelope subject --wrapped
 **CBOR Hex**
 
 ~~~
-D8 C8                  # tag(200) envelope
-   D8 C8               # tag(200) envelope
-      D8 18            # tag(24) leaf
+d8 c8                  # tag(200) envelope
+   d8 c8               # tag(200) envelope
+      d8 c9            # tag(201) leaf
          65            # text(5)
-            416C696365 # "Alice"
+            416c696365 # "Alice"
 ~~~
 
 # Reference Implementations
@@ -759,7 +756,7 @@ This section is informative.
 
 The current reference implementations of Envelope are written in Swift {{ENVELOPE-SWIFT}} and Rust {{ENVELOPE-RUST}}.
 
-The `envelope` command line tool {{ENVELOPE-CLI}} is also written in Swift.
+The `envelope` command line tool {{ENVELOPE-CLI}} is also written in Rust.
 
 # Security Considerations
 
