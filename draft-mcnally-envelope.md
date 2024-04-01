@@ -30,12 +30,10 @@ normative:
     RFC8949: CBOR
     RFC8610: CDDL
     RFC6838: MIME
+    IANACBORTAGS: IANA.cbor-tags
     DCBOR:
         title: "Gordian dCBOR: A Deterministic CBOR Application Profile"
         target: https://www.ietf.org/archive/id/draft-mcnally-deterministic-cbor-08.html
-    IANA-CBOR-TAGS:
-        title: IANA, Concise Binary Object Representation (CBOR) Tags
-        target: https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
     RFC6234: SHA-256
     ENVELOPE-SWIFT:
         title: Blockchain Commons Gordian Envelope for Swift
@@ -790,11 +788,16 @@ Elided Envelopes may in some cases inadvertently reveal information by transmitt
 
 ## CBOR Tags
 
-This document requests that IANA {{IANA-CBOR-TAGS}} assign the following tag:
+RFC Editor: please replace RFCXXXX with the RFC number of this RFC and remove this note.
+
+IANA {{IANACBORTAGS}} has assigned the following tag:
 
 | Tag | Data Item | Semantics | Specification |
 |:----|:-----|:-----|:-----|
-| 200 | multiple | Gordian Envelope | This document |
+| 200 | multiple | Gordian Envelope | \[RFCXXXX\] |
+{: title="CBOR Tag for Envelope"}
+
+This document uses the tag `#6.201` for encapsulated dCBOR, which is defined in {{DCBOR}}.
 
 Points of contact:
 
