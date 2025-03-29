@@ -14,7 +14,6 @@
 /.vscode/
 /lib
 /node_modules/
-/versioned/
 Gemfile.lock
 archive.json
 draft-mcnally-envelope.xml
