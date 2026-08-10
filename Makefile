@@ -1,4 +1,10 @@
 LIBDIR := lib
+
+# The vendored lib/ is pinned to i-d-template from 2022-10-01, whose config.mk still
+# points at https://datatracker.ietf.org/api/submit -- retired, now answering HTTP 410.
+# The current endpoint is /api/submission. config.mk uses ?=, so setting it here wins.
+DATATRACKER_UPLOAD_URL := https://datatracker.ietf.org/api/submission
+
 include $(LIBDIR)/main.mk
 
 $(LIBDIR)/main.mk:
